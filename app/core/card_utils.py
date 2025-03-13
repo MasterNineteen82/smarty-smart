@@ -59,6 +59,17 @@ class ConfigManager:
                 except ValueError:
                     logger.warning(f"Could not convert environment variable {env_key} to correct type, using default value.")
 
+    def _setup_directories(self):
+        """Setup directories for logging and backups."""
+        logs_dir = self.get("LOGS_DIR", "logs")
+        backup_dir = self.get("BACKUP_DIR", os.path.join(logs_dir, "backups"))
+
+        os.makedirs(logs_dir, exist_ok=True)
+        os.makedirs(backup_dir, exist_ok=True)
+
+        self._config["LOGS_DIR"] = logs_dir
+        self._config["BACKUP_DIR"] = backup_dir
+
     def mask_sensitive_data(self, data_str):
         """Mask sensitive data if configured to do so"""
         if not self._config.get("SENSITIVE_DATA_MASKING", True):
