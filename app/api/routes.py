@@ -3,10 +3,9 @@ import time
 import json
 from functools import wraps
 from concurrent.futures import ThreadPoolExecutor
+import os  # Import the os module
 
-from flask import Blueprint, render_template, request, jsonify #Removed unused abort
-
-from numpy import e
+from flask import Blueprint, render_template, request, jsonify  # FIX: Ensure Flask jsonify is imported.
 from smartcard.util import toHexString, toBytes
 from smartcard.System import readers
 from smartcard.scard import SCARD_PRESENT, SCARD_STATE_PRESENT, SCARD_STATE_EMPTY
@@ -16,70 +15,66 @@ from card_utils import (
     status, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
     update_available_readers, selected_reader, card_info, detect_card_type, is_card_registered, detect_reader_type
 )
-# Define SCARD_PRESENT manually only if it doesn't exist
-try:
-    pass
-except ImportError:
-    SCARD_PRESENT = 0x20  # Define manually if missing
 
 from server_utils import run_server, stop_server
 from card_manager import card_manager
 
-# Add more comprehensive error handling decorator
+# Configuration Loading
+def load_config():
+    """Load configuration from environment variables or a file."""
+    config = {}
+    config['MAX_PIN_ATTEMPTS'] = int(os.environ.get('MAX_PIN_ATTEMPTS', 3))  # Default to 3
+    config['DEFAULT_PIN'] = os.environ.get('DEFAULT_PIN', '123')
+    return config
+
+config = load_config()
+MAX_PIN_ATTEMPTS = config['MAX_PIN_ATTEMPTS']
+DEFAULT_PIN = config['DEFAULT_PIN']
+
+# Error Handling Decorator
 def handle_card_exceptions(f):
+    """Comprehensive error handling for card operations."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
             return f(*args, **kwargs)
         except ValueError as e:
             logger.warning(f"Value error: {e}")
-            return jsonify({
-                "status": "error",
-                "message": f"Value error: {str(e)}",
-                "error_type": "ValueError",
-                "error_details": str(e),
-                "timestamp": datetime.datetime.now().isoformat()
-            }), 400
+            return jsonify(error_response("ValueError", str(e))), 400
         except KeyError as e:
             logger.warning(f"Key error: {e}")
-            return jsonify({
-                "status": "error",
-                "message": f"Key error: {str(e)}",
-                "error_type": "KeyError",
-                "error_details": str(e),
-                "timestamp": datetime.datetime.now().isoformat()
-            }), 400
+            return jsonify(error_response("KeyError", str(e))), 400
         except ConnectionError as e:
             logger.error(f"Connection error: {e}")
-            return jsonify({
-                "status": "error",
-                "message": f"Connection error: {str(e)}",
-                "error_type": "ConnectionError",
-                "error_details": str(e),
-                "timestamp": datetime.datetime.now().isoformat(),
-                "suggestion": "Check if reader is properly connected"
-            }), 500
+            return jsonify(error_response("ConnectionError", str(e), "Check if reader is properly connected")), 500
         except Exception as e:
             logger.exception(f"Operation failed: {e}")
-            error_response = {
-                "status": "error",
-                "message": f"Operation failed: {str(e)}",
-                "error_type": e.__class__.__name__,
-                "error_details": str(e),
-                "timestamp": datetime.datetime.now().isoformat()
-            }
+            suggestion = None
             if "No card present" in str(e):
-                error_response["suggestion"] = "Please place a card on the reader"
+                suggestion = "Please place a card on the reader"
             elif "Connection failed" in str(e):
-                error_response["suggestion"] = "Check if reader is properly connected"
-            return jsonify(error_response), 500
+                suggestion = "Check if reader is properly connected"
+            return jsonify(error_response(e.__class__.__name__, str(e), suggestion)), 500
     return decorated_function
 
-# Find the log_operation_timing decorator and update it to this:
+def error_response(error_type, error_details, suggestion=None):
+    """Standardized error response format."""
+    response = {
+        "status": "error",
+        "message": f"Operation failed: {error_details}",
+        "error_type": error_type,
+        "error_details": error_details,
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+    if suggestion:
+        response["suggestion"] = suggestion
+    return response
+
+# Operation Timing Decorator
 def log_operation_timing(operation_name):
-    """Decorator to log operation timing"""
+    """Decorator to log operation timing with improved error handling."""
     def decorator(f):
-        @wraps(f)  # This is the critical line that preserves function metadata
+        @wraps(f)
         def wrapper(*args, **kwargs):
             start_time = time.time()
             logger.debug(f"Starting operation: {operation_name}")
@@ -87,14 +82,14 @@ def log_operation_timing(operation_name):
             try:
                 result = f(*args, **kwargs)
                 end_time = time.time()
-                duration = (end_time - start_time) * 1000  # ms
+                duration = (end_time - start_time) * 1000
                 logger.debug(f"Operation completed: {operation_name} in {duration:.2f}ms")
                 return result
             except Exception as e:
                 end_time = time.time()
-                duration = (end_time - start_time) * 1000  # ms
+                duration = (end_time - start_time) * 1000
                 logger.error(f"Operation failed: {operation_name} after {duration:.2f}ms - {e}")
-                raise
+                raise  # Re-raise the exception after logging
             finally:
                 logger.debug(f"Operation {operation_name} finished, total duration: {duration:.2f}ms")
                 
@@ -124,16 +119,7 @@ def start_server_route_bp():
         return jsonify({"message": "Server started", "status": "success"})
     except Exception as e:
         logger.error(f"Failed to start server: {e}")
-        return jsonify({
-            "message": f"Failed to start server: {str(e)}",
-            "status": "error",
-            "error_type": e.__class__.__name__,
-            "error_details": str(e),
-            "timestamp": datetime.datetime.now().isoformat()
-        }), 500
-
-# routes.py
-routes = Blueprint('routes', __name__)
+        return jsonify(error_response("ServerStartError", str(e))), 500
 
 @bp.route('/card_status', methods=['POST'], endpoint='card_status')
 @log_operation_timing("Card Status")
@@ -171,13 +157,7 @@ def stop_server_route():
         return jsonify({"message": "Server stopped", "status": "success"})
     except Exception as e:
         logger.error(f"Failed to stop server: {e}")
-        return jsonify({
-            "message": f"Failed to stop server: {str(e)}",
-            "status": "error",
-            "error_type": e.__class__.__name__,
-            "error_details": str(e),
-            "timestamp": datetime.datetime.now().isoformat()
-        }), 500
+        return jsonify(error_response("ServerStopError", str(e))), 500
 
 @bp.route('/connect', methods=['POST'], endpoint='connect_card')
 @log_operation_timing("Connect Card")
@@ -229,7 +209,7 @@ def verify_pin():
             return jsonify({"message": err, "status": "error"}), 400
         
         try:
-            pin = request.json.get('pin', '123')
+            pin = request.json.get('pin', DEFAULT_PIN)
             if not isinstance(pin, str) or len(pin) != 3 or not pin.isdigit():
                 return jsonify({"message": "PIN must be a 3-digit number", "status": "error"}), 400
             

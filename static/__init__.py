@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Blueprint
 import logging
 import os
 from werkzeug.exceptions import HTTPException
@@ -14,15 +14,17 @@ def create_app(config=None):
 
 def configure_logging(app):
     handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.logger.setLevel(logging.INFO)
 
 def load_configuration(app, config):
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev_key'),
+    default_config = {
+        'SECRET_KEY': os.environ.get('SECRET_KEY', 'dev_key'),
         # Add other default configs here, e.g., DATABASE_URL
-    )
+    }
+    app.config.from_mapping(default_config)
     if config:
         app.config.from_mapping(config)
 
@@ -37,23 +39,25 @@ def register_blueprints(app):
 def register_error_handlers(app):
     @app.errorhandler(HTTPException)
     def handle_http_exception(e):
-        """Handles HTTP exceptions, returning JSON responses."""
         response = jsonify({'code': e.code, 'description': e.description})
         response.status_code = e.code
         return response
 
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
-        """Handles all other exceptions, logging them and returning a generic error."""
         app.logger.exception("An unexpected error occurred: %s", e)
         response = jsonify({'code': 500, 'description': 'Internal Server Error'})
         response.status_code = 500
         return response
 
 def register_health_check(app):
-    @app.route('/health')
+    health_bp = Blueprint('health', __name__)
+
+    @health_bp.route('/health')
     def health_check():
         return jsonify({"status": "ok"})
+
+    app.register_blueprint(health_bp)
 
 if __name__ == '__main__':
     app = create_app()

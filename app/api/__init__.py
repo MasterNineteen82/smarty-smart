@@ -13,23 +13,16 @@ def create_app(config_override=None):
     return app
 
 def configure_app(app, config_override=None):
-    # Load default configuration from a file, if it exists
     app.config.from_object('config.DefaultConfig')
-
-    # Load environment variables
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev_key')
     )
-
-    # Optionally load configuration from a file specified by environment variable
     config_file = os.environ.get('APP_CONFIG_FILE')
     if config_file:
         try:
             app.config.from_pyfile(config_file)
         except FileNotFoundError:
             app.logger.warning(f"Config file not found: {config_file}")
-
-    # Override with any passed-in configuration
     if config_override:
         app.config.from_mapping(config_override)
 
@@ -53,7 +46,6 @@ def register_blueprints(app):
         app.register_blueprint(bp)
     except ImportError as e:
         app.logger.error(f"Failed to import routes: {e}")
-        print(f"Error: {e}. Ensure 'routes.py' exists and has a blueprint named 'bp'. Also, check dependencies.")
 
 def register_error_handlers(app):
     def create_error_response(e, status_code):

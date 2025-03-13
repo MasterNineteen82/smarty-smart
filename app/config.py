@@ -114,7 +114,7 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
             with open(config_path, 'r') as f:
                 custom_config = json.load(f)
                 for key, value in custom_config.items():
-                    if key.isupper() and key in globals():
+                    if key.isupper() and key in config:  # Use config instead of globals()
                         config[key] = value
         except (FileNotFoundError, json.JSONDecodeError) as e:
             logger.error(f"Error loading config from {config_path}: {e}")

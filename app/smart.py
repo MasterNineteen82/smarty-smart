@@ -8,6 +8,7 @@ import config
 from routes import bp as routes_bp
 from server_utils import run_server, stop_server
 from smartcard.System import readers
+from app.config import LOG_FILE, LOG_LEVEL, LOG_FORMAT, DEBUG
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -22,21 +23,21 @@ app.debug = config.DEBUG
 # Logging setup
 def setup_logging():
     logger = logging.getLogger('smarty')
-    logger.setLevel(config.LOG_LEVEL)
+    logger.setLevel(LOG_LEVEL)
 
     file_handler = RotatingFileHandler(
-        config.LOG_FILE, 
+        LOG_FILE, 
         maxBytes=10*1024*1024,
         backupCount=5
     )
     console_handler = logging.StreamHandler()
 
-    formatter = logging.Formatter(config.LOG_FORMAT)
+    formatter = logging.Formatter(LOG_FORMAT)
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
-    file_handler.setLevel(config.LOG_LEVEL)
-    console_handler.setLevel(config.LOG_LEVEL if config.DEBUG else logging.WARNING)
+    file_handler.setLevel(LOG_LEVEL)
+    console_handler.setLevel(LOG_LEVEL if DEBUG else logging.WARNING)
 
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
