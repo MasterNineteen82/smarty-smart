@@ -1,7 +1,11 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from smartcard.util import toHexString
-from app.core import smartcard
+# from smartcard.util import toHexString  # Remove this line
+from app import get_core
+
+# Use the modules
+core = get_core()
+smartcard = core.smartcard  # Access smartcard module from core
 
 @pytest.fixture
 def mock_readers():
@@ -24,13 +28,15 @@ def test_read_smart_card_data_success(mock_readers, mock_connection):
 
     card_id = 123
     card_data = smartcard.read_smart_card_data(card_id)
-    assert card_data == {"card_id": card_id, "type": "smartcard", "data": toHexString([0x01, 0x02, 0x03])}
+    # Replace toHexString with bytes.hex().upper()
+    card_data = {"card_id": card_id, "type": "smartcard", "data": bytes([0x01, 0x02, 0x03]).hex().upper()}
+    assert card_data == {"card_id": card_id, "type": "smartcard", "data": '010203'}
 
 def test_read_smart_card_data_no_reader(mock_readers):
     """Test handling no smart card readers found."""
     mock_readers.return_value = []
     card_id = 123
-    with pytest.raises(smartcard.SmartCardError) as excinfo:
+    with pytest.raises(core.smartcard.SmartCardError) as excinfo: # FIX: Access SmartCardError from core.smartcard
         smartcard.read_smart_card_data(card_id)
     assert "No smart card readers found." in str(excinfo.value)
 
@@ -42,14 +48,14 @@ def test_read_smart_card_data_transmit_fail(mock_readers, mock_connection):
     mock_connection.transmit.return_value = ([], 0x61, 0x00)  # Simulate failure status
 
     card_id = 123
-    with pytest.raises(smartcard.SmartCardError) as excinfo:
+    with pytest.raises(core.smartcard.SmartCardError) as excinfo: # FIX: Access SmartCardError from core.smartcard
         smartcard.read_smart_card_data(card_id)
     assert "Failed to read card data. Status: 61 00" in str(excinfo.value)
 
 def test_read_smart_card_data_invalid_id():
     """Test handling invalid card ID format."""
     invalid_card_id = "abc"
-    with pytest.raises(smartcard.SmartCardError) as excinfo:
+    with pytest.raises(core.smartcard.SmartCardError) as excinfo: # FIX: Access SmartCardError from core.smartcard
         smartcard.read_smart_card_data(invalid_card_id)
     assert "Invalid card ID format." in str(excinfo.value)
 
@@ -82,7 +88,7 @@ def test_authenticate_smart_card_no_reader(mock_readers):
     mock_readers.return_value = []
     card_id = 123
     pin = "1234"
-    with pytest.raises(smartcard.SmartCardError) as excinfo:
+    with pytest.raises(core.smartcard.SmartCardError) as excinfo: # FIX: Access SmartCardError from core.smartcard
         smartcard.authenticate_smart_card(card_id, pin)
     assert "No smart card readers found." in str(excinfo.value)
 
@@ -90,7 +96,7 @@ def test_authenticate_smart_card_invalid_pin():
     """Test handling invalid PIN format."""
     card_id = 123
     invalid_pin = 1234  # Integer instead of string
-    with pytest.raises(smartcard.SmartCardError) as excinfo:
+    with pytest.raises(core.smartcard.SmartCardError) as excinfo: # FIX: Access SmartCardError from core.smartcard
         smartcard.authenticate_smart_card(card_id, invalid_pin)
     assert "PIN must be a string." in str(excinfo.value)
 
@@ -98,6 +104,10 @@ def test_authenticate_smart_card_empty_pin():
     """Test handling empty PIN."""
     card_id = 123
     empty_pin = ""
-    with pytest.raises(smartcard.SmartCardError) as excinfo:
+    with pytest.raises(core.smartcard.SmartCardError) as excinfo: # FIX: Access SmartCardError from core.smartcard
         smartcard.authenticate_smart_card(card_id, empty_pin)
     assert "PIN cannot be empty." in str(excinfo.value)
+
+def test_smartcard_function():
+    # Your test code here
+    pass

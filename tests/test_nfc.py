@@ -1,6 +1,10 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from app.core import nfc
+from app import get_core
+
+# Use the modules
+core = get_core()
+nfc = core.nfc  # Access nfc module from core
 
 @pytest.fixture
 def mock_nfc_context(mocker):
@@ -95,3 +99,7 @@ def test_write_nfc_card_data_communication_error(mocker, mock_nfc_context):
     assert "Communication error with NFC card" in str(excinfo.value)
     mock_clf.connect.assert_called_once()
     nfc.logger.error.assert_called()
+
+def test_nfc_function():
+    # Your test code here
+    pass

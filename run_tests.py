@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test runner for Smart Card Manager
 Runs all tests and reports results
@@ -9,6 +8,11 @@ import sys
 import os
 from contextlib import contextmanager
 import argparse
+import subprocess  # Import the subprocess module
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 @contextmanager
 def suppress_stdout():
@@ -43,40 +47,34 @@ def run_tests():
     test_loader = unittest.TestLoader()
     test_suite = unittest.TestSuite()
 
-    for module_name in test_modules:
+    for module in test_modules:
         try:
-            # Import test module
-            __import__(module_name)
-            module = sys.modules[module_name]
-
-            # Add tests from module
-            module_tests = test_loader.loadTestsFromModule(module)
-            test_suite.addTests(module_tests)
-        except (ImportError, AttributeError) as e:
-            print(f"Error loading test module {module_name}: {e}")
-
-    if test_suite.countTestCases() == 0:
-        print("No tests found in the test modules.")
-        return False
+            test_suite.addTest(test_loader.loadTestsFromName(module))
+        except Exception as e:
+            print(f"Error loading tests from module '{module}': {e}")
+            return False
 
     # Run tests
-    test_runner = unittest.TextTestRunner(verbosity=2)
-    result = test_runner.run(test_suite)
+    with suppress_stdout():
+        runner = unittest.TextTestRunner(verbosity=2)
+        result = runner.run(test_suite)
 
+    # Run log analysis
+    try:
+        logging.info("Running log analysis...")
+        subprocess.run(["python", "tests/logreview.py"], check=True)  # Execute logreview.py
+        logging.info("Log analysis completed.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Log analysis failed: {e}")
+        return False
+
+    # Return True if all tests pass
     return result.wasSuccessful()
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run Smart Card Manager tests')
-    parser.add_argument('--capture', action='store_true', help='Capture output for web display')
-    args = parser.parse_args()
-
-    if args.capture:
-        print("Running Smart Card Manager tests...\n")
-        with suppress_stdout():
-            success = run_tests()
-        print("\nSummary:", "PASSED" if success else "FAILED")
-        sys.exit(0 if success else 1)
+if __name__ == "__main__":
+    if run_tests():
+        print("All tests passed.")
+        sys.exit(0)
     else:
-        print("Running Smart Card Manager tests...")
-        success = run_tests()
-        sys.exit(0 if success else 1)
+        print("Some tests failed.")
+        sys.exit(1)

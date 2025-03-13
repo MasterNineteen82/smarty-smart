@@ -3,27 +3,34 @@ import time
 import json
 from functools import wraps
 from concurrent.futures import ThreadPoolExecutor
-import os  # Import the os module
+import os
 
-from flask import Blueprint, render_template, request, jsonify  # FIX: Ensure Flask jsonify is imported.
-from smartcard.util import toHexString, toBytes
+from flask import Blueprint, render_template, request, jsonify
 from smartcard.System import readers
 from smartcard.scard import SCARD_PRESENT, SCARD_STATE_PRESENT, SCARD_STATE_EMPTY
 
 from card_utils import (
-    safe_globals, establish_connection, close_connection,
-    status, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
+    safe_globals, status, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
     update_available_readers, selected_reader, card_info, detect_card_type, is_card_registered, detect_reader_type
 )
 
 from server_utils import run_server, stop_server
 from card_manager import card_manager
+from app import get_models, get_api, get_core
+from app.smart import logger
 
-# Configuration Loading
+# Import pyscard modules
+from smartcard.Exceptions import CardConnectionException
+from smartcard.CardConnection import CardConnection
+from smartcard.CardService import CardService
+from smartcard.util import toHexString, toBytes
+
+models = get_models()
+core = get_core()
+
 def load_config():
-    """Load configuration from environment variables or a file."""
     config = {}
-    config['MAX_PIN_ATTEMPTS'] = int(os.environ.get('MAX_PIN_ATTEMPTS', 3))  # Default to 3
+    config['MAX_PIN_ATTEMPTS'] = int(os.environ.get('MAX_PIN_ATTEMPTS', 3))
     config['DEFAULT_PIN'] = os.environ.get('DEFAULT_PIN', '123')
     return config
 
@@ -31,9 +38,7 @@ config = load_config()
 MAX_PIN_ATTEMPTS = config['MAX_PIN_ATTEMPTS']
 DEFAULT_PIN = config['DEFAULT_PIN']
 
-# Error Handling Decorator
 def handle_card_exceptions(f):
-    """Comprehensive error handling for card operations."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
@@ -44,9 +49,9 @@ def handle_card_exceptions(f):
         except KeyError as e:
             logger.warning(f"Key error: {e}")
             return jsonify(error_response("KeyError", str(e))), 400
-        except ConnectionError as e:
-            logger.error(f"Connection error: {e}")
-            return jsonify(error_response("ConnectionError", str(e), "Check if reader is properly connected")), 500
+        except CardConnectionException as e:
+            logger.error(f"Card connection error: {e}")
+            return jsonify(error_response("CardConnectionError", str(e), "Check card and reader")), 500
         except Exception as e:
             logger.exception(f"Operation failed: {e}")
             suggestion = None
@@ -58,7 +63,6 @@ def handle_card_exceptions(f):
     return decorated_function
 
 def error_response(error_type, error_details, suggestion=None):
-    """Standardized error response format."""
     response = {
         "status": "error",
         "message": f"Operation failed: {error_details}",
@@ -70,9 +74,7 @@ def error_response(error_type, error_details, suggestion=None):
         response["suggestion"] = suggestion
     return response
 
-# Operation Timing Decorator
 def log_operation_timing(operation_name):
-    """Decorator to log operation timing with improved error handling."""
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -89,7 +91,7 @@ def log_operation_timing(operation_name):
                 end_time = time.time()
                 duration = (end_time - start_time) * 1000
                 logger.error(f"Operation failed: {operation_name} after {duration:.2f}ms - {e}")
-                raise  # Re-raise the exception after logging
+                raise
             finally:
                 logger.debug(f"Operation {operation_name} finished, total duration: {duration:.2f}ms")
                 
@@ -97,6 +99,26 @@ def log_operation_timing(operation_name):
     return decorator
 
 bp = Blueprint('routes', __name__)
+
+def establish_connection(reader_name=None):
+    try:
+        if not reader_name:
+            reader_name = selected_reader.name
+        
+        reader = readers()[0]  # Get the first reader
+        connection = reader.createConnection()
+        connection.connect()
+        return connection, None
+    except Exception as e:
+        logger.error(f"Failed to establish connection: {e}")
+        return None, str(e)
+
+def close_connection(conn):
+    try:
+        if conn:
+            conn.disconnect()
+    except Exception as e:
+        logger.error(f"Failed to close connection: {e}")
 
 @bp.route('/')
 def index():
@@ -111,11 +133,9 @@ def index():
 @log_operation_timing("Start Server")
 @handle_card_exceptions
 def start_server_route_bp():
-    """Start the server route in blueprint"""
     try:
-        # Import here to avoid circular import
-        from smart import app
-        run_server(app)  # Add app parameter here
+        from app.app import app
+        run_server(app)
         return jsonify({"message": "Server started", "status": "success"})
     except Exception as e:
         logger.error(f"Failed to start server: {e}")
@@ -131,27 +151,27 @@ def get_card_status():
         if not reader_list:
             return jsonify({"status": "warning", "message": "No readers detected"})
         
-        reader = str(reader_list[0])  # Use first reader for simplicity
+        reader = str(reader_list[0])
         conn, err = establish_connection(reader)
         if err:
             return jsonify({"status": "error", "message": f"Card not present: {err}"})
         
         atr = toHexString(conn.getATR())
         card_type = detect_card_type(atr)
-        conn.disconnect()
+        close_connection(conn)
         return jsonify({
             "status": "success",
             "message": f"Card Status: ACTIVE\nATR: {atr}",
             "card_type": card_type
         })
-    except Exception:
+    except Exception as e:
+        logger.error(f"Error getting card status: {e}")
         return jsonify({"status": "error", "message": "An error occurred"})
 
 @bp.route('/stop_server', methods=['POST'], endpoint='bp_stop_server')
 @log_operation_timing("Stop Server")
 @handle_card_exceptions
 def stop_server_route():
-    """Stop the server route in blueprint"""
     try:
         stop_server()
         return jsonify({"message": "Server stopped", "status": "success"})
@@ -167,12 +187,12 @@ def connect_card():
     if not reader_list:
         return jsonify({"status": "warning", "message": "No readers detected"}), 200
 
-    with ThreadPoolExecutor(max_workers=len(reader_list)) as executor:
-        future_to_reader = {executor.submit(establish_connection, r): r for r in reader_list}
-        results = []
-        for future in future_to_reader:
-            conn, err = future.result()
-            results.append({"reader": future_to_reader[future], "success": conn is not None, "message": err or "Connected successfully"})
+    results = []
+    for r in reader_list:
+        conn, err = establish_connection(r)
+        results.append({"reader": r, "success": conn is not None, "message": err or "Connected successfully"})
+        if conn:
+            close_connection(conn)
 
     return jsonify({"status": "success", "results": results})
 
@@ -268,7 +288,6 @@ def update_pin():
 @log_operation_timing("Get Card Info")
 @handle_card_exceptions
 def card_info_route():
-    """Get detailed information about the card"""
     with safe_globals():
         conn, err = establish_connection()
         if err:
@@ -283,20 +302,17 @@ def card_info_route():
         try:
             atr = toHexString(conn.getATR())
             card_type = card_info.get("card_type", "Unknown")
-            reader_type = detect_reader_type(selected_reader.name) # Now in scope
+            reader_type = detect_reader_type(selected_reader.name)
 
-            # Try to get additional info based on card type
             extra_info = {}
             
             if card_type == "MIFARE_CLASSIC":
-                # Try to get MIFARE classic info (UID, etc)
                 try:
                     pass
                 except Exception:
                     pass
             
-            # Check if card is registered
-            registered = is_card_registered(atr) # Now in scope
+            registered = is_card_registered(atr)
             
             info = {
                 "atr": atr,
@@ -312,7 +328,7 @@ def card_info_route():
                 "message": json.dumps(info),
                 "status": "success"
             })
-        except Exception as e: #Remove unused variable
+        except Exception as e:
             logger.error(f"Error getting card info: {e}")
             return jsonify({
                 "message": f"Error getting card info: {e}",
@@ -394,7 +410,7 @@ def card_status_get():
         
         try:
             return jsonify({"message": "Not implemented", "status": "error"}), 501
-        except Exception: #Remove unused variable
+        except Exception as e:
             return jsonify({"message": str(e), "status": "error"}), 500
         finally:
             close_connection(conn)
@@ -409,8 +425,7 @@ def format_card():
             return jsonify({"message": err, "status": "error"}), 400
 
         try:
-            # Example: APDU command to format the card (replace with actual command)
-            format_apdu = [0xFF, 0x00, 0x00, 0x00, 0x00]  # Placeholder
+            format_apdu = [0xFF, 0x00, 0x00, 0x00, 0x00]
             data, sw1, sw2 = conn.transmit(format_apdu)
 
             if sw1 == 0x90 and sw2 == 0x00:
@@ -438,7 +453,6 @@ def block_card_direct():
             if not atr:
                 return jsonify({"message": "ATR is required", "status": "error"}), 400
 
-            # Call card_manager to block the card
             card_manager.block_card(atr)
 
             return jsonify({"message": "Card blocked successfully", "status": "success"})
@@ -460,12 +474,12 @@ def register_card_route():
 
         try:
             atr = toHexString(conn.getATR())
-            user_id = request.json.get('user_id')  # Get user ID from request
+            user_id = request.json.get('user_id')
 
             if not user_id:
                 return jsonify({"message": "User ID is required", "status": "error"}), 400
 
-            card_manager.register_card(atr, user_id) # Use card_manager
+            card_manager.register_card(atr, user_id)
 
             return jsonify({"message": "Card registered successfully", "status": "success"})
 

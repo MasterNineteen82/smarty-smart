@@ -3,14 +3,21 @@ import logging
 import os
 from werkzeug.exceptions import HTTPException
 
-# Import commonly used modules from the app package
-from . import config
-from . import models
-from . import api
-from . import core
+# Use lazy imports to avoid circular dependencies
+def get_models():
+    from . import models
+    return models
+
+def get_api():
+    from . import api
+    return api
+
+def get_core():
+    from . import core
+    return core
 
 # Define __all__ to control which modules are imported with "from app import *"
-__all__ = ["config", "models", "api", "core"]
+__all__ = ["get_models", "get_api", "get_core"]
 
 def create_app(config=None):
     app = Flask(__name__)

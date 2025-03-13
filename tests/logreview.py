@@ -4,14 +4,21 @@ import json
 import logging
 from datetime import datetime
 import traceback
+import configparser
+
+# Configuration
+CONFIG_FILE = "config.ini"
+config = configparser.ConfigParser()
+config.read(CONFIG_FILE)
 
 # Configure Logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging_level = config.get("logging", "level", fallback="INFO").upper()
+logging.basicConfig(level=logging.getLevelName(logging_level), format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Define Directories
-CODEBASE_DIR = "X:/smarty"  # Main codebase directory
-LOGS_DIR = "X:/smarty/logs"  # Logs directory
-REPORTS_BASE_DIR = "X:/smarty/tests"  # Base reports directory
+# Define Directories from config
+CODEBASE_DIR = config.get("directories", "codebase_dir", fallback="X:/smarty")
+LOGS_DIR = config.get("directories", "logs_dir", fallback="X:/smarty/logs")
+REPORTS_BASE_DIR = config.get("directories", "reports_base_dir", fallback="X:/smarty/tests")
 
 # Create a timestamped directory for reports
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -21,51 +28,31 @@ try:
 except OSError as e:
     logging.error(f"Failed to create report directory: {e}")
 
-# Function to scan JavaScript files for common issues
-def scan_js_files(directory):
-    """Scans JavaScript files for syntax errors, missing event listeners, and API call issues."""
-    issues = []
-    js_event_patterns = [
-        (r"document\.getElementById\(['\"](\w+)['\"]\)", "Possible missing element ID reference."),
-        (r"document\.querySelector\(['\"](.+?)['\"]\)", "Possible missing element selector reference."),
-        (r"\.addEventListener\(['\"](click|submit|change)['\"]", "Possible missing event listener assignment."),
-        (r"fetch\(['\"](.+?)['\"]\)", "Check API request URLs for incorrect endpoints."),
-        (r"console\.log\(", "Debugging statement found; consider removing."),
-    ]
+# Load patterns from config
+def load_patterns(section):
+    """Load regex patterns from config file."""
+    patterns = []
+    i = 1
+    while True:
+        try:
+            pattern = config.get(section, f"pattern_{i}")
+            issue_desc = config.get(section, f"issue_{i}")
+            patterns.append((pattern, issue_desc))
+            i += 1
+        except configparser.NoOptionError:
+            break
+    return patterns
 
+JS_PATTERNS = load_patterns("javascript_patterns")
+PY_PATTERNS = load_patterns("python_patterns")
+
+# Function to scan files for issues based on patterns
+def scan_files(directory, file_extension, patterns):
+    """Scans files for issues based on provided regex patterns."""
+    issues = []
     for root, _, files in os.walk(directory):
         for file in files:
-            if file.endswith(".js"):
-                file_path = os.path.join(root, file)
-                try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        content = f.read()
-                except IOError as e:
-                    logging.error(f"Could not read file {file_path}: {e}")
-                    continue  # Skip to the next file
-
-                for pattern, issue_desc in js_event_patterns:
-                    try:
-                        matches = re.findall(pattern, content)
-                        for match in matches:
-                            issues.append({"file": file_path, "issue": issue_desc, "detail": match})
-                    except re.error as e:
-                        logging.error(f"Regex error for pattern '{pattern}': {e}")
-    return issues
-
-# Function to scan Python API routes for issues
-def scan_python_files(directory):
-    """Scans Python API route files for missing/malformed responses."""
-    issues = []
-    py_patterns = [
-        (r"@app\.route\(['\"](/api/.*?)['\"]", "API route defined."),
-        (r"return jsonify\((.*?)\)", "Ensure API response format is correct."),
-        (r"except Exception as e", "Check exception handling; add logging for better debugging."),
-    ]
-
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".py"):
+            if file.endswith(file_extension):
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
@@ -74,14 +61,14 @@ def scan_python_files(directory):
                     logging.error(f"Could not read file {file_path}: {e}")
                     continue
 
-                for pattern, issue_desc in py_patterns:
+                for pattern, issue_desc in patterns:
                     try:
                         matches = re.findall(pattern, content)
                         for match in matches:
                             issues.append({"file": file_path, "issue": issue_desc, "detail": match})
                     except re.error as e:
                         logging.error(f"Regex error for pattern '{pattern}': {e}")
-
+                
     return issues
 
 # Function to analyze logs for errors
@@ -121,8 +108,8 @@ def analyze_logs(directory):
     return log_issues
 
 # Run the analysis
-js_issues = scan_js_files(CODEBASE_DIR)
-py_issues = scan_python_files(CODEBASE_DIR)
+js_issues = scan_files(CODEBASE_DIR, ".js", JS_PATTERNS)
+py_issues = scan_files(CODEBASE_DIR, ".py", PY_PATTERNS)
 log_issues = analyze_logs(LOGS_DIR)
 
 # Generate a structured report
