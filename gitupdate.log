@@ -4,3 +4,65 @@
 2025-03-13 03:10:45,447 - ERROR - ❌ Error creating gitupdate.py: local variable 'e' referenced before assignment
 2025-03-13 03:22:50,816 - INFO - 🔄 Starting Setup for Automated Git Updates...
 
+2025-03-13 03:22:50,827 - INFO - Creating gitupdate.py script...
+2025-03-13 03:22:50,827 - INFO - ✅ gitupdate.py created.
+2025-03-13 03:22:50,827 - INFO - Creating gitupdate.bat...
+2025-03-13 03:22:50,827 - INFO - ✅ gitupdate.bat created.
+2025-03-13 03:22:50,827 - INFO - Scheduling Task in Task Scheduler...
+2025-03-13 03:22:50,832 - WARNING - ⚠️ Old Task Removed.
+2025-03-13 03:22:50,848 - INFO - ✅ Task scheduled to run every 30 minutes.
+2025-03-13 03:22:50,848 - INFO - 
+🚀 Running Git Update for the First Time...
+2025-03-13 03:22:50,944 - INFO - 
+🔄 Starting Git Auto-Update...
+2025-03-13 03:22:51,071 - WARNING - ⚠️ Minor issue (stderr): git add .
+warning: in the working copy of 'static/css/bootstrap.min.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'static/js/bootstrap.bundle.min.js', LF will be replaced by CRLF the next time Git touches it
+
+2025-03-13 03:22:51,164 - INFO - ✅ git commit -m "Auto-update: 2025-03-13 03:22:51"
+[main c00dd9e] Auto-update: 2025-03-13 03:22:51
+ 21 files changed, 2884 insertions(+), 60 deletions(-)
+ rename README.md => documents/README.md (78%)
+ rename Startup Guide.md => documents/Startup Guide.md (100%)
+ rename spec.md => documents/spec.md (100%)
+ create mode 100644 gitupdate.bat
+ create mode 100644 gitupdate.log
+ create mode 100644 setupgit.py
+ create mode 100644 static/css/api_explorer.css
+ create mode 100644 static/css/bootstrap.min.css
+ create mode 100644 static/css/config.css
+ create mode 100644 static/css/config_manager.css
+ create mode 100644 static/css/logs.css
+ create mode 100644 static/css/style.css
+ create mode 100644 static/css/styles.css
+ create mode 100644 static/img/favicon.ico
+ create mode 100644 static/js/api_explorer.js
+ create mode 100644 static/js/bootstrap.bundle.min.js
+ create mode 100644 static/js/card_operations.js
+ create mode 100644 static/js/config_manager.js
+ create mode 100644 static/js/logs.js
+ create mode 100644 static/js/script.js
+
+2025-03-13 03:22:51,875 - INFO - ✅ git pull origin main
+Already up to date.
+
+2025-03-13 03:22:51,875 - WARNING - ⚠️ Minor issue (stderr): git pull origin main
+From https://github.com/MasterNineteen82/smarty-smart
+ * branch            main       -> FETCH_HEAD
+
+2025-03-13 03:22:58,716 - WARNING - ⚠️ Minor issue (stderr): git push origin main
+To https://github.com/MasterNineteen82/smarty-smart
+   a7fe8af..c00dd9e  main -> main
+
+2025-03-13 03:22:58,716 - INFO - 🚀 Git update completed successfully!
+
+2025-03-13 03:22:58,728 - INFO - ✅ Initial Git update completed.
+2025-03-13 03:22:58,728 - INFO - 
+✅ Setup Complete! Git will auto-update every 30 minutes.
+2025-03-13 03:29:42,676 - INFO - 🔄 Starting Setup for Automated Git Updates...
+
+2025-03-13 03:29:42,682 - INFO - gitupdate.py already exists at X:\smarty-smart\gitupdate.py
+2025-03-13 03:29:42,682 - INFO - gitupdate.bat already exists at X:\smarty-smart\gitupdate.bat
+2025-03-13 03:29:42,682 - INFO - Scheduling Task in Task Scheduler...
+2025-03-13 03:29:42,687 - WARNING - ⚠️ Could not remove old task (if it existed): (-2147352567, 'Exception occurred.', (0, None, None, None, 0, -2147024891), None)
+2025-03-13 03:29:42,687 - ERROR - ❌ Error registering task: (-2147352567, 'Exception occurred.', (0, None, None, None, 0, -2147024891), None)

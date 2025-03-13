@@ -9,12 +9,18 @@ from flask import Blueprint, render_template, request, jsonify #Removed unused a
 from numpy import e
 from smartcard.util import toHexString, toBytes
 from smartcard.System import readers
+from smartcard.scard import SCARD_PRESENT, SCARD_STATE_PRESENT, SCARD_STATE_EMPTY
 
 from card_utils import (
     safe_globals, establish_connection, close_connection,
     status, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
     update_available_readers, selected_reader, card_info, detect_card_type, is_card_registered, detect_reader_type
 )
+# Define SCARD_PRESENT manually only if it doesn't exist
+try:
+    pass
+except ImportError:
+    SCARD_PRESENT = 0x20  # Define manually if missing
 
 from server_utils import run_server, stop_server
 from card_manager import card_manager
