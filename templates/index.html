@@ -32,57 +32,82 @@
 
 <script>
     $(document).ready(function() {
+        // Function to display messages
+        function displayMessage(message, type = 'danger') {
+            $("#output").html(`<div class='alert alert-${type}'>${message}</div>`);
+        }
+
+        // Function to clear the output message
+        function clearMessage() {
+            $("#output").empty();
+        }
+
         $("#getCardInfo").click(function() {
+            clearMessage(); // Clear previous messages
+
             var cardId = $("#cardId").val();
+
             if (!cardId) {
-                $("#output").html("<div class='alert alert-danger'>Please enter a Card ID.</div>");
+                displayMessage("Please enter a Card ID.");
                 return;
             }
-            // Add validation for cardId if needed (e.g., isNaN, length)
+
+            if (isNaN(cardId)) {
+                displayMessage("Card ID must be a number.");
+                return;
+            }
 
             $.ajax({
-                url: '/api/card/' + cardId, // Replace with your actual API endpoint
+                url: '/api/card/' + cardId,
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    $("#output").html("<div class='alert alert-success'>Card Info: " + JSON.stringify(data) + "</div>");
+                    displayMessage("Card Info: " + JSON.stringify(data), 'success');
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    $("#output").html("<div class='alert alert-danger'>Error: " + textStatus + " - " + errorThrown + "</div>");
+                    console.error("Error fetching card info:", jqXHR, textStatus, errorThrown);
+                    displayMessage("Error: " + textStatus + " - " + errorThrown);
                 }
             });
         });
 
         $("#authenticateCard").click(function() {
+            clearMessage(); // Clear previous messages
+
             var cardId = $("#cardId").val();
             var pin = $("#pin").val();
 
             if (!cardId || !pin) {
-                $("#output").html("<div class='alert alert-danger'>Please enter both Card ID and PIN.</div>");
+                displayMessage("Please enter both Card ID and PIN.");
                 return;
             }
 
-            // Add validation for PIN if needed (e.g., length, format)
+            if (isNaN(cardId)) {
+                displayMessage("Card ID must be a number.");
+                return;
+            }
+
             if (pin.length !== 4 || isNaN(pin)) {
-                $("#output").html("<div class='alert alert-danger'>PIN must be a 4-digit number.</div>");
+                displayMessage("PIN must be a 4-digit number.");
                 return;
             }
 
             $.ajax({
-                url: '/api/card/authenticate', // Replace with your actual API endpoint
+                url: '/api/card/authenticate',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({card_id: cardId, pin: pin}),
                 dataType: 'json',
                 success: function(data) {
                     if (data.success) {
-                        $("#output").html("<div class='alert alert-success'>Authentication Successful!</div>");
+                        displayMessage("Authentication Successful!", 'success');
                     } else {
-                        $("#output").html("<div class='alert alert-danger'>Authentication Failed: " + data.message + "</div>");
+                        displayMessage("Authentication Failed: " + data.message);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    $("#output").html("<div class='alert alert-danger'>Error: " + textStatus + " - " + errorThrown + "</div>");
+                    console.error("Error authenticating card:", jqXHR, textStatus, errorThrown);
+                    displayMessage("Error: " + textStatus + " - " + errorThrown);
                 }
             });
         });

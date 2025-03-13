@@ -4,32 +4,45 @@
 
 {% block additional_head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/api_explorer.css') }}">
+<meta name="description" content="API Explorer interface for Smart Card Manager">
 {% endblock %}
 
 {% block content %}
-<main class="container mt-4">
+<main class="container mt-4" id="api-explorer">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>API Explorer</h1>
-        <a href="/" class="btn btn-outline-secondary">
-            <i class="bi bi-house"></i> Dashboard
-        </a>
+        <div class="d-flex gap-2">
+            <button id="toggleDarkMode" class="btn btn-outline-secondary" aria-label="Toggle dark mode">
+                <i class="bi bi-moon"></i>
+            </button>
+            <a href="/" class="btn btn-outline-secondary" aria-label="Return to Dashboard">
+                <i class="bi bi-house"></i> Dashboard
+            </a>
+        </div>
     </div>
 
     <div class="row">
+        <!-- Sidebar filters -->
         <aside class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0">Search & Filter</h5>
+                    <h2 class="h5 mb-0">Search & Filter</h2>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="searchInput" class="form-label">Search Endpoints</label>
-                        <input type="text" class="form-control" id="searchInput" placeholder="Enter search term...">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Enter search term..." 
+                                   aria-label="Search endpoints" autocomplete="off">
+                            <button class="btn btn-outline-secondary" type="button" id="clearSearch" aria-label="Clear search">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label d-block">Filter by Method</label>
-                        <div class="btn-group" role="group">
+                        <div class="btn-group w-100" role="group" aria-label="HTTP method filters">
                             <input type="checkbox" class="btn-check" id="btn-get" autocomplete="off" checked>
                             <label class="btn btn-outline-primary" for="btn-get">GET</label>
 
@@ -44,20 +57,28 @@
                         </div>
                     </div>
 
-                    <div>
-                        <button class="btn btn-primary" id="refreshApisButton">
+                    <div class="mb-3">
+                        <label for="categoryFilter" class="form-label">Filter by Category</label>
+                        <select class="form-select" id="categoryFilter" aria-label="Filter by API category">
+                            <option value="all" selected>All Categories</option>
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-primary" id="refreshApisButton" aria-label="Refresh API list">
                             <i class="bi bi-arrow-clockwise"></i> Refresh APIs
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="card mt-4">
+            <div class="card mt-4 shadow-sm">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0">API Status</h5>
+                    <h2 class="h5 mb-0">API Status</h2>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group" id="apiStatusList">
+                    <ul class="list-group" id="apiStatusList"></ul>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             Total Endpoints
                             <span class="badge bg-primary rounded-pill" id="totalEndpoints">0</span>
@@ -66,16 +87,76 @@
                             Categories
                             <span class="badge bg-secondary rounded-pill" id="totalCategories">0</span>
                         </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Visible Endpoints
+                            <span class="badge bg-info rounded-pill" id="visibleEndpoints">0</span>
+                        </li>
                     </ul>
+                </div>
+            </div>
+
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Settings</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="enableRequestHistory" checked>
+                        <label class="form-check-label" for="enableRequestHistory">Save Request History</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="showDeprecatedApis">
+                        <label class="form-check-label" for="showDeprecatedApis">Show Deprecated APIs</label>
+                    </div>
                 </div>
             </div>
         </aside>
 
+        <!-- Main content area -->
         <section class="col-md-8">
-            <div id="apiEndpointsContainer">
-                <div class="d-flex justify-content-center">
+            <div class="alert alert-info alert-dismissible fade show mb-3" role="alert" id="apiTipAlert">
+                <strong>Tip:</strong> Click on an endpoint to view details and try it out!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div id="apiEndpointsContainer" class="accordion">
+                <!-- Loading state -->
+                <div id="loadingSpinner" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">Loading APIs...</span>
+                    </div>
+                    <p class="mt-2">Loading API endpoints...</p>
+                </div>
+                
+                <!-- Error state -->
+                <div id="errorState" class="alert alert-danger d-none" role="alert">
+                    <h3 class="h5"><i class="bi bi-exclamation-triangle"></i> Error Loading APIs</h3>
+                    <p id="errorMessage">Unable to load API endpoints. Please try again later.</p>
+                    <button class="btn btn-outline-danger" id="retryButton">
+                        <i class="bi bi-arrow-repeat"></i> Retry
+                    </button>
+                </div>
+                
+                <!-- Empty state -->
+                <div id="emptyState" class="alert alert-warning d-none" role="alert">
+                    <h3 class="h5"><i class="bi bi-search"></i> No Results Found</h3>
+                    <p>No API endpoints match your current filters.</p>
+                    <button class="btn btn-outline-secondary" id="clearFiltersButton">
+                        <i class="bi bi-funnel"></i> Clear All Filters
+                    </button>
+                </div>
+                
+                <!-- Endpoints will be inserted here -->
+            </div>
+
+            <div class="my-4">
+                <h2 class="h5 mb-3">Recent Requests</h2>
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="requestHistoryList">
+                            <li class="list-group-item text-center text-muted">No recent requests</li>
+                            <!-- Request history will be populated here -->
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -91,14 +172,21 @@
             <a href="/logs" class="btn btn-outline-primary">
                 <i class="bi bi-journal-text"></i> Logs
             </a>
+            <a href="/docs" class="btn btn-outline-info">
+                <i class="bi bi-file-text"></i> Documentation
+            </a>
             <a href="/" class="btn btn-outline-secondary">
                 <i class="bi bi-house"></i> Dashboard
             </a>
         </div>
     </nav>
-</main>
-{% endblock %}
 
-{% block additional_scripts %}
-<script src="{{ url_for('static', filename='js/api_explorer.js') }}"></script>
-{% endblock %}
+    <!-- API test modal -->
+    <div class="modal fade" id="apiTestModal" tabindex="-1" aria-labelledby="apiTestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="apiTestModalLabel">Test API Endpoint</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"</div>

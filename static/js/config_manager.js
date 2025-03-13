@@ -260,3 +260,174 @@ function resetToDefaults() {
         });
     }
 }
+
+// Function to fetch and display the current configuration
+async function fetchConfig() {
+    try {
+        const response = await fetch('/api/config'); // Replace with your actual API endpoint
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const config = await response.json();
+        displayConfigJson(config);
+    } catch (error) {
+        console.error('Failed to fetch configuration:', error);
+        displayError('Failed to load configuration. Check the console for details.');
+    }
+}
+
+// Function to display the configuration as a JSON string
+function displayConfigJson(config) {
+    const configJsonDisplay = document.getElementById('config-json-display');
+    configJsonDisplay.textContent = JSON.stringify(config, null, 4);
+}
+
+// Function to copy the configuration JSON to the clipboard
+function copyConfigJson() {
+    const configJsonDisplay = document.getElementById('config-json-display');
+    navigator.clipboard.writeText(configJsonDisplay.textContent)
+        .then(() => showToast('Copied!', 'Configuration copied to clipboard.', 'success'))
+        .catch(err => {
+            console.error('Failed to copy config:', err);
+            showToast('Copy Failed', 'Could not copy configuration to clipboard.', 'error');
+        });
+}
+
+// Function to import a configuration from a JSON string
+async function importConfig() {
+    const configImport = document.getElementById('config-import');
+    try {
+        const config = JSON.parse(configImport.value);
+        const response = await fetch('/api/config', { // Replace with your actual API endpoint
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        });
+
+        if (!response.ok) {
+            const errorDetail = await response.json();
+            throw new Error(`HTTP error! status: ${response.status}, detail: ${errorDetail.detail}`);
+        }
+
+        showToast('Import Successful', 'Configuration imported successfully.', 'success');
+        fetchConfig(); // Refresh the displayed configuration
+    } catch (error) {
+        console.error('Failed to import configuration:', error);
+        showToast('Import Failed', `Could not import configuration: ${error}`, 'error');
+    }
+}
+
+// Function to save the configuration to the server
+async function saveConfig() {
+    try {
+        const form = document.getElementById('configForm');
+        const formData = {};
+
+        // Group data by section
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            const nameParts = input.name.split('.');
+            if (nameParts.length !== 2) {
+                console.warn(`Invalid input name format: ${input.name}. Skipping.`);
+                return;
+            }
+
+            const section = nameParts[0];
+            const field = nameParts[1];
+
+            if (!formData[section]) {
+                formData[section] = {};
+            }
+
+            let value = input.type === 'checkbox' ? input.checked : input.value;
+
+            if (input.type === 'number' && value !== '') {
+                const numValue = Number(value);
+                if (isNaN(numValue)) {
+                    showToast('Validation Error', `Invalid number format for ${input.name}.`, 'error');
+                    return;
+                }
+                value = numValue;
+            }
+
+            formData[section][field] = value;
+        });
+
+        const response = await fetch('/api/config', { // Replace with your actual API endpoint
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const errorDetail = await response.json();
+            throw new Error(`HTTP error! status: ${response.status}, detail: ${errorDetail.detail}`);
+        }
+
+        showToast('Save Successful', 'Configuration saved successfully.', 'success');
+        fetchConfig(); // Refresh the displayed configuration
+    } catch (error) {
+        console.error('Failed to save configuration:', error);
+        showToast('Save Failed', `Could not save configuration: ${error}`, 'error');
+    }
+}
+
+// Function to reset the form to its default values
+function resetForm() {
+    fetchConfig(); // Reload the configuration to reset the form
+    showToast('Reset', 'Form reset to default values.', 'info');
+}
+
+// Function to confirm the reset action
+async function confirmReset() {
+    try {
+        const response = await fetch('/api/config/reset', { // Replace with your actual API endpoint
+            method: 'POST'
+        });
+
+        if (!response.ok) {
+            const errorDetail = await response.json();
+            throw new Error(`HTTP error! status: ${response.status}, detail: ${errorDetail.detail}`);
+        }
+
+        showToast('Reset Successful', 'Configuration reset to default values.', 'success');
+        fetchConfig(); // Refresh the displayed configuration
+    } catch (error) {
+        console.error('Failed to reset configuration:', error);
+        showToast('Reset Failed', `Could not reset configuration: ${error}`, 'error');
+    }
+}
+
+// Function to display toast messages
+function showToast(title, message, type) {
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.classList.add('toast', `bg-${type}`);
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+        <div class="toast-header">
+            <strong class="me-auto">${title}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+
+    toast.addEventListener('hidden.bs.toast', function () {
+        toast.remove();
+    });
+}
+
+// Call fetchConfig when the page loads
+document.addEventListener('DOMContentLoaded', fetchConfig);

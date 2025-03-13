@@ -173,36 +173,230 @@ function sendRequest(endpoint, path) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    let apiEndpoints = [];
     const searchInput = document.getElementById('searchInput');
     const apiEndpointsContainer = document.getElementById('apiEndpointsContainer');
-    const refreshApisButton = document.getElementById('refreshApisButton');
+    const loadingIndicator = document.querySelector('.spinner-border');
 
-    // Load endpoints
-    fetchApiEndpoints().then(endpoints => {
-        if (endpoints) {
-            apiEndpoints = endpoints;
-            displayApiEndpoints(apiEndpoints);
+    // Load endpoints on page load
+    loadEndpoints();
+
+    // Event listener for search input
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterEndpoints(searchTerm);
+    });
+
+    // Function to load endpoints from the server
+    function loadEndpoints() {
+        loadingIndicator.style.display = 'block';
+        apiEndpointsContainer.innerHTML = ''; // Clear existing content
+
+        fetch('/api/docs.json') // Adjust the endpoint to fetch API documentation
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                loadingIndicator.style.display = 'none';
+                const categorizedRoutes = categorizeEndpoints(data.paths);
+                renderEndpoints(categorizedRoutes);
+            })
+            .catch(error => {
+                loadingIndicator.style.display = 'none';
+                console.error('Failed to load API endpoints:', error);
+                apiEndpointsContainer.innerHTML = `<div class="alert alert-danger">Failed to load API endpoints. Check the console for details.</div>`;
+            });
+    }
+
+    // Function to categorize endpoints
+    function categorizeEndpoints(paths) {
+        const categorizedRoutes = {};
+        for (const path in paths) {
+            const methods = paths[path];
+            for (const method in methods) {
+                const endpoint = methods[method];
+                const tag = endpoint.tags && endpoint.tags[0] ? endpoint.tags[0] : 'Uncategorized';
+                if (!categorizedRoutes[tag]) {
+                    categorizedRoutes[tag] = [];
+                }
+                categorizedRoutes[tag].push({ path, method, endpoint });
+            }
         }
-    });
+        return categorizedRoutes;
+    }
 
-    // Search functionality
-    searchInput.addEventListener('keyup', function() {
-        const filtered = filterEndpoints(this.value, apiEndpoints);
-        displayApiEndpoints(filtered);
-    });
-
-    // Method filter event listeners
-    const methodButtons = document.querySelectorAll('input[name="method"]');
-    methodButtons.forEach(button => {
-        button.addEventListener('change', function() {
-            const filtered = filterByMethod(apiEndpoints);
-            displayApiEndpoints(filtered);
+    // Function to filter endpoints based on search input
+    function filterEndpoints(filterText) {
+        const endpointContainers = document.querySelectorAll('.endpoint-container');
+        endpointContainers.forEach(container => {
+            const endpointPath = container.querySelector('.endpoint-path').textContent.toLowerCase();
+            const endpointSummary = container.querySelector('.endpoint-summary').textContent.toLowerCase();
+            if (endpointPath.includes(filterText) || endpointSummary.includes(filterText)) {
+                container.style.display = '';
+            } else {
+                container.style.display = 'none';
+            }
         });
-    });
+    }
 
-    // Refresh APIs button
-    refreshApisButton.addEventListener('click', function() {
-        fetchApiStatus();
-    });
+    // Helper function to set text content, with error handling
+    function setTextContent(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = value;
+        } else {
+            console.error(`Element with ID '${elementId}' not found.`);
+        }
+    }
+
+    // Render endpoints
+    function renderEndpoints(categorizedRoutes) {
+        for (const category in categorizedRoutes) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.classList.add('api-category');
+            categoryDiv.innerHTML = `<h2>${category}</h2>`;
+            apiEndpointsContainer.appendChild(categoryDiv);
+
+            categorizedRoutes[category].forEach(route => {
+                const endpointDiv = document.createElement('div');
+                endpointDiv.classList.add('endpoint-container');
+                endpointDiv.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="method-badge method-${route.method.toLowerCase()}">${route.method.toUpperCase()}</span>
+                            <span class="endpoint-path">${route.path}</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary toggle-details-btn" data-endpoint-path="${route.path}" data-endpoint-method="${route.method}">
+                            Details
+                        </button>
+                    </div>
+                    <div class="endpoint-summary">${route.endpoint.summary || 'No summary'}</div>
+                    <div class="endpoint-details" style="display: none;">
+                        <!-- Details will be loaded here -->
+                    </div>
+                `;
+                apiEndpointsContainer.appendChild(endpointDiv);
+            });
+        }
+
+        // Attach event listeners to toggle buttons after rendering
+        const toggleButtons = document.querySelectorAll('.toggle-details-btn');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                toggleEndpointDetails(this);
+            });
+        });
+    }
+
+    // Render parameters
+    function renderParameters(parameters) {
+        if (!parameters || parameters.length === 0) {
+            return '<p>No parameters.</p>';
+        }
+
+        let tableHtml = `
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>In</th>
+                        <th>Description</th>
+                        <th>Required</th>
+                        <th>Schema</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        parameters.forEach(param => {
+            tableHtml += `
+                <tr>
+                    <td>${param.name}</td>
+                    <td>${param.in}</td>
+                    <td>${param.description || 'No description'}</td>
+                    <td>${param.required ? 'Yes' : 'No'}</td>
+                    <td>${param.schema ? JSON.stringify(param.schema) : 'No schema'}</td>
+                </tr>
+            `;
+        });
+
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+        return tableHtml;
+    }
+
+    // Toggle endpoint details
+    function toggleEndpointDetails(button) {
+        const endpointDiv = button.closest('.endpoint-container');
+        const detailsDiv = endpointDiv.querySelector('.endpoint-details');
+        const endpointPath = button.dataset.endpointPath;
+        const endpointMethod = button.dataset.endpointMethod;
+
+        if (detailsDiv.style.display === 'none') {
+            // Fetch and render details
+            fetch(`/api/docs.json`) // Adjust the endpoint to fetch API documentation
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const endpoint = data.paths[endpointPath][endpointMethod];
+                    const parametersHtml = renderParameters(endpoint.parameters);
+
+                    detailsDiv.innerHTML = `
+                        <h3>Parameters</h3>
+                        ${parametersHtml}
+                        <h3>Response</h3>
+                        <button class="btn btn-sm btn-primary send-request-btn" data-endpoint-path="${endpointPath}" data-endpoint-method="${endpointMethod}">Send Request</button>
+                        <div class="response-container"></div>
+                    `;
+
+                    // Attach event listener to send request button
+                    const sendRequestButton = detailsDiv.querySelector('.send-request-btn');
+                    sendRequestButton.addEventListener('click', function() {
+                        sendRequest(endpoint, endpointPath);
+                    });
+
+                    detailsDiv.style.display = '';
+                    button.textContent = 'Hide Details';
+                })
+                .catch(error => {
+                    console.error('Failed to load endpoint details:', error);
+                    detailsDiv.innerHTML = `<div class="alert alert-danger">Failed to load endpoint details. Check the console for details.</div>`;
+                });
+        } else {
+            detailsDiv.style.display = 'none';
+            button.textContent = 'Details';
+        }
+    }
+
+    // Send request
+    function sendRequest(endpoint, path) {
+        const responseContainer = document.querySelector('.response-container');
+        responseContainer.innerHTML = '<p>Sending request...</p>';
+
+        fetch(path, { method: endpoint.method.toUpperCase() })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                responseContainer.innerHTML = `
+                    <h3>Response</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            })
+            .catch(error => {
+                console.error('Failed to send request:', error);
+                responseContainer.innerHTML = `<div class="alert alert-danger">Failed to send request. Check the console for details.</div>`;
+            });
+    }
 });

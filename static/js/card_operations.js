@@ -303,3 +303,75 @@ document.addEventListener('DOMContentLoaded', function() {
         readMemoryButton.addEventListener('click', readMemory);
     }
 });
+
+// Function to connect to a card reader
+async function connectCard(reader) {
+    try {
+        const response = await fetch('/api/cards/connect', { // Replace with your actual API endpoint
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reader })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to connect to card:', error);
+        throw error;
+    }
+}
+
+// Function to read memory from the card
+async function readMemory() {
+    try {
+        const response = await fetch('/api/cards/read_memory'); // Replace with your actual API endpoint
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to read memory:', error);
+        throw error;
+    }
+}
+
+// Function to register a card
+async function registerCard(atr, userId, cardType) {
+    try {
+        const response = await fetch('/api/cards/register', { // Replace with your actual API endpoint
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ atr, user_id: userId, card_type: cardType })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to register card:', error);
+        throw error;
+    }
+}
+
+// Function to perform a card operation
+async function performCardOperation(operation, data = {}) {
+    try {
+        const response = await fetch(`/api/cards/${operation}`, { // Replace with your actual API endpoint
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error(`Failed to perform card operation ${operation}:`, error);
+        throw error;
+    }
+}

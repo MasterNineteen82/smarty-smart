@@ -3,71 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Smart Card Management System">
+    <!-- Security headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <title>{% block title %}Smart Card Manager{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <!-- CSS Dependencies -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.17.0/font/bootstrap-icons.css">
     {% block additional_head %}{% endblock %}
     <style>
-        .hidden {
-            display: none;
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 350px;
+            z-index: 1050;
         }
-        .error {
-            color: red;
+        .alert {
+            margin-bottom: 10px;
+            transition: opacity 0.5s ease-in-out;
         }
-        .success {
-            color: green;
+        .footer {
+            margin-top: 2rem;
+            padding: 1rem 0;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e7e7e7;
         }
     </style>
 </head>
 <body>
-    <header class="header">
+    <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="/">Smart Card Manager</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" href="/">
+                    <i class="bi bi-credit-card-2-front me-2"></i>Smart Card Manager
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/api_explorer">API Explorer</a>
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"></li>
+                            <a class="nav-link" href="/api_explorer" aria-label="API Explorer">
+                                <i class="bi bi-code-slash me-1"></i>API Explorer
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/config_manager">Configuration</a>
+                            <a class="nav-link" href="/config_manager" aria-label="Configuration">
+                                <i class="bi bi-gear me-1"></i>Configuration
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/logs">Logs</a>
+                        <li class="nav-item"></li>
+                            <a class="nav-link" href="/logs" aria-label="Logs">
+                                <i class="bi bi-journal-text me-1"></i>Logs
+                            </a>
                         </li>
                     </ul>
+                    <div class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/help" aria-label="Help">
+                                <i class="bi bi-question-circle me-1"></i>Help
+                            </a>
+                        </li>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <main class="container mt-4">
-        <div id="error-message" class="error hidden"></div>
-        <div id="success-message" class="success hidden"></div>
+    <div class="alert-container" id="alert-container"></div>
+
+    <main class="container mt-4 mb-5">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer">
+    <footer class="footer mt-auto">
         <div class="container">
-            <p>&copy; 2025 Smart Card Manager</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Smart Card Manager | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>Version 1.0.0</p>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
     <script>
-        function displayMessage(message, type = 'error') {
-            const messageDiv = document.getElementById(`${type}-message`);
-            messageDiv.textContent = message;
-            messageDiv.classList.remove('hidden');
-            setTimeout(() => {
-                messageDiv.classList.add('hidden');
-            }, 5000);
+        // Enhanced message notification system
+        function displayMessage(message, type = 'error', duration = 5000) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertDiv = document.createElement('div');
+            
+            // Map message type to Bootstrap alert class
+            const alertClass = type === 'error' ? 'alert-danger' : 
+                              type === 'success' ? 'alert-success' : 
+                              type === 'warning' ? 'alert-warning' : 'alert-info';
+            
+            // Create alert with bootstrap styling
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            
+            // Add appropriate icon based on type
+            const icon = type === 'error' ? 'bi-exclamation-triangle-fill' : 
+                         type === 'success' ? 'bi-check-circle-fill' : 
+                         type === 'warning' ? 'bi-exclamation-circle-fill' : 'bi-info-circle-fill';
+            
+            alertDiv.innerHTML = `
+                <i class="bi ${icon} me-2"></i>
+                <span>${message}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Add to container
+            alertContainer.appendChild(alertDiv);
+            
+            // Add fade out effect and remove
+            if (duration > 0) {
+                setTimeout(() => {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 500);
+                }, duration);
+            }
+            
+            return alertDiv;
         }
+
+        // Initialize event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if URL has success or error parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('success')) {
+                displayMessage(urlParams.get('success'), 'success');
+            }
+            if (urlParams.has('error')) {
+                displayMessage(urlParams.get('error'), 'error');
+            }
+        });
     </script>
     {% block additional_scripts %}{% endblock %}
 </body>

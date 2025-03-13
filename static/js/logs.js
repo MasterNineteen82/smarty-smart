@@ -32,30 +32,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch logs from the API
     function fetchLogs() {
-        const level = logLevelSelect.value;
-        const lines = logLinesSelect.value;
-        const search = encodeURIComponent(logSearchInput.value);
+        const logLevel = logLevelSelect.value;
         const logFile = logFileSelect.value;
+        const searchTerm = logSearchInput.value;
+        const logLines = logLinesSelect.value;
 
-        const url = `/api/logs?level=${level}&lines=${lines}&search=${search}&file=${logFile}`;
+        // Construct the URL with query parameters
+        let url = `/api/logs?level=${logLevel}&file=${logFile}&search=${searchTerm}&lines=${logLines}`;
 
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
-                if (data && data.status === 'success') {
-                    displayLogs(data);
-                } else {
-                    displayAlert('danger', data.message || 'Failed to fetch logs');
-                }
+                displayLogs(data);
             })
             .catch(error => {
-                console.error('Error fetching logs:', error);
-                displayAlert('danger', `Error fetching logs: ${error.message}`);
+                console.error('Failed to fetch logs:', error);
+                displayAlert('danger', 'Failed to load logs. Check the console for details.');
             });
     }
 
@@ -81,23 +78,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to format a single log line
     function formatLogLine(log, searchTerm) {
-        let logHtml = log;
-        let statusIcon = getStatusIcon(logHtml);
+        const logHtml = escapeHtml(log); // Escape HTML entities to prevent XSS
+        const highlightedLog = highlightSearchTerm(logHtml, searchTerm);
 
-        logHtml = highlightTimestamp(logHtml);
-        logHtml = highlightLogLevel(logHtml);
-        logHtml = highlightModuleNames(logHtml);
-        logHtml = formatInstallationMessages(logHtml);
-        logHtml = highlightSearchTerm(logHtml, searchTerm);
-        logHtml = formatDependencies(logHtml);
+        return `<div class="log-line">${highlightedLog}</div>`;
+    }
 
-        return `<div class="log-line">${statusIcon} ${logHtml}</div>`;
+    // Function to escape HTML entities
+    function escapeHtml(text) {
+        let map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    // Function to highlight the search term in the log line
+    function highlightSearchTerm(logHtml, searchTerm) {
+        if (!searchTerm) return logHtml;
+
+        const regex = new RegExp(escapeRegex(searchTerm), 'gi');
+        return logHtml.replace(regex, '<span class="log-highlight">$&</span>');
+    }
+
+    // Function to escape regex special characters
+    function escapeRegex(string) {
+        return string.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 
     // Function to update log statistics
     function updateLogStats(showingLines, filteredLines, logFile) {
-        logCountElement.textContent = `${showingLines} of ${filteredLines} entries`;
-        logStatsElement.textContent = `Log Entries (${logFile})`;
+        logCountElement.textContent = `${showingLines} entries`;
+        logStatsElement.textContent = `Showing ${filteredLines} of ${showingLines} entries from ${logFile}`;
     }
 
     // Function to scroll to the bottom of the log container
@@ -107,106 +123,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to get the status icon for a log line
     function getStatusIcon(logHtml) {
-        if (logHtml.includes(' - ERROR - ') || logHtml.includes(' - CRITICAL - ')) {
-            return '<span class="log-icon log-error-icon">❗</span>';
-        } else if (logHtml.includes(' - WARNING - ')) {
-            return '<span class="log-icon log-warning-icon">⚠️</span>';
-        } else if (logHtml.includes(' - INFO - ')) {
-            return '<span class="log-icon log-info-icon">ℹ️</span>';
-        } else if (logHtml.includes(' - DEBUG - ')) {
-            return '<span class="log-icon log-debug-icon">🔍</span>';
-        } else {
-            return '<span class="log-icon">📋</span>';
-        }
-    }
-
-    // Function to highlight the timestamp in a log line
-    function highlightTimestamp(logHtml) {
-        return logHtml.replace(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}/,
-            match => `<span class="log-timestamp">${match}</span>`);
-    }
-
-    // Function to highlight the log level in a log line
-    function highlightLogLevel(logHtml) {
-        return logHtml.replace(/ - (DEBUG|INFO|WARNING|ERROR|CRITICAL) - /, (match, level) => {
-            return ` - <span class="log-${level.toLowerCase()}">${level}</span> - `;
-        });
-    }
-
-    // Function to highlight module names in a log line
-    function highlightModuleNames(logHtml) {
-        return logHtml.replace(/ - ([a-zA-Z0-9_\.]+):\d+ - /, (match, module) => {
-            const lineNumber = match.split(':')[1].replace(' - ', '');
-            return ` - <span class="log-module">${module}</span>:<span class="log-line-number">${lineNumber}</span> - `;
-        });
-    }
-
-    // Function to format installation messages in a log line
-    function formatInstallationMessages(logHtml) {
-        logHtml = logHtml.replace(/([a-zA-Z0-9_\.-]+) is not installed/,
-            '<strong>$1</strong> is not installed');
-        logHtml = logHtml.replace(/Installing ([a-zA-Z0-9_\.-]+)/,
-            'Installing <strong>$1</strong>');
-        logHtml = logHtml.replace(/([a-zA-Z0-9_\.-]+) was successfully installed/,
-            '<strong>$1</strong> was successfully installed');
-        return logHtml;
-    }
-
-    // Function to highlight the search term in a log line
-    function highlightSearchTerm(logHtml, searchTerm) {
-        if (searchTerm) {
-            const regex = new RegExp(`(${searchTerm})`, 'gi');
-            logHtml = logHtml.replace(regex, '<span class="log-highlight">$1</span>');
-        }
-        return logHtml;
-    }
-
-    // Function to format dependencies in a log line
-    function formatDependencies(logHtml) {
-        if (logHtml.includes('Requirement already satisfied: ')) {
-            logHtml = logHtml.replace(/Requirement already satisfied: ([^\s]+)/,
-                'Requirement already satisfied: <strong>$1</strong>');
-
-            if (logHtml.includes(' in ')) {
-                logHtml = `<span class="log-indent">${logHtml}</span>`;
-            }
-        }
-        return logHtml;
-    }
-
-    // Function to clear the logs
-    function clearLogs() {
-        const logFile = logFileSelect.value;
-
-        if (!confirm(`Are you sure you want to clear the "${logFile}" log file?`)) {
-            return;
-        }
-
-        fetch('/api/logs/clear', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ file: logFile })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.status === 'success') {
-                    displayAlert('success', data.message);
-                    fetchLogs();
-                } else {
-                    displayAlert('danger', data.message || 'Failed to clear logs');
-                }
-            })
-            .catch(error => {
-                console.error('Error clearing logs:', error);
-                displayAlert('danger', `Error clearing logs: ${error.message}`);
-            });
+        if (logHtml.includes('ERROR')) return '<i class="bi bi-x-circle log-error-icon"></i>';
+        if (logHtml.includes('WARNING')) return '<i class="bi bi-exclamation-triangle log-warning-icon"></i>';
+        if (logHtml.includes('INFO')) return '<i class="bi bi-info-circle log-info-icon"></i>';
+        if (logHtml.includes('DEBUG')) return '<i class="bi bi-bug log-debug-icon"></i>';
+        return '';
     }
 
     // Function to toggle the theme
@@ -236,13 +157,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to display alerts
     function displayAlert(type, message) {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show`;
-        alert.innerHTML = `
-            <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'} me-2"></i> ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        logContainer.prepend(alert); // Prepends to the log container
+        const alertContainer = document.getElementById('alert-container');
+        alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 5000);
     }
 
     // --- Event Listeners ---
@@ -292,3 +211,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch logs on page load
     fetchLogs();
 });
+
+// Function to clear logs
+async function clearLogs() {
+    try {
+        const response = await fetch('/api/logs/clear', { method: 'POST' }); // Replace with your actual API endpoint
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        displayAlert('success', 'Logs cleared successfully.');
+        fetchLogs(); // Refresh the log display
+    } catch (error) {
+        console.error('Failed to clear logs:', error);
+        displayAlert('danger', 'Failed to clear logs. Check the console for details.');
+    }
+}

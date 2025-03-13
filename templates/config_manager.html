@@ -4,6 +4,7 @@
 
 {% block additional_head %}
 <link href="{{ url_for('static', filename='css/config_manager.css') }}" rel="stylesheet">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -16,25 +17,24 @@
 
 <div class="row">
     <div class="col-12">
-        <!-- Config status alert -->
-        <div class="alert alert-success d-none" id="configStatus">
-            <i class="bi bi-check-circle me-2"></i> Configuration saved successfully
+        <!-- Config status alerts -->
+        <div class="alert alert-success alert-dismissible fade show d-none" id="configStatus" role="alert">
+            <i class="bi bi-check-circle me-2"></i> <span id="configStatusMessage">Configuration saved successfully</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <!-- Config error alert -->
-        <div class="alert alert-danger d-none" id="configError">
+        <div class="alert alert-danger alert-dismissible fade show d-none" id="configError" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i> Error: <span id="configErrorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
 </div>
 
 <div class="card mb-4">
     <div class="card-header bg-light">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="mb-0">Application Settings</h5>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-2" id="saveBtn" disabled>
-                    <i class="bi bi-save"></i> Save Changes
-                </button>
+            <div class="mt-2 mt-md-0">
+                <button class="btn btn-sm btn-outline-primary me
                 <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetConfirmModal">
                     <i class="bi bi-arrow-counterclockwise"></i> Reset to Defaults
                 </button>
