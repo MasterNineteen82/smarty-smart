@@ -55,8 +55,12 @@ class ValidationError(DataError):
     pass
 
 
-class CardError(SmartcardBaseException):
-    """Exception for card-related errors."""
+class CardError(Exception):
+    """Custom exception for card-related errors."""
+    pass
+
+class InvalidInputError(Exception):
+    """Custom exception for invalid input errors."""
     pass
 
 

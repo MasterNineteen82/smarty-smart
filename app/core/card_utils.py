@@ -1,19 +1,20 @@
-import os
 import logging
-import threading
-import time
-from logging.handlers import RotatingFileHandler
-from smartcard.System import readers
-from smartcard.Exceptions import NoCardException, CardConnectionException
+import os
+import json
+from contextlib import contextmanager
 from enum import Enum, auto
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional, Tuple
+
+from smartcard.System import readers
+from smartcard.CardConnection import CardConnection
+from smartcard.Exceptions import CardConnectionException, NoCardException
 
 # --- Configuration Management ---
 class ConfigManager:
     """Centralized configuration management with dynamic loading."""
 
     _instance = None
-    _lock = threading.Lock()
+    _lock = None  # Remove threading.Lock()
     _config: Dict[str, Any] = {}
     _defaults = {
         "MAX_PIN_ATTEMPTS": 3,
@@ -26,11 +27,9 @@ class ConfigManager:
     }
 
     def __new__(cls):
-        with cls._lock:
-            if not cls._instance:
-                cls._instance = super().__new__(cls)
-                cls._instance._initialize()
-        return cls._instance
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(ConfigManager, cls).__new__(cls)
+        return cls.instance
 
     def _initialize(self):
         """Initialize configuration: defaults -> env vars -> dynamic loading."""
@@ -115,15 +114,15 @@ TIMEOUTS = {
 # --- Enhanced Logging Configuration with Rotation ---
 logs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
 os.makedirs(logs_dir, exist_ok=True)
-file_handler = RotatingFileHandler(os.path.join(logs_dir, 'smart_card.log'), maxBytes=5*1024*1024, backupCount=5)
+file_handler = None #RotatingFileHandler(os.path.join(logs_dir, 'smart_card.log'), maxBytes=5*1024*1024, backupCount=5)
 console_handler = logging.StreamHandler()
 log_format = '%(asctime)s - %(levelname)s - %(name)s:%(lineno)d - %(message)s'
 formatter = logging.Formatter(log_format)
-file_handler.setFormatter(formatter)
+#file_handler.setFormatter(formatter)
 console_handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(file_handler)
+#logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
 # --- Enhanced Enums for State Tracking ---
@@ -143,32 +142,33 @@ class CardStatus(Enum):
     REVOKED = auto()       # New: Card credentials are permanently invalidated
     RETIRED = auto()       # New: Card is disassociated from its assigned user/application
     UNREGISTERED = auto()  # Added missing value
+    DISPOSED = "disposed"  # Added new value
 
 class ReaderStatus(Enum):
-    READY = auto()
-    NOT_FOUND = auto()
-    ERROR = auto()
-    BUSY = auto()
+    READY = None #auto()
+    NOT_FOUND = None #auto()
+    ERROR = None #auto()
+    BUSY = None #auto()
 
 # --- Card Type Enums for Better Identification ---
 class CardType(Enum):
-    UNKNOWN = auto()
-    MIFARE_CLASSIC = auto()
-    MIFARE_ULTRALIGHT = auto()
-    MIFARE_DESFIRE = auto()
-    FELICA = auto()
-    NFC_TYPE_1 = auto()
-    NFC_TYPE_2 = auto()
-    NFC_TYPE_3 = auto()
-    NFC_TYPE_4 = auto()
-    ISO_14443_A = auto()
-    ISO_14443_B = auto()
-    JCOP_JAVACARD = auto()
-    SLE_MEMORY_CARD = auto()
-    GENERIC_RFID = auto()
+    UNKNOWN = None #auto()
+    MIFARE_CLASSIC = None #auto()
+    MIFARE_ULTRALIGHT = None #auto()
+    MIFARE_DESFIRE = None #auto()
+    FELICA = None #auto()
+    NFC_TYPE_1 = None #auto()
+    NFC_TYPE_2 = None #auto()
+    NFC_TYPE_3 = None #auto()
+    NFC_TYPE_4 = None #auto()
+    ISO_14443_A = None #auto()
+    ISO_14443_B = None #auto()
+    JCOP_JAVACARD = None #auto()
+    SLE_MEMORY_CARD = None #auto()
+    GENERIC_RFID = None #auto()
 
 # --- Global State with Thread Safety ---
-_lock = threading.RLock()
+#_lock = threading.RLock() # Removed threading
 # Rename variable to avoid collision with function name
 current_connection = None  # Changed from card_connection
 status: Dict[str, str] = {"message": "Disconnected", "atr": ""}
@@ -185,7 +185,7 @@ available_readers: list = []
 registered_cards: Dict[str, Dict[str, Any]] = {}  # Store card registration data
 
 # Ensure backup directory exists
-os.makedirs(BACKUP_DIR, exist_ok=True)
+#os.makedirs(BACKUP_DIR, exist_ok=True) # Removed
 
 # Fix toHexString to handle type checking properly
 def toHexString(bytes_obj):
@@ -322,59 +322,34 @@ def read_card_id(reader):
         logger.error(f"Error creating card connection: {str(e)}")
         return None
 
-def establish_connection(reader_name):
+def establish_connection(reader_name: Optional[str] = None) -> Tuple[Optional[CardConnection], Optional[str]]:
     """
-    Establish a connection to a card on the specified reader.
-
-    Args:
-        reader_name (str): Name of the reader to connect to
-
-    Returns:
-        tuple: (connection object, error message or None)
+    Establish a connection with a smart card reader.
     """
-    max_retries = config.get("MAX_CONNECT_RETRIES", 3)
-    retry_delay = 1  # seconds
+    try:
+        if not reader_name:
+            reader_list = readers()
+            if not reader_list:
+                return None, "No readers detected"
+            reader = reader_list[0]  # Get the first reader
+        else:
+            reader = readers()[0]  # Get the first reader
+        connection = reader.createConnection()
+        connection.connect()
+        return connection, None
+    except Exception as e:
+        logger.error(f"Failed to establish connection: {e}")
+        return None, str(e)
 
-    for attempt in range(max_retries):
-        try:
-            available_readers = readers()
-            selected_reader = None
-
-            for reader in available_readers:
-                if reader_name in str(reader):
-                    selected_reader = reader
-                    break
-
-            if selected_reader is None:
-                logger.warning(f"Reader '{reader_name}' not found in available readers")
-                return None, f"Reader '{reader_name}' not found"
-
-            # Apply appropriate timeout based on reader type
-            #reader_type = detect_reader_type(reader_name)
-            #timeout = TIMEOUTS.get(reader_name, TIMEOUTS.get("DEFAULT", 5.0))
-
-            logger.debug(f"Connecting to reader {reader_name}, attempt {attempt + 1}/{max_retries}")
-            connection = selected_reader.createConnection()
-            connection.connect()  # Add timeout parameter if supported
-            logger.info(f"Successfully connected to reader '{reader_name}'")
-            return connection, None
-
-        except NoCardException:
-            logger.info(f"No card present on reader '{reader_name}', attempt {attempt + 1}/{max_retries}")
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)  # Wait before retrying
-            continue
-        except CardConnectionException as e:
-            logger.error(f"Connection error on reader '{reader_name}', attempt {attempt + 1}/{max_retries}: {str(e)}")
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)  # Wait before retrying
-            continue
-        except Exception as e:
-            logger.error(f"Unexpected error connecting to reader '{reader_name}', attempt {attempt + 1}/{max_retries}: {str(e)}", exc_info=True)
-            return None, f"Unexpected error: {str(e)}"
-
-    logger.error(f"Failed to connect to reader '{reader_name}' after {max_retries} attempts.")
-    return None, "Could not connect to card reader after multiple attempts."
+def close_connection(conn: Optional[CardConnection]) -> None:
+    """
+    Close a connection with a smart card reader.
+    """
+    try:
+        if conn:
+            conn.disconnect()
+    except Exception as e:
+        logger.error(f"Failed to close connection: {e}")
 
 def get_card_status(card_id, reader=None):
     """
@@ -463,3 +438,109 @@ def mask_sensitive_data(data: str) -> str:
     except Exception as e:
         logger.error(f"Error masking sensitive data: {e}")
         return data
+
+# Safe Globals Context Manager
+@contextmanager
+def safe_globals():
+    """
+    Context manager to provide a safe execution environment by limiting
+    access to potentially harmful globals.
+    """
+    safe_list = ['__builtins__', 'datetime', 'time', 'json', 'os']
+    safe_dict = dict((k, __builtins__.__dict__[k]) for k in safe_list if k in __builtins__.__dict__)
+    safe_dict['os'] = os
+    safe_dict['json'] = json
+    try:
+        yield safe_dict
+    finally:
+        pass
+
+# Card Registry Operations (Example - Adapt to your needs)
+def is_card_registered(atr: str) -> bool:
+    """
+    Check if a card with the given ATR is registered.
+    """
+    # Implement logic to check if the card is registered
+    # This could involve querying a database or checking a file
+    return False
+
+def register_card(atr: str, user_id: str) -> None:
+    """
+    Register a card with the given ATR and user ID.
+    """
+    # Implement logic to register the card
+    # This could involve adding the card to a database or file
+    pass
+
+def unregister_card(atr: str) -> None:
+    """
+    Unregister a card with the given ATR.
+    """
+    # Implement logic to unregister the card
+    # This could involve removing the card from a database or file
+    pass
+
+def activate_card(atr: str) -> None:
+    """
+    Activate a card with the given ATR.
+    """
+    # Implement logic to activate the card
+    # This could involve setting a flag in a database or file
+    pass
+
+def deactivate_card(atr: str) -> None:
+    """
+    Deactivate a card with the given ATR.
+    """
+    # Implement logic to deactivate the card
+    # This could involve setting a flag in a database or file
+    pass
+
+def block_card(atr: str) -> None:
+    """
+    Block a card with the given ATR.
+    """
+    # Implement logic to block the card
+    # This could involve setting a flag in a database or file
+    pass
+
+def unblock_card(atr: str) -> None:
+    """
+    Unblock a card with the given ATR.
+    """
+    # Implement logic to unblock the card
+    # This could involve setting a flag in a database or file
+    pass
+
+def backup_card_data(atr: str) -> str:
+    """
+    Backup card data for the given ATR.
+    """
+    # Implement logic to backup card data
+    # This could involve creating a copy of the card's data in a file or database
+    return "backup_id"
+
+def restore_card_data(atr: str, backup_id: str) -> None:
+    """
+    Restore card data for the given ATR from the given backup ID.
+    """
+    # Implement logic to restore card data
+    # This could involve restoring the card's data from a file or database
+    pass
+
+def secure_dispose_card(atr: str) -> None:
+    """
+    Securely dispose of a card with the given ATR.
+    """
+    # Implement logic to securely dispose of the card
+    # This could involve deleting the card's data from a database or file
+    pass
+
+# Reader Type Detection
+def detect_reader_type(reader_name: str) -> str:
+    """
+    Detect the type of a smart card reader based on its name.
+    """
+    # Implement logic to detect the reader type based on the reader name
+    # This could involve checking the reader name against a list of known reader names
+    return "Unknown"

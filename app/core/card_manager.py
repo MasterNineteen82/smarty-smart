@@ -4,17 +4,18 @@ import asyncio
 import logging
 from typing import Dict, List, Tuple, Optional, Any
 from datetime import datetime
+import shutil
 
 from smartcard.util import toHexString
 
 from app.core.card_utils import (
     establish_connection, close_connection, safe_globals,
-    detect_card_type, detect_reader_type, is_card_registered,
-    register_card, unregister_card, activate_card, deactivate_card,
-    block_card, unblock_card, backup_card_data, restore_card_data,
-    secure_dispose_card, card_info, card_status, CardStatus,
+    detect_card_type, detect_reader_type, CardStatus,
     ACR122U_IDENTIFIER
 )
+
+# Import the session_scope context manager and Card model from app/db.py
+from app.db import session_scope, Card, Session
 
 # Configuration & Constants
 class Config:
@@ -79,7 +80,7 @@ def handle_file_operation(filepath: str, operation: str = 'read', data: Optional
         return False
 
 class CardManager:
-    """High-level card management class handling lifecycle operations with better error handling"""
+    """High-level card management class handling lifecycle operations."""
     
     def __init__(self):
         self.last_operation = None
@@ -87,7 +88,7 @@ class CardManager:
         self.recovery_mode = False
     
     async def handle_operation(self, operation_func, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
-        """Execute card operation with retry logic and error handling"""
+        """Execute card operation with retry logic and error handling."""
         retries = 0
         self.last_operation = operation_func.__name__
         self.last_operation_time = datetime.now()
@@ -116,22 +117,28 @@ class CardManager:
         return False, "Operation failed with unknown error", None
     
     def lifecycle_transition(self, from_states: List[CardStatus], to_state: CardStatus, 
-                             operation_func, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
-        """Handle lifecycle state transitions with validation and edge case handling"""
+                             operation_func, atr: str, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
+        """Handle lifecycle state transitions with validation."""
         try:
-            current_status = card_status()
-            if current_status not in from_states and not self.recovery_mode:
-                valid_states = [state.name for state in from_states]
-                return False, f"Invalid state transition. Card must be in one of these states: {', '.join(valid_states)}", None
-            
-            success, message, extra = self.handle_operation(operation_func, *args, **kwargs)
-            
-            if success:
-                # Update card status if operation was successful
-                card_status(to_state)
-                return True, f"Transition to {to_state.name} successful: {message}", extra
-            else:
-                return False, f"Transition to {to_state.name} failed: {message}", extra
+            with session_scope() as db:
+                card = db.query(Card).filter(Card.atr == atr).first()
+                if not card:
+                    return False, "Card not registered", None
+
+                current_status = CardStatus(card.status)
+                if current_status not in from_states and not self.recovery_mode:
+                    valid_states = [state.name for state in from_states]
+                    return False, f"Invalid state transition. Card must be in one of these states: {', '.join(valid_states)}. Current state: {current_status.name}", None
+                
+                success, message, extra = self.handle_operation(operation_func, atr, *args, **kwargs)
+                
+                if success:
+                    # Update card status in DB if operation was successful
+                    card.status = to_state.value
+                    db.commit()
+                    return True, f"Transition to {to_state.name} successful: {message}", extra
+                else:
+                    return False, f"Transition to {to_state.name} failed: {message}", extra
         
         except Exception as e:
             logger.error(f"Lifecycle transition failed: {e}")
@@ -139,14 +146,6 @@ class CardManager:
     
     def register_new_card(self, atr: str, user_id: str) -> Tuple[bool, str]:
         """Register a new card."""
-        
-        # Placeholder for session_scope.  Replace with your actual implementation.
-        from contextlib import contextmanager
-        @contextmanager
-        def session_scope():
-            # Replace with your actual database session logic
-            yield None  # Dummy value for now
-        
         try:
             with session_scope() as db:
                 # Check if card already exists
@@ -155,7 +154,7 @@ class CardManager:
                     return False, "Card already registered"
 
                 # Create new card
-                new_card = Card(atr=atr, user_id=user_id)
+                new_card = Card(atr=atr, user_id=user_id, status=CardStatus.REGISTERED.value)
                 db.add(new_card)
                 db.commit()
                 return True, "Card registered successfully"
@@ -191,27 +190,30 @@ class CardManager:
 
                 # Activate card
                 existing_card.is_blocked = False
+                existing_card.status = CardStatus.ACTIVE.value
                 db.commit()
                 return True, "Card activated successfully"
         except Exception as e:
             logger.error(f"Error activating card: {e}")
             return False, f"Error activating card: {str(e)}"
     
-    def deactivate_active_card(self) -> Tuple[bool, str]:
-        """Deactivate a card with edge case handling"""
+    def deactivate_active_card(self, atr: str) -> Tuple[bool, str]:
+        """Deactivate a card."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.ACTIVE, CardStatus.REGISTERED],
-                CardStatus.INACTIVE,
-                deactivate_card
-            )
-            return success, message
+            with session_scope() as db:
+                # Check if card exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if not existing_card:
+                    return False, "Card not registered"
+
+                # Deactivate card
+                existing_card.is_blocked = True
+                existing_card.status = CardStatus.INACTIVE.value
+                db.commit()
+                return True, "Card deactivated successfully"
         except Exception as e:
-            logger.error(f"Deactivate active card failed: {e}")
-            return False, f"Deactivate active card encountered an error: {str(e)}"
+            logger.error(f"Error deactivating card: {e}")
+            return False, f"Error deactivating card: {str(e)}"
     
     def block_active_card(self, atr: str) -> Tuple[bool, str]:
         """Block a card."""
@@ -224,70 +226,82 @@ class CardManager:
 
                 # Block card
                 existing_card.is_blocked = True
+                existing_card.status = CardStatus.BLOCKED.value
                 db.commit()
                 return True, "Card blocked successfully"
         except Exception as e:
             logger.error(f"Error blocking card: {e}")
             return False, f"Error blocking card: {str(e)}"
     
-    def unblock_blocked_card(self) -> Tuple[bool, str]:
-        """Unblock a card with edge case handling"""
+    def unblock_blocked_card(self, atr: str) -> Tuple[bool, str]:
+        """Unblock a card."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.BLOCKED],
-                CardStatus.INACTIVE,
-                unblock_card
-            )
-            return success, message
+            with session_scope() as db:
+                # Check if card exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if not existing_card:
+                    return False, "Card not registered"
+
+                # Unblock card
+                existing_card.is_blocked = False
+                existing_card.status = CardStatus.INACTIVE.value
+                db.commit()
+                return True, "Card unblocked successfully"
         except Exception as e:
-            logger.error(f"Unblock blocked card failed: {e}")
-            return False, f"Unblock blocked card encountered an error: {str(e)}"
+            logger.error(f"Error unblocking card: {e}")
+            return False, f"Error unblocking card: {str(e)}"
     
     def create_backup(self) -> Tuple[bool, str, Optional[str]]:
-        """Create a backup of card data with edge case handling"""
+        """Create a backup of card data."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered", None
-            
-            success, message, backup_id = self.handle_operation(backup_card_data)
-            return success, message, backup_id
+            backup_dir = Config.get_backup_dir()
+            os.makedirs(backup_dir, exist_ok=True)
+            backup_path = os.path.join(backup_dir, f'card_db_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.sqlite')
+
+            # Get the database URL from app/db.py
+            from app.db import DATABASE_URL
+
+            # Copy the database file to the backup location
+            shutil.copy2(DATABASE_URL.replace("sqlite:///", ""), backup_path)
+
+            return True, "Database backed up successfully", backup_path
         except Exception as e:
             logger.error(f"Create backup failed: {e}")
             return False, f"Create backup encountered an error: {str(e)}", None
     
-    def restore_from_backup(self, backup_id: str) -> Tuple[bool, str]:
-        """Restore card from a backup with edge case handling"""
+    def restore_from_backup(self, backup_path: str) -> Tuple[bool, str]:
+        """Restore card data from a backup."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.handle_operation(restore_card_data, backup_id)
-            return success, message
+            # Get the database URL from app/db.py
+            from app.db import DATABASE_URL
+
+            # Restore the database from the backup file
+            shutil.copy2(backup_path, DATABASE_URL.replace("sqlite:///", ""))
+
+            return True, "Database restored successfully"
         except Exception as e:
             logger.error(f"Restore from backup failed: {e}")
             return False, f"Restore from backup encountered an error: {str(e)}"
     
-    def securely_dispose(self) -> Tuple[bool, str]:
-        """Securely dispose of a card with edge case handling"""
+    def securely_dispose(self, atr: str) -> Tuple[bool, str]:
+        """Securely dispose of a card (remove from database)."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.ACTIVE, CardStatus.INACTIVE, CardStatus.BLOCKED, CardStatus.REGISTERED, CardStatus.UNREGISTERED],
-                CardStatus.DISPOSED,
-                secure_dispose_card
-            )
-            return success, message
+            with session_scope() as db:
+                # Check if card exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if not existing_card:
+                    return False, "Card not registered"
+
+                # Delete card
+                db.delete(existing_card)
+                db.commit()
+                return True, "Card disposed successfully"
         except Exception as e:
-            logger.error(f"Securely dispose card failed: {e}")
-            return False, f"Securely dispose card encountered an error: {str(e)}"
+            logger.error(f"Error disposing card: {e}")
+            return False, f"Error disposing card: {str(e)}"
     
     def get_device_card_compatibility(self) -> Dict:
-        """Check compatibility between current reader and card"""
+        """Check compatibility between current reader and card."""
         with safe_globals():
             conn, err = establish_connection()
             if err:
@@ -336,7 +350,7 @@ class CardManager:
                 close_connection(conn)
     
     def enable_recovery_mode(self) -> None:
-        """Enable recovery mode to bypass state checks (for admin use only)"""
+        """Enable recovery mode to bypass state checks (for admin use only)."""
         if not self.recovery_mode:
             self.recovery_mode = True
             logger.warning("Recovery mode enabled! State transitions will not be validated.")
@@ -344,7 +358,7 @@ class CardManager:
             logger.info("Recovery mode is already enabled.")
     
     def disable_recovery_mode(self) -> None:
-        """Disable recovery mode"""
+        """Disable recovery mode."""
         if self.recovery_mode:
             self.recovery_mode = False
             logger.info("Recovery mode disabled. State transitions will be validated.")
@@ -355,38 +369,43 @@ class CardManager:
         """Custom exception for card-related errors."""
         pass
     
-    def register_card(self, atr, user_id):
-        """Register a card with a specific user ID."""
-        logger.info(f"Registering card with ATR {atr} for user {user_id}")
-        if atr in self.registered_cards:
-            raise self.CardError(f"Card with ATR {atr} is already registered.")
-        self.registered_cards[atr] = user_id
-    
-    def unregister_card(self, atr):
-        """Unregister a card."""
-        logger.info(f"Unregistering card with ATR {atr}")
-        if atr not in self.registered_cards:
-            raise self.CardError(f"Card with ATR {atr} is not registered.")
-        del self.registered_cards[atr]
+    def get_card_status_from_db(self, atr: str) -> Optional[CardStatus]:
+        """Get the card status from the database."""
+        try:
+            with session_scope() as db:
+                card = db.query(Card).filter(Card.atr == atr).first()
+                if card:
+                    return CardStatus(card.status)
+                else:
+                    return None
+        except Exception as e:
+            logger.error(f"Error getting card status from db: {e}")
+            return None
 
-    def block_card(self, atr):
-        """Block a card."""
-        logger.info(f"Blocking card with ATR {atr}")
-        # Implement logic to block the card (e.g., set a flag in the database)
+    def update_card_status_in_db(self, atr: str, status: CardStatus) -> bool:
+        """Update the card status in the database."""
+        try:
+            with session_scope() as db:
+                card = db.query(Card).filter(Card.atr == atr).first()
+                if card:
+                    card.status = status.value
+                    db.commit()
+                    return True
+                else:
+                    return False
+        except Exception as e:
+            logger.error(f"Error updating card status in db: {e}")
+            return False
 
-    def activate_card(self, atr):
-        """Activate a card."""
-        logger.info(f"Activating card with ATR {atr}")
-        # Implement logic to activate the card (e.g., set a flag in the database)
-
-    def deactivate_card(self, atr):
-        """Deactivate a card."""
-        logger.info(f"Deactivating card with ATR {atr}")
-        # Implement logic to deactivate the card (e.g., set a flag in the database)
-
-    def is_card_registered(self, atr):
-        """Check if a card is registered."""
-        return atr in self.registered_cards
+    def is_card_registered(self, atr: str) -> bool:
+        """Check if a card is registered in the database."""
+        try:
+            with session_scope() as db:
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                return existing_card is not None
+        except Exception as e:
+            logger.error(f"Error checking card registration: {e}")
+            return False
 
 def backup_registry(backup_path=None):
     """Backup the card registry to a file."""

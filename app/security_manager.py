@@ -1,9 +1,19 @@
 import logging
 import hashlib
 import os
+import secrets
 from cryptography.fernet import Fernet, InvalidToken
-from functools import wraps
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+import base64
+from functools import wraps, lru_cache
+from typing import Tuple, Optional
 
+from app.core.card_utils import config  # Import the config object
+from app.db import session_scope, User
+
+# Configure logging
 logger = logging.getLogger(__name__)
 
 class AuthenticationError(Exception):
@@ -20,53 +30,74 @@ class EncryptionError(Exception):
 
 class SecurityManager:
     """
-    Manages security operations including authentication, authorization,
-    encryption key management, and data encryption/decryption.
+    Manages security-related operations, including authentication, authorization,
+    encryption, and PIN verification.
     """
+
     def __init__(self, key=None):
-        """Initialize SecurityManager with an optional encryption key."""
-        if key is None:
-            # Generate a key if one is not provided
-            self.key = Fernet.generate_key()
-            logger.warning("No encryption key provided. Generated a new key. Ensure key persistence in production.")
+        """
+        Initializes the SecurityManager with an optional encryption key.
+        """
+        self.encryption_key = key or self._load_or_generate_key()
+        self.fernet = Fernet(self.encryption_key.encode())
+        self.default_pin = config.get("DEFAULT_PIN")  # Access DEFAULT_PIN using config
+        self.max_pin_attempts = config.get("MAX_PIN_ATTEMPTS")  # Access MAX_PIN_ATTEMPTS using config
+        self.pin_attempts = 0
+
+    def _load_or_generate_key(self) -> str:
+        """
+        Loads the encryption key from an environment variable or generates a new one.
+        """
+        key = os.environ.get("SMARTCARD_ENCRYPTION_KEY")
+        if key:
+            logger.info("Encryption key loaded from environment variable.")
+            return key
         else:
-            self.key = key
-        self.cipher = Fernet(self.key)
+            key = self._generate_encryption_key()
+            logger.warning("No encryption key provided. Generated a new key. Ensure key persistence in production.")
+            return key
+
+    def _generate_encryption_key(self) -> str:
+        """
+        Generates a new encryption key.
+        """
+        key = Fernet.generate_key().decode()
+        return key
+
+    def persist_key(self):
+        """
+        Persists the encryption key to an environment variable.
+        """
+        os.environ["SMARTCARD_ENCRYPTION_KEY"] = self.encryption_key
+        logger.info("Encryption key persisted to environment variable.")
 
     async def authenticate_user(self, username, password):
         """
         Authenticate a user by checking the provided credentials against stored credentials.
-        Hashes the password before comparison.
         """
         logger.info(f"Authenticating user {username}")
         try:
-            # Retrieve stored password hash from database based on username
-            stored_password_hash = await self._get_password_hash_from_db(username)  # Corrected method name
+            with session_scope() as db:
+                # Retrieve user from database based on username
+                user = db.query(User).filter(User.username == username).first()
 
-            # Hash the provided password
-            hashed_password = self._hash_password(password)
+                if user is None:
+                    logger.warning(f"Authentication failed for user {username}: user not found.")
+                    raise AuthenticationError("Invalid credentials.")
 
-            # Compare the hashed password with the stored hash
-            if hashed_password == stored_password_hash:
-                logger.info(f"User {username} authenticated successfully.")
-                return True
-            else:
-                logger.warning(f"Authentication failed for user {username}: incorrect password.")
-                raise AuthenticationError("Invalid credentials.")
+                # Hash the provided password
+                hashed_password = self._hash_password(password)
+
+                # Compare the hashed password with the stored hash
+                if hashed_password == user.password:
+                    logger.info(f"User {username} authenticated successfully.")
+                    return True
+                else:
+                    logger.warning(f"Authentication failed for user {username}: incorrect password.")
+                    raise AuthenticationError("Invalid credentials.")
         except Exception as e:
             logger.error(f"Authentication failed for user {username}: {e}")
             raise AuthenticationError("Authentication failed.") from e
-
-    async def _get_password_hash_from_db(self, username):
-        """
-        Retrieve the password hash from the database.
-        This is a placeholder; replace with actual database retrieval logic.
-        """
-        # Placeholder: Simulate fetching the password hash from a database
-        if username == "testuser":
-            return "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"  # Example hash for "password"
-        else:
-            raise ValueError("User not found.")
 
     async def authorize_user(self, username, permission):
         """
@@ -131,7 +162,7 @@ class SecurityManager:
         logger.info("Encrypting data")
         try:
             if key is None:
-                cipher = self.cipher
+                cipher = self.fernet
             else:
                 cipher = Fernet(key)
             encrypted_data = cipher.encrypt(data.encode())
@@ -148,7 +179,7 @@ class SecurityManager:
         logger.info("Decrypting data")
         try:
             if key is None:
-                cipher = self.cipher
+                cipher = self.fernet
             else:
                 cipher = Fernet(key)
             decrypted_data = cipher.decrypt(data.decode()).decode()
@@ -161,36 +192,25 @@ class SecurityManager:
             logger.error(f"Decryption failed: {e}")
             raise EncryptionError("Decryption failed.") from e
 
-    def verify_pin(self, pin):
+    def verify_pin(self, pin: str) -> Tuple[bool, str]:
         """
-        Verify PIN against stored PIN using hashing.
+        Verifies the provided PIN against the stored PIN.
         """
-        logger.info("Verifying PIN")
-        try:
-            # Retrieve stored PIN hash from database
-            stored_pin_hash = self._get_pin_hash_from_db()
-
-            # Hash the provided PIN
-            hashed_pin = self._hash_pin(pin)
-
-            # Compare the hashed PIN with the stored hash
-            if hashed_pin == stored_pin_hash:
-                logger.info("PIN verification successful.")
-                return True
+        if pin == self.default_pin:
+            self.pin_attempts = 0
+            return True, "PIN verified successfully"
+        else:
+            self.pin_attempts += 1
+            if self.pin_attempts >= self.max_pin_attempts:
+                return False, "PIN blocked due to too many incorrect attempts"
             else:
-                logger.warning("PIN verification failed: incorrect PIN.")
-                return False
-        except Exception as e:
-            logger.error(f"PIN verification failed: {e}")
-            return False
+                return False, f"Incorrect PIN. Attempts remaining: {self.max_pin_attempts - self.pin_attempts}"
 
-    def _get_pin_hash_from_db(self):
+    def reset_pin_attempts(self) -> None:
         """
-        Retrieve the PIN hash from the database.
-        This is a placeholder; replace with actual database retrieval logic.
+        Resets the PIN attempts counter.
         """
-        # Placeholder: Simulate fetching the PIN hash from a database
-        return "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"  # Example hash for "1234"
+        self.pin_attempts = 0
 
     def _hash_password(self, password):
         """
@@ -224,3 +244,10 @@ class SecurityManager:
                 return func(*args, **kwargs)
             return wrapper
         return decorator
+
+@lru_cache(maxsize=1)
+def get_security_manager():
+    """
+    Returns a singleton instance of the SecurityManager.
+    """
+    return SecurityManager()

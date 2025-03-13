@@ -15,10 +15,10 @@ from contextlib import contextmanager
 from sqlalchemy.pool import QueuePool
 
 # Remove unused imports
-from app.core.config_utils import config  # Import the config object
+from app.core.card_utils import config  # Import the config object
 
 # Get the database URL from the environment or use a default
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./test.db")
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./smartcard.db")
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -64,7 +64,7 @@ class User(Base):
     """
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     username = Column(String(64), unique=True, nullable=False, index=True)
     password = Column(String(256), nullable=False)  # Store hashed passwords
     email = Column(String(120), unique=True, nullable=True)
@@ -83,12 +83,13 @@ class Card(Base):
     """
     __tablename__ = 'cards'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     atr = Column(String(128), unique=True, nullable=False, index=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     registered_at = Column(DateTime, default=datetime.utcnow)
     is_blocked = Column(Boolean, default=False)
     last_used = Column(DateTime, nullable=True)
+    status = Column(String, default="inactive")
 
     # Relationship with user
     user = relationship("User", back_populates="cards")

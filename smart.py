@@ -1,30 +1,78 @@
+import os
 import sys
-import os
-
-# Add the virtual environment's site-packages directory to the Python path
-venv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "venv", "lib", "site-packages")
-print(f"venv_path: {venv_path}")  # Print the venv_path for verification
-sys.path.insert(0, venv_path)
-
-print(f"Python path: {sys.path}")  # Print the Python path for verification
-
-import os
 import logging
+
+# Adjust Python path
+venv_path = os.path.join(os.getcwd(), 'venv', 'lib', 'site-packages')
+python_path = [venv_path] + sys.path
+sys.path = list(set(python_path))  # Remove duplicates by converting to a set
+
+logger = logging.getLogger('app')
+logger.setLevel(logging.DEBUG)  # Set the minimum log level
+
+# Create a console handler
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# Create a formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(ch)
+
+logger.debug(f"venv_path: {venv_path}")
+logger.debug(f"Python path: {sys.path}")
+
+try:
+    from app.api import card_routes  # Import the card routes
+    from app.api import auth_routes
+    # from app.api import config_routes # Import config routes - REMOVED
+except ImportError as e:
+    logger.error(f"Failed to import routes: {e}")
+    print(f"Error: {e}. Ensure 'routes.py' exists and has a router named 'router'. Also, check dependencies.")
+    sys.exit(1)
+
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import argparse
 import uvicorn
-from app.api import card_routes  # Import the card routes
-from app.api import config_routes # Import config routes
-from app.api import logs_routes # Import logs routes
-from app.core.card_manager import card_manager # Import card manager
-from app.core.config_utils import config # Import config
-from app.db import create_db_and_tables
+# from app.api import logs_routes # Import logs routes - REMOVED
+from app.core.card_manager import card_manager  # Import card manager
+from app.core.card_utils import config  # Import config
+from app.db import init_db
+from contextlib import asynccontextmanager
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Initialize security manager outside lifespan
+security_manager = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global security_manager
+    # Startup event
+    logger.info("Starting up the application...")
+    try:
+        # Initialize database
+        init_db()
+        logger.info("Database initialized successfully.")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+
+    # Initialize SecurityManager here, after env vars are loaded
+    from app.security_manager import SecurityManager, get_security_manager  # Use get_security_manager instead
+    security_manager = get_security_manager()
+
+    # Persist key if it was generated
+    if os.environ.get("SMARTCARD_ENCRYPTION_KEY") is None:
+        security_manager.persist_key()
+
+    yield
+
+    # Shutdown event
+    logger.info("Shutting down the application...")
+    # Perform cleanup tasks here
+    logger.info("Application shutdown completed.")
 
 app = FastAPI(
     title="Smart Card Manager API",
@@ -32,13 +80,15 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
-app.include_router(card_routes.router, prefix="/cards", tags=["cards"]) # Include card routes
-app.include_router(config_routes.router, prefix="/config", tags=["config"]) # Include config routes
-app.include_router(logs_routes.router, prefix="/logs", tags=["logs"]) # Include logs routes
+# app.include_router(logs_routes.router, prefix="/logs", tags=["logs"]) # Include logs routes - REMOVED
+app.include_router(card_routes.router, prefix="/cards", tags=["cards"])  # Include card routes
+app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])  # Include auth routes
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Dependency to simulate database interaction
 async def fake_dependency():
@@ -52,6 +102,7 @@ async def fake_dependency():
             detail=f"Database dependency failed: {e}",
         )
 
+
 @app.get("/", tags=["root"])
 async def read_root(dependency=Depends(fake_dependency)):
     try:
@@ -60,29 +111,23 @@ async def read_root(dependency=Depends(fake_dependency)):
         logger.exception("Error in read_root")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
     return {"status": "ok"}
+
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     logger.warning(f"HTTPException: {exc.status_code} - {exc.detail}")
     return JSONResponse(status_code=exc.status_code, content={"message": exc.detail})
 
+
 @app.exception_handler(Exception)
 async def generic_exception_handler(request, exc):
     logger.error(f"Generic Exception: {type(exc).__name__} - {exc}")
-    return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Starting up the application...")
-    # Initialize the card manager on startup
-    await card_manager.initialize()
-    # Create database tables
-    create_db_and_tables()
-    logger.info("Application startup completed.")
+    return JSONResponse(status_code=500, content={"message": exc.detail})
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Smart Card Manager API")
