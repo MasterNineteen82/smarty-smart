@@ -19812,3 +19812,266 @@ To https://github.com/MasterNineteen82/smarty-smart
 
 Update started at: 2025-03-13 20:53:00.547073
 Update completed successfully at: 2025-03-13 20:53:01.204967
+2025-03-13 21:22:51,906 - INFO - 
+🔄 Starting Git Auto-Update...
+2025-03-13 21:22:53,484 - WARNING - ⚠️ Minor issue (stderr): git add .
+warning: in the working copy of 'venv/Lib/site-packages/dateutil/_version.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi/security/oauth2.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi/utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/psycopg2/errorcodes.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/_exception_handler.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/_utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/applications.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/authentication.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/background.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/concurrency.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/datastructures.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/endpoints.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/exceptions.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/formparsers.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/middleware/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/requests.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/responses.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/routing.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/schemas.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/staticfiles.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/status.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/templating.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/testclient.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/types.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette/websockets.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/SQLAlchemy-2.0.25.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/SQLAlchemy-2.0.25.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/SQLAlchemy-2.0.25.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles-23.2.1.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles-23.2.1.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles-23.2.1.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles-23.2.1.dist-info/licenses/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles-23.2.1.dist-info/licenses/NOTICE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/base.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/os.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/ospath.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/threadpool/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/threadpool/binary.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/threadpool/text.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/aiofiles/threadpool/utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/asyncpg-0.29.0.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/asyncpg-0.29.0.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/asyncpg-0.29.0.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi-0.109.0.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi-0.109.0.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi-0.109.0.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/fastapi-0.109.0.dist-info/licenses/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/top_level.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/zip-safe', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette-0.35.1.dist-info/INSTALLER', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette-0.35.1.dist-info/METADATA', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette-0.35.1.dist-info/WHEEL', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'venv/Lib/site-packages/starlette-0.35.1.dist-info/licenses/LICENSE.md', LF will be replaced by CRLF the next time Git touches it
+
+2025-03-13 21:22:54,058 - INFO - ✅ git commit -m "Auto-update: 2025-03-13 21:22:53"
+[main a3696d2] Auto-update: 2025-03-13 21:22:53
+ 700 files changed, 25571 insertions(+), 2907 deletions(-)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/INSTALLER (100%)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/LICENSE (100%)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/METADATA (99%)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/RECORD (69%)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/REQUESTED (100%)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/WHEEL (100%)
+ rename venv/Lib/site-packages/{SQLAlchemy-2.0.27.dist-info => SQLAlchemy-2.0.25.dist-info}/top_level.txt (100%)
+ rename venv/Lib/site-packages/{fastapi-0.109.2.dist-info => aiofiles-23.2.1.dist-info}/INSTALLER (100%)
+ create mode 100644 venv/Lib/site-packages/aiofiles-23.2.1.dist-info/METADATA
+ create mode 100644 venv/Lib/site-packages/aiofiles-23.2.1.dist-info/RECORD
+ rename venv/Lib/site-packages/{fastapi-0.109.2.dist-info => aiofiles-23.2.1.dist-info}/REQUESTED (100%)
+ rename venv/Lib/site-packages/{fastapi-0.109.2.dist-info => aiofiles-23.2.1.dist-info}/WHEEL (67%)
+ create mode 100644 venv/Lib/site-packages/aiofiles-23.2.1.dist-info/licenses/LICENSE
+ create mode 100644 venv/Lib/site-packages/aiofiles-23.2.1.dist-info/licenses/NOTICE
+ create mode 100644 venv/Lib/site-packages/aiofiles/__init__.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/__pycache__/base.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/__pycache__/os.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/__pycache__/ospath.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/base.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/os.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/ospath.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/tempfile/__init__.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/tempfile/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/tempfile/__pycache__/temptypes.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/tempfile/temptypes.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/__init__.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/__pycache__/binary.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/__pycache__/text.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/__pycache__/utils.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/binary.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/text.py
+ create mode 100644 venv/Lib/site-packages/aiofiles/threadpool/utils.py
+ create mode 100644 venv/Lib/site-packages/asyncpg-0.29.0.dist-info/AUTHORS
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => asyncpg-0.29.0.dist-info}/INSTALLER (100%)
+ create mode 100644 venv/Lib/site-packages/asyncpg-0.29.0.dist-info/LICENSE
+ create mode 100644 venv/Lib/site-packages/asyncpg-0.29.0.dist-info/METADATA
+ create mode 100644 venv/Lib/site-packages/asyncpg-0.29.0.dist-info/RECORD
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => asyncpg-0.29.0.dist-info}/REQUESTED (100%)
+ create mode 100644 venv/Lib/site-packages/asyncpg-0.29.0.dist-info/WHEEL
+ create mode 100644 venv/Lib/site-packages/asyncpg-0.29.0.dist-info/top_level.txt
+ create mode 100644 venv/Lib/site-packages/asyncpg/__init__.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/_asyncio_compat.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/_version.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/cluster.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/compat.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/connect_utils.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/connection.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/connresource.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/cursor.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/introspection.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/pool.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/prepared_stmt.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/serverversion.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/transaction.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/types.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/__pycache__/utils.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/_asyncio_compat.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/_testbase/__init__.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/_testbase/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/_testbase/__pycache__/fuzzer.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/_testbase/fuzzer.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/_version.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/cluster.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/compat.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/connect_utils.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/connection.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/connresource.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/cursor.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/exceptions/__init__.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/exceptions/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/exceptions/__pycache__/_base.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/exceptions/_base.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/introspection.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/__init__.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/__init__.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/__pycache__/types.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/buffer.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/buffer.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/__init__.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/bits.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/bytea.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/context.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/datetime.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/float.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/geometry.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/hstore.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/int.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/json.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/jsonpath.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/misc.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/network.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/numeric.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/pg_snapshot.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/text.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/tid.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/codecs/uuid.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/consts.pxi
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/cpythonx.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/debug.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/frb.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/frb.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/hton.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/pgproto.cp310-win_amd64.pyd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/pgproto.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/pgproto.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/tohex.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/types.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/pgproto/uuid.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/pool.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/prepared_stmt.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/__init__.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/__init__.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/__pycache__/__init__.cpython-310.pyc
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/array.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/base.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/base.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/pgproto.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/range.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/record.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/codecs/textutils.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/consts.pxi
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/coreproto.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/coreproto.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/cpythonx.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/encodings.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/pgtypes.pxi
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/prepared_stmt.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/prepared_stmt.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/protocol.cp310-win_amd64.pyd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/protocol.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/protocol.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/record/__init__.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/scram.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/scram.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/settings.pxd
+ create mode 100644 venv/Lib/site-packages/asyncpg/protocol/settings.pyx
+ create mode 100644 venv/Lib/site-packages/asyncpg/serverversion.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/transaction.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/types.py
+ create mode 100644 venv/Lib/site-packages/asyncpg/utils.py
+ rename venv/Lib/site-packages/{starlette-0.36.3.dist-info => fastapi-0.109.0.dist-info}/INSTALLER (100%)
+ rename venv/Lib/site-packages/{fastapi-0.109.2.dist-info => fastapi-0.109.0.dist-info}/METADATA (98%)
+ rename venv/Lib/site-packages/{fastapi-0.109.2.dist-info => fastapi-0.109.0.dist-info}/RECORD (89%)
+ create mode 100644 venv/Lib/site-packages/fastapi-0.109.0.dist-info/REQUESTED
+ rename venv/Lib/site-packages/{starlette-0.36.3.dist-info => fastapi-0.109.0.dist-info}/WHEEL (67%)
+ rename venv/Lib/site-packages/{fastapi-0.109.2.dist-info => fastapi-0.109.0.dist-info}/licenses/LICENSE (100%)
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/INSTALLER
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/LICENSE
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/METADATA
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/RECORD
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/REQUESTED
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/WHEEL
+ create mode 100644 venv/Lib/site-packages/psycopg2_binary-2.9.9.dist-info/top_level.txt
+ create mode 100644 venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/INSTALLER
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => python_dateutil-2.9.0.post0.dist-info}/LICENSE (100%)
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => python_dateutil-2.9.0.post0.dist-info}/METADATA (99%)
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => python_dateutil-2.9.0.post0.dist-info}/RECORD (70%)
+ create mode 100644 venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/REQUESTED
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => python_dateutil-2.9.0.post0.dist-info}/WHEEL (100%)
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => python_dateutil-2.9.0.post0.dist-info}/top_level.txt (100%)
+ rename venv/Lib/site-packages/{python_dateutil-2.9.0.dist-info => python_dateutil-2.9.0.post0.dist-info}/zip-safe (100%)
+ create mode 100644 venv/Lib/site-packages/starlette-0.35.1.dist-info/INSTALLER
+ rename venv/Lib/site-packages/{starlette-0.36.3.dist-info => starlette-0.35.1.dist-info}/METADATA (92%)
+ rename venv/Lib/site-packages/{starlette-0.36.3.dist-info => starlette-0.35.1.dist-info}/RECORD (58%)
+ create mode 100644 venv/Lib/site-packages/starlette-0.35.1.dist-info/WHEEL
+ rename venv/Lib/site-packages/{starlette-0.36.3.dist-info => starlette-0.35.1.dist-info}/licenses/LICENSE.md (100%)
+
+2025-03-13 21:22:54,736 - INFO - ✅ git pull origin main
+Already up to date.
+
+2025-03-13 21:22:54,737 - WARNING - ⚠️ Minor issue (stderr): git pull origin main
+From https://github.com/MasterNineteen82/smarty-smart
+ * branch            main       -> FETCH_HEAD
+
+2025-03-13 21:23:04,335 - WARNING - ⚠️ Minor issue (stderr): git push origin main
+remote: 
+remote: GitHub found 10 vulnerabilities on MasterNineteen82/smarty-smart's default branch (1 critical, 2 high, 5 moderate, 2 low). To find out more, visit:        
+remote:      https://github.com/MasterNineteen82/smarty-smart/security/dependabot        
+remote: 
+To https://github.com/MasterNineteen82/smarty-smart
+   457c643..a3696d2  main -> main
+
+2025-03-13 21:23:04,335 - INFO - 🚀 Git update completed successfully!
+
+Update started at: 2025-03-13 21:23:04.335931
+Update completed successfully at: 2025-03-13 21:23:05.024283

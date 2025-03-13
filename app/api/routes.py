@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from smartcard.System import readers
 from smartcard.scard import *  # noqa - Import all names from smartcard.scard
 
-from card_utils import (
+from app.core.card_utils import (
     safe_globals, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
     detect_card_type, is_card_registered, detect_reader_type
 )

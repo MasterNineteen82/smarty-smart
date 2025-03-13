@@ -14,7 +14,7 @@ from datetime import datetime
 from contextlib import contextmanager
 from sqlalchemy.pool import QueuePool
 
-from app.config import DATABASE_URL, DB_POOL_SIZE, DB_MAX_OVERFLOW
+# Remove unused imports
 from app.core.config_utils import config  # Import the config object
 
 # Get the database URL from the environment or use a default
@@ -70,7 +70,7 @@ class User(Base):
     email = Column(String(120), unique=True, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     last_login = Column(DateTime, nullable=True)
-    
+
     # Relationship with cards
     cards = relationship("Card", back_populates="user", cascade="all, delete-orphan")
 
@@ -89,7 +89,7 @@ class Card(Base):
     registered_at = Column(DateTime, default=datetime.utcnow)
     is_blocked = Column(Boolean, default=False)
     last_used = Column(DateTime, nullable=True)
-    
+
     # Relationship with user
     user = relationship("User", back_populates="cards")
 

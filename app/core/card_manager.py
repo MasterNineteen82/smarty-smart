@@ -85,7 +85,6 @@ class CardManager:
         self.last_operation = None
         self.last_operation_time = None
         self.recovery_mode = False
-        self.registered_cards = {}  # In-memory storage for registered cards
     
     async def handle_operation(self, operation_func, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
         """Execute card operation with retry logic and error handling"""
@@ -137,54 +136,66 @@ class CardManager:
         except Exception as e:
             logger.error(f"Lifecycle transition failed: {e}")
             return False, f"Lifecycle transition encountered an error: {str(e)}", None
-    def register_new_card(self, name: str, user_id: str, 
-                         custom_data: Optional[Dict] = None) -> Tuple[bool, str]:
-        """Register a new card with edge case handling"""
-        try:
-            if is_card_registered():
-                return False, "Card is already registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.UNKNOWN, CardStatus.CONNECTED, CardStatus.UNREGISTERED],
-                CardStatus.REGISTERED,
-                register_card, name, user_id, custom_data
-            )
-            return success, message
-        except Exception as e:
-            logger.error(f"Register new card failed: {e}")
-            return False, f"Register new card encountered an error: {str(e)}"
     
-    def unregister_existing_card(self) -> Tuple[bool, str]:
-        """Unregister a card with edge case handling"""
+    def register_new_card(self, atr: str, user_id: str) -> Tuple[bool, str]:
+        """Register a new card."""
+        
+        # Placeholder for session_scope.  Replace with your actual implementation.
+        from contextlib import contextmanager
+        @contextmanager
+        def session_scope():
+            # Replace with your actual database session logic
+            yield None  # Dummy value for now
+        
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.REGISTERED, CardStatus.ACTIVE, CardStatus.INACTIVE],
-                CardStatus.UNREGISTERED,
-                unregister_card
-            )
-            return success, message
+            with session_scope() as db:
+                # Check if card already exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if existing_card:
+                    return False, "Card already registered"
+
+                # Create new card
+                new_card = Card(atr=atr, user_id=user_id)
+                db.add(new_card)
+                db.commit()
+                return True, "Card registered successfully"
         except Exception as e:
-            logger.error(f"Unregister existing card failed: {e}")
-            return False, f"Unregister existing card encountered an error: {str(e)}"
+            logger.error(f"Error registering card: {e}")
+            return False, f"Error registering card: {str(e)}"
     
-    def activate_inactive_card(self) -> Tuple[bool, str]:
-        """Activate a card with edge case handling"""
+    def unregister_existing_card(self, atr: str) -> Tuple[bool, str]:
+        """Unregister a card."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.REGISTERED, CardStatus.INACTIVE],
-                CardStatus.ACTIVE,
-                activate_card
-            )
-            return success, message
+            with session_scope() as db:
+                # Check if card exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if not existing_card:
+                    return False, "Card not registered"
+
+                # Delete card
+                db.delete(existing_card)
+                db.commit()
+                return True, "Card unregistered successfully"
         except Exception as e:
-            logger.error(f"Activate inactive card failed: {e}")
-            return False, f"Activate inactive card encountered an error: {str(e)}"
+            logger.error(f"Error unregistering card: {e}")
+            return False, f"Error unregistering card: {str(e)}"
+    
+    def activate_inactive_card(self, atr: str) -> Tuple[bool, str]:
+        """Activate a card."""
+        try:
+            with session_scope() as db:
+                # Check if card exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if not existing_card:
+                    return False, "Card not registered"
+
+                # Activate card
+                existing_card.is_blocked = False
+                db.commit()
+                return True, "Card activated successfully"
+        except Exception as e:
+            logger.error(f"Error activating card: {e}")
+            return False, f"Error activating card: {str(e)}"
     
     def deactivate_active_card(self) -> Tuple[bool, str]:
         """Deactivate a card with edge case handling"""
@@ -202,21 +213,22 @@ class CardManager:
             logger.error(f"Deactivate active card failed: {e}")
             return False, f"Deactivate active card encountered an error: {str(e)}"
     
-    def block_active_card(self) -> Tuple[bool, str]:
-        """Block a card with edge case handling"""
+    def block_active_card(self, atr: str) -> Tuple[bool, str]:
+        """Block a card."""
         try:
-            if not is_card_registered():
-                return False, "Card is not registered"
-            
-            success, message, _ = self.lifecycle_transition(
-                [CardStatus.ACTIVE, CardStatus.INACTIVE, CardStatus.REGISTERED],
-                CardStatus.BLOCKED,
-                block_card
-            )
-            return success, message
+            with session_scope() as db:
+                # Check if card exists
+                existing_card = db.query(Card).filter(Card.atr == atr).first()
+                if not existing_card:
+                    return False, "Card not registered"
+
+                # Block card
+                existing_card.is_blocked = True
+                db.commit()
+                return True, "Card blocked successfully"
         except Exception as e:
-            logger.error(f"Block active card failed: {e}")
-            return False, f"Block active card encountered an error: {str(e)}"
+            logger.error(f"Error blocking card: {e}")
+            return False, f"Error blocking card: {str(e)}"
     
     def unblock_blocked_card(self) -> Tuple[bool, str]:
         """Unblock a card with edge case handling"""

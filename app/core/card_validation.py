@@ -5,59 +5,47 @@ This module validates smart cards by checking their ATR against a database of kn
 """
 
 import logging
-from typing import Dict, Optional, Union
-from sqlalchemy.exc import SQLAlchemyError
-from app.db import session_scope, Card
-from app.utils.exceptions import CardError, InvalidInputError
+from typing import Optional
 
+from app.db import session_scope, Card, Session  # Import Session
+from sqlalchemy.orm import Session
+
+# Configure logging
 logger = logging.getLogger(__name__)
 
 class CardValidator:
     """
-    Validates smart cards by checking their ATR against a database of known cards.
+    Validates smart card data against predefined rules and database records.
     """
-
-    async def validate_card(self, atr: str) -> Dict[str, Union[bool, Optional[str]]]:
+    def __init__(self):
         """
-        Validates a smart card by checking its ATR against a database of known cards.
+        Initializes the CardValidator with necessary dependencies.
+        """
+        pass
+
+    async def validate_card(self, atr: str, db: Session) -> Optional[Card]:
+        """
+        Validates if a card with the given ATR exists in the database.
 
         Args:
-            atr: The ATR of the smart card to validate.
+            atr (str): The Answer To Reset (ATR) string of the card.
+            db (Session): The database session.
 
         Returns:
-            Dictionary containing validation result and optional card information.
-
-        Raises:
-            InvalidInputError: If the ATR is None or empty.
-            CardError: If an error occurs during card validation.
+            Optional[Card]: The Card object if found, otherwise None.
         """
-        # Input validation
-        if not atr:
-            logger.error("ATR cannot be None or empty")
-            raise InvalidInputError("ATR cannot be None or empty")
-            
         try:
-            async with session_scope() as session:
-                card = await session.query(Card).filter_by(atr=atr).first()
-                if card:
-                    logger.info(f"Card with ATR {atr} is valid")
-                    return {
-                        "valid": True,
-                        "card_type": card.type,
-                        "card_id": card.id
-                    }
-                else:
-                    logger.warning(f"Card with ATR {atr} is not recognized in the system")
-                    return {
-                        "valid": False,
-                        "reason": "Card not recognized"
-                    }
-        except SQLAlchemyError as e:
-            logger.error(f"Database error during card validation: {str(e)}")
-            raise CardError(f"Database error during card validation: {str(e)}")
+            # Query the database for a card with the given ATR
+            card = db.query(Card).filter(Card.atr == atr).first()
+            if card:
+                logger.info(f"Card with ATR '{atr}' found in the database.")
+                return card
+            else:
+                logger.warning(f"Card with ATR '{atr}' not found in the database.")
+                return None
         except Exception as e:
-            logger.error(f"Unexpected error validating card: {str(e)}")
-            raise CardError(f"Unexpected error validating card: {str(e)}")
+            logger.error(f"Error validating card: {e}")
+            return None
 
-# Singleton instance for application-wide use
+# Initialize CardValidator
 card_validator = CardValidator()
