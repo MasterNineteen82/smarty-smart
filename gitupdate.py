@@ -68,5 +68,31 @@ def update_git_repo():
     except Exception as e:
         log_message(f"❌ Error during git update: {e}", logging.ERROR)
 
+def update_project():
+    """Updates the project using Git."""
+
+    try:
+        # Define paths
+        log_file_path = "gitupdate.log"
+
+        # Log the start of the update
+        with open(log_file_path, "a") as log_file:
+            log_file.write(f"Update started at: {datetime.datetime.now()}\n")
+
+        # Run git pull
+        subprocess.run(["git", "pull"], check=True, capture_output=True, text=True)
+
+        # Log the successful update
+        with open(log_file_path, "a") as log_file:
+            log_file.write(f"Update completed successfully at: {datetime.datetime.now()}\n")
+
+        print("Project updated successfully.")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error updating project: {e}")
+        with open(log_file_path, "a") as log_file:
+            log_file.write(f"Error updating project: {e}\n")
+
 if __name__ == "__main__":
     update_git_repo()
+    update_project()

@@ -212,6 +212,30 @@ def run_gitupdate_now():
         log_message(f"❌ An unexpected error occurred during the initial Git update: {e}", logging.ERROR)
         sys.exit(1)
 
+def setup_git():
+    """Sets up the Git environment for the project."""
+
+    try:
+        # Check if Git is installed
+        subprocess.run(["git", "--version"], check=True, capture_output=True)
+
+        # Initialize Git repository if it doesn't exist
+        if not os.path.exists(".git"):
+            subprocess.run(["git", "init"], check=True)
+
+        # Set up pre-commit hook (example)
+        hook_path = os.path.join(".git", "hooks", "pre-commit")
+        with open(hook_path, "w") as f:
+            f.write("#!/bin/sh\npython " + SCRIPT_PATH + "\n")
+        os.chmod(hook_path, 0o755)
+
+        print("Git environment set up successfully.")
+
+    except FileNotFoundError:
+        print("Git is not installed. Please install Git and try again.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error setting up Git environment: {e}")
+
 if __name__ == "__main__":
     log_message("🔄 Starting Setup for Automated Git Updates...\n", logging.INFO)
 
@@ -234,6 +258,7 @@ if __name__ == "__main__":
     create_bat_file()
     schedule_task()
     run_gitupdate_now()
+    setup_git()
 
     log_message(f"\n✅ Setup Complete! Git will auto-update every {UPDATE_INTERVAL_MINUTES} minutes.", logging.INFO)
     sys.exit(0)

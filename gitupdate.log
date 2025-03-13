@@ -124,3 +124,35 @@ To https://github.com/MasterNineteen82/smarty-smart
 
 2025-03-13 08:52:59,053 - INFO - 🚀 Git update completed successfully!
 
+2025-03-13 09:22:52,777 - INFO - 
+🔄 Starting Git Auto-Update...
+2025-03-13 09:22:53,056 - INFO - ✅ git commit -m "Auto-update: 2025-03-13 09:22:52"
+[main c945589] Auto-update: 2025-03-13 09:22:52
+ 14 files changed, 79 insertions(+)
+ rename __init__.py => app/__init__.py (100%)
+ rename routes.py => app/api/routes.py (100%)
+ rename cli.py => app/cli.py (100%)
+ rename config.py => app/config.py (100%)
+ rename config_manager.py => app/config_manager.py (100%)
+ rename card_manager.py => app/core/card_manager.py (100%)
+ rename card_utils.py => app/core/card_utils.py (100%)
+ rename create_favicon.py => app/create_favicon.py (100%)
+ rename server_utils.py => app/server_utils.py (100%)
+ rename smart.py => app/smart.py (100%)
+ rename UserRequirements.md => documents/UserRequirements.md (100%)
+ rename startup.ipynb => documents/startup.ipynb (100%)
+ create mode 100644 reorg.ps1
+
+2025-03-13 09:22:53,737 - INFO - ✅ git pull origin main
+Already up to date.
+
+2025-03-13 09:22:53,737 - WARNING - ⚠️ Minor issue (stderr): git pull origin main
+From https://github.com/MasterNineteen82/smarty-smart
+ * branch            main       -> FETCH_HEAD
+
+2025-03-13 09:25:10,311 - WARNING - ⚠️ Minor issue (stderr): git push origin main
+To https://github.com/MasterNineteen82/smarty-smart
+   ccab9be..c945589  main -> main
+
+2025-03-13 09:25:10,311 - INFO - 🚀 Git update completed successfully!
+
