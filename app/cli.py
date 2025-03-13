@@ -7,16 +7,17 @@ with consistent error handling and user feedback.
 
 import logging
 import sys
-from typing import Optional
+from typing import Optional, List, Tuple, Union
 
 import click
 from app.db import init_db
 from app.core.card_manager import card_manager
 from app.core.nfc import nfc_manager
 from app.core.exceptions import (
-    CardRegistrationError, CardNotFoundError, 
+    CardRegistrationError, CardNotFoundError,
     CardOperationError, NFCOperationError,
-    DatabaseError
+    DatabaseError, InvalidArgumentError,
+    DeviceNotFoundError  # New exception
 )
 from app.api.routes import bp as routes_bp
 
@@ -26,6 +27,12 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger('smartcard-cli')
+
+def handle_error(e: Exception, message: str):
+    """Handles exceptions, logs the error, and prints a user-friendly message."""
+    logger.error(f"{message}: {e}")
+    click.echo(f"Error: {message}: {e}", err=True)
+    sys.exit(1)
 
 @click.group()
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
@@ -48,9 +55,7 @@ def initdb():
         click.echo("Database initialized successfully.")
         logger.info("Database initialized")
     except DatabaseError as e:
-        logger.error(f"Database initialization failed: {e}")
-        click.echo(f"Error initializing database: {e}", err=True)
-        sys.exit(1)
+        handle_error(e, "Database initialization failed")
 
 @cli.command()
 def list_cards():
@@ -67,8 +72,7 @@ def list_cards():
             blocked = " [BLOCKED]" if card.is_blocked else ""
             click.echo(f"ID: {card.id} | ATR: {card.atr} | User: {card.user_id} | Status: {status}{blocked}")
     except Exception as e:
-        logger.error(f"Error listing cards: {e}")
-        click.echo(f"Error retrieving card list: {e}", err=True)
+        handle_error(e, "Error listing cards")
 
 @cli.command()
 @click.argument('atr')
@@ -81,18 +85,20 @@ def register_card(atr, user_id, activate):
     USER_ID: The ID of the user to associate with this card
     """
     try:
+        # Validate inputs
+        if not atr:
+            raise InvalidArgumentError("ATR cannot be empty.")
+        if not user_id:
+            raise InvalidArgumentError("User ID cannot be empty.")
+            
         card = card_manager.register_card(atr, user_id)
         click.echo(f"Card with ATR {atr} registered to user {user_id} (Card ID: {card.id}).")
         
         if activate:
             card_manager.activate_card(atr)
-            click.echo(f"Card activated successfully.")
-    except CardRegistrationError as e:
-        logger.error(f"Card registration failed: {e}")
-        click.echo(f"Error registering card: {e}", err=True)
-    except CardOperationError as e:
-        logger.error(f"Card activation failed: {e}")
-        click.echo(f"Card registered but activation failed: {e}", err=True)
+            click.echo("Card activated successfully.")
+    except (CardRegistrationError, CardOperationError, InvalidArgumentError) as e:
+        handle_error(e, "Card registration/activation failed")
 
 @cli.command()
 @click.argument('card_identifier')
@@ -105,16 +111,16 @@ def block_card(card_identifier, by_id):
     """
     try:
         if by_id:
-            card = card_manager.block_card_by_id(int(card_identifier))
+            try:
+                card_id = int(card_identifier)
+            except ValueError:
+                raise InvalidArgumentError("Card ID must be an integer.")
+            card = card_manager.block_card_by_id(card_id)
         else:
             card = card_manager.block_card(card_identifier)
         click.echo(f"Card {card_identifier} blocked successfully.")
-    except CardNotFoundError as e:
-        logger.error(f"Card not found: {e}")
-        click.echo(f"Error: {e}", err=True)
-    except CardOperationError as e:
-        logger.error(f"Block operation failed: {e}")
-        click.echo(f"Error blocking card: {e}", err=True)
+    except (CardNotFoundError, CardOperationError, InvalidArgumentError) as e:
+        handle_error(e, "Blocking card failed")
 
 @cli.command()
 @click.argument('card_identifier')
@@ -126,16 +132,16 @@ def activate_card(card_identifier, by_id):
     """
     try:
         if by_id:
-            card = card_manager.activate_card_by_id(int(card_identifier))
+            try:
+                card_id = int(card_identifier)
+            except ValueError:
+                raise InvalidArgumentError("Card ID must be an integer.")
+            card = card_manager.activate_card_by_id(card_id)
         else:
-            card = card_manager.activate_card(card_identifier)
+            card_manager.activate_card(card_identifier)
         click.echo(f"Card {card_identifier} activated successfully.")
-    except CardNotFoundError as e:
-        logger.error(f"Card not found: {e}")
-        click.echo(f"Error: {e}", err=True)
-    except CardOperationError as e:
-        logger.error(f"Activation operation failed: {e}")
-        click.echo(f"Error activating card: {e}", err=True)
+    except (CardNotFoundError, CardOperationError, InvalidArgumentError) as e:
+        handle_error(e, "Activating card failed")
 
 @cli.command()
 @click.argument('card_identifier')
@@ -147,16 +153,16 @@ def deactivate_card(card_identifier, by_id):
     """
     try:
         if by_id:
-            card = card_manager.deactivate_card_by_id(int(card_identifier))
+            try:
+                card_id = int(card_identifier)
+            except ValueError:
+                raise InvalidArgumentError("Card ID must be an integer.")
+            card = card_manager.deactivate_card_by_id(card_id)
         else:
             card = card_manager.deactivate_card(card_identifier)
         click.echo(f"Card {card_identifier} deactivated successfully.")
-    except CardNotFoundError as e:
-        logger.error(f"Card not found: {e}")
-        click.echo(f"Error: {e}", err=True)
-    except CardOperationError as e:
-        logger.error(f"Deactivation operation failed: {e}")
-        click.echo(f"Error deactivating card: {e}", err=True)
+    except (CardNotFoundError, CardOperationError, InvalidArgumentError) as e:
+        handle_error(e, "Deactivating card failed")
 
 @cli.command()
 @click.argument('card_id', type=int)
@@ -167,17 +173,17 @@ def read_nfc(card_id, raw):
     CARD_ID: The ID of the NFC card to read from
     """
     try:
+        if not isinstance(card_id, int):
+            raise InvalidArgumentError("Card ID must be an integer.")
+        if card_id <= 0:
+             raise InvalidArgumentError("Card ID must be a positive integer.")
         data = nfc_manager.read_nfc_data(card_id)
         if raw:
             click.echo(data)
         else:
             click.echo(f"NFC data from card {card_id}: {data}")
-    except CardNotFoundError as e:
-        logger.error(f"NFC card not found: {e}")
-        click.echo(f"Error: {e}", err=True)
-    except NFCOperationError as e:
-        logger.error(f"NFC read operation failed: {e}")
-        click.echo(f"Error reading NFC data: {e}", err=True)
+    except (CardNotFoundError, NFCOperationError, InvalidArgumentError) as e:
+        handle_error(e, "Reading NFC data failed")
 
 @cli.command()
 @click.argument('card_id', type=int)
@@ -190,14 +196,16 @@ def write_nfc(card_id, data):
     DATA: The data string to write to the card
     """
     try:
+        if not isinstance(card_id, int):
+            raise InvalidArgumentError("Card ID must be an integer.")
+        if card_id <= 0:
+             raise InvalidArgumentError("Card ID must be a positive integer.")
+        if not data:
+            raise InvalidArgumentError("Data to write cannot be empty.")
         nfc_manager.write_nfc_data(card_id, data)
         click.echo(f"Data successfully written to NFC card {card_id}.")
-    except CardNotFoundError as e:
-        logger.error(f"NFC card not found: {e}")
-        click.echo(f"Error: {e}", err=True)
-    except NFCOperationError as e:
-        logger.error(f"NFC write operation failed: {e}")
-        click.echo(f"Error writing NFC data: {e}", err=True)
+    except (CardNotFoundError, NFCOperationError, InvalidArgumentError) as e:
+        handle_error(e, "Writing NFC data failed")
 
 @cli.command()
 def scan_devices():
@@ -211,9 +219,10 @@ def scan_devices():
         click.echo("Detected devices:")
         for i, device in enumerate(devices, 1):
             click.echo(f"{i}. {device.name} ({device.device_type})")
+    except DeviceNotFoundError as e:
+        handle_error(e, "No devices found")
     except NFCOperationError as e:
-        logger.error(f"Device scanning failed: {e}")
-        click.echo(f"Error scanning for devices: {e}", err=True)
+        handle_error(e, "Device scanning failed")
 
 if __name__ == '__main__':
     cli()
