@@ -1,0 +1,66 @@
+/* Styles for configuration manager */
+
+.settings-sidebar {
+    min-width: 200px;
+    border-right: 1px solid #dee2e6;
+}
+
+.config-row {
+    margin-bottom: 1rem;
+}
+
+.config-label {
+    font-weight: 500;
+}
+
+.config-value {
+    font-family: monospace;
+}
+
+.config-experimental {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+}
+
+.config-modified {
+    background-color: #d1e7dd;
+    border-left: 3px solid #198754;
+}
+
+.form-switch.config-wide {
+    padding-left: 2.5em;
+}
+
+#config-json-display {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.settings-nav {
+    position: sticky;
+    top: 1rem;
+}
+
+.tab-content {
+    padding-left: 1rem;
+}
+
+.path-input-group {
+    display: flex;
+}
+
+.path-input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.path-input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.setting-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}

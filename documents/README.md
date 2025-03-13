@@ -5,36 +5,37 @@ A comprehensive lifecycle management system for smart cards and NFC/RFID tags, w
 ## Features
 
 - **Card Connection & Discovery**
-    - Auto-detection of connected readers
-    - Connection to NFC/RFID cards with configurable timeouts
-    - Support for multiple concurrent readers
-    
+  - Auto-detection of connected readers
+  - Connection to NFC/RFID cards with configurable timeouts
+  - Support for multiple concurrent readers
+
 - **Card Identification**
-    - Automatic detection of card type and protocol
-    - Support for MIFARE Classic, Ultralight, DESFire, FeliCa, ISO cards
-    - Card UID/NUID extraction and validation
-    
+  - Automatic detection of card type and protocol
+  - Support for MIFARE Classic, Ultralight, DESFire, FeliCa, ISO cards
+  - Card UID/NUID extraction and validation
+
 - **Lifecycle Management**
-    - Registration with customizable metadata
-    - Activation/deactivation workflows with audit trail
-    - Block/unblock mechanisms with admin override
-    - Expiration management with configurable alerts
-    
+  - Registration with customizable metadata
+  - Activation/deactivation workflows with audit trail
+  - Block/unblock mechanisms with admin override
+  - Expiration management with configurable alerts
+
 - **Data Security**
-    - End-to-end encryption of stored card data
-    - Secure memory operations (read/write)
-    - PIN management with retry counters
-    - Secure deletion and disposal options
+  - End-to-end encryption of stored card data
+  - Secure memory operations (read/write)
+  - PIN management with retry counters
+  - Secure deletion and disposal options
 
 - **Administrative Functions**
-    - Backup & restore of card data with encryption
-    - Batch operations for multiple cards
-    - Recovery mode with elevated privileges
-    - Detailed audit logging
+  - Backup & restore of card data with encryption
+  - Batch operations for multiple cards
+  - Recovery mode with elevated privileges
+  - Detailed audit logging
 
 ## Supported Hardware
 
 ### Readers
+
 | Reader Model | Connection Type | Compatibility Level | Notes |
 |--------------|-----------------|---------------------|-------|
 | Cherry SmartTerminal ST | USB/Serial | Full | Preferred for security operations |
@@ -42,6 +43,7 @@ A comprehensive lifecycle management system for smart cards and NFC/RFID tags, w
 | Generic PC/SC readers | USB/Serial | Partial | Feature availability varies |
 
 ### Card Types
+
 | Card Family | Supported Types | Read Support | Write Support |
 |-------------|-----------------|--------------|---------------|
 | MIFARE Classic | 1K, 4K | Full | Full |
@@ -56,16 +58,16 @@ A comprehensive lifecycle management system for smart cards and NFC/RFID tags, w
 ### Prerequisites
 
 - **System Requirements**:
-    - Python 3.8+
-    - 100MB disk space
-    - Admin privileges for driver installation
+  - Python 3.8+
+  - 100MB disk space
+  - Admin privileges for driver installation
 
 - **Required Software**:
-    - PC/SC middleware:
-        - Windows: WinSCard (built-in)
-        - Linux: PCSC-Lite (`sudo apt-get install pcscd libpcsclite-dev`)
-        - macOS: PCSC-Lite (built-in)
-    - Reader-specific drivers
+  - PC/SC middleware:
+    - Windows: WinSCard (built-in)
+    - Linux: PCSC-Lite (`sudo apt-get install pcscd libpcsclite-dev`)
+    - macOS: PCSC-Lite (built-in)
+  - Reader-specific drivers
 
 ### Installation Methods
 
@@ -78,17 +80,20 @@ pip install smart-card-manager
 #### From Source
 
 1. Clone the repository:
+
      ```bash
      git clone https://github.com/username/smart-card-manager.git
      cd smart-card-manager
      ```
 
 2. Install dependencies:
+
      ```bash
      pip install -r requirements.txt
      ```
 
 3. Install the package:
+
      ```bash
      pip install -e .
      ```
@@ -97,9 +102,11 @@ pip install smart-card-manager
 
 1. Connect your smart card reader to your computer
 2. Launch the Smart Card Manager:
+
      ```bash
      smartcard-mgr
      ```
+
 3. The application will auto-detect available readers
 4. Place a card on the reader to begin operations
 
@@ -120,8 +127,6 @@ logging:
     level: "INFO"
     file: "smartcard.log"
 ```
-
-## Configuration
 
 The Smart Card Manager uses a centralized configuration system in `config.py`. You can customize the application behavior using:
 

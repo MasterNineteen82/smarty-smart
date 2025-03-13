@@ -1,44 +1,72 @@
 import os
 import subprocess
 import datetime
+import logging
 
-# Define your repository directory
-REPO_DIR = r"X:\Path\To\Your\Repo"  # Change this to your Git directory
-BRANCH = "main"  # Change if using a different branch
+# Configuration
+REPO_DIR = r'X:\smarty-smart'
+LOG_FILE = os.path.join(REPO_DIR, 'gitupdate.log')
+BRANCH = 'main'
+COMMIT_MESSAGE_PREFIX = "Auto-update"
+
+# Logging setup
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', encoding='utf-8')
+
+def log_message(message, level=logging.INFO):
+    logging.log(level, message)
 
 def run_git_command(command):
-    """Runs a Git command in the repository directory and prints the output."""
-    process = subprocess.run(command, shell=True, cwd=REPO_DIR, text=True, capture_output=True)
-    print(process.stdout)
-    if process.stderr:
-        print("Error:", process.stderr)
+    try:
+        log_message(f"Running: {command}", logging.DEBUG)
+        process = subprocess.run(command, shell=True, cwd=REPO_DIR, text=True, capture_output=True)
+
+        if process.returncode == 0:
+            if process.stdout:
+                log_message(f"✅ {command}\n{process.stdout}", logging.INFO)
+            if process.stderr:
+                log_message(f"⚠️ Minor issue (stderr): {command}\n{process.stderr}", logging.WARNING)
+        else:
+            log_message(f"❌ ERROR: {command} failed with return code {process.returncode}\nStderr: {process.stderr}\nStdout: {process.stdout}", logging.ERROR)
+            return False  # Indicate failure
+
+        return True  # Indicate success
+
+    except FileNotFoundError as e:
+        log_message(f"❌ FileNotFoundError running {command}: {str(e)}. Ensure Git is installed and in your system's PATH.", logging.CRITICAL)
+        return False
+    except subprocess.CalledProcessError as e:
+        log_message(f"❌ CalledProcessError running {command}: {str(e)}. Stderr: {e.stderr}, Stdout: {e.stdout}", logging.ERROR)
+        return False
+    except Exception as e:
+        log_message(f"❌ Exception running {command}: {str(e)}", logging.ERROR)
+        return False
 
 def update_git_repo():
-    """Executes the Git workflow: status, add, commit, pull, and push."""
-    print("\n🔄 Updating Git repository...\n")
+    log_message("\n🔄 Starting Git Auto-Update...", logging.INFO)
+    try:
+        # Check if there are any changes to commit
+        status_result = subprocess.run("git status --porcelain", shell=True, cwd=REPO_DIR, text=True, capture_output=True)
+        if status_result.stdout.strip():
+            run_git_command("git add .")
+            commit_message = f"{COMMIT_MESSAGE_PREFIX}: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            if not run_git_command(f'git commit -m "{commit_message}"'):
+                log_message("❌ Commit failed, halting update.", logging.WARNING)
+                return  # Stop if commit fails
+        else:
+            log_message("⚠️ No changes to commit.", logging.INFO)
 
-    # Step 1: Check Git Status
-    print("📌 Checking Git status...")
-    run_git_command("git status")
+        if not run_git_command(f"git pull origin {BRANCH}"):
+            log_message("❌ Pull failed, halting update.", logging.WARNING)
+            return
 
-    # Step 2: Add Changes
-    print("\n✅ Adding all changes...")
-    run_git_command("git add .")
+        if not run_git_command(f"git push origin {BRANCH}"):
+            log_message("❌ Push failed, halting update.", logging.WARNING)
+            return
 
-    # Step 3: Commit Changes with Timestamp
-    commit_message = f"Auto-update: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    print(f"\n📝 Committing changes with message: '{commit_message}'...")
-    run_git_command(f'git commit -m "{commit_message}"')
+        log_message("🚀 Git update completed successfully!\n", logging.INFO)
 
-    # Step 4: Pull Latest Changes to Avoid Conflicts
-    print("\n⬇️ Pulling latest changes from remote...")
-    run_git_command(f"git pull origin {BRANCH}")
-
-    # Step 5: Push Changes to GitHub
-    print("\n⬆️ Pushing changes to GitHub...")
-    run_git_command(f"git push origin {BRANCH}")
-
-    print("\n🚀 Git update completed successfully!")
+    except Exception as e:
+        log_message(f"❌ Error during git update: {e}", logging.ERROR)
 
 if __name__ == "__main__":
     update_git_repo()
