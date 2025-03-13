@@ -15,7 +15,7 @@ from app.core.card_utils import (
     register_card, unregister_card, activate_card, deactivate_card,
     block_card, unblock_card, backup_card_data, restore_card_data,
     secure_dispose_card, card_info, card_status, CardStatus,
-    CHERRY_ST_IDENTIFIER, ACR122U_IDENTIFIER
+    CHERRY_ST_IDENTIFIER, ACR122U_IDENTIFIER, delete_backup
 )
 
 class MockCardConnection:

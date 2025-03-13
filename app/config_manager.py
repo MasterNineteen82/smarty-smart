@@ -30,6 +30,7 @@ class ConfigManager:
         self.defaults: Dict[str, Dict[str, Any]] = {}
         self._setup_defaults()
         self.load()
+        self._setup_directories()
     
     def _resolve_config_path(self, config_file: str) -> str:
         """Determine the absolute path to the configuration file."""
@@ -144,37 +145,62 @@ class ConfigManager:
     
     def _ensure_directory_exists(self) -> None:
         """Ensure that the directory for the config file exists."""
-        dir_path = os.path.dirname(os.path.abspath(self.config_path))
-        os.makedirs(dir_path, exist_ok=True)
+        try:
+            dir_path = os.path.dirname(os.path.abspath(self.config_path))
+            os.makedirs(dir_path, exist_ok=True)
+        except OSError as e:
+            logger.error(f"Failed to create directory: {e}")
+        except Exception as e:
+            logger.exception(f"Unexpected error ensuring directory exists: {e}")
+
+    def _setup_directories(self) -> None:
+        """Ensure that the necessary directories exist."""
+        try:
+            log_dir = self.get("logging", "log_dir")
+            if log_dir:
+                log_path = os.path.join(os.path.dirname(os.path.abspath(self.config_path)), log_dir)
+                os.makedirs(log_path, exist_ok=True)
+        except OSError as e:
+            logger.error(f"Failed to create log directory: {e}")
+        except Exception as e:
+            logger.exception(f"Unexpected error setting up directories: {e}")
     
     def get(self, section: str, key: str, default: Any = None) -> Any:
         """Get a configuration value"""
-        if not self._validate_section_and_key(section, key):
-            return default
-
         try:
-            return self.config[section][key]
-        except KeyError:
-            logger.warning(f"Configuration key '{key}' not found in section '{section}'. Returning default.")
-            return default
+            if not self._validate_section_and_key(section, key):
+                return default
+
+            try:
+                return self.config[section][key]
+            except KeyError:
+                logger.warning(f"Configuration key '{key}' not found in section '{section}'. Returning default.")
+                return default
+            except Exception as e:
+                logger.exception(f"Unexpected error getting configuration: {e}")
+                return default
         except Exception as e:
-            logger.exception(f"Unexpected error getting configuration: {e}")
+            logger.error(f"Error during get operation: {e}")
             return default
     
     def set(self, section: str, key: str, value: Any) -> bool:
         """Set a configuration value"""
-        if not self._validate_section_and_key(section, key, check_valid=False):
-            return False
-
         try:
-            if section in self.config:
-                self.config[section][key] = value
-                return True
-            else:
-                logger.error(f"Section '{section}' not found in configuration.")
+            if not self._validate_section_and_key(section, key, check_valid=False):
+                return False
+
+            try:
+                if section in self.config:
+                    self.config[section][key] = value
+                    return True
+                else:
+                    logger.error(f"Section '{section}' not found in configuration.")
+                    return False
+            except Exception as e:
+                logger.exception(f"Unexpected error setting configuration: {e}")
                 return False
         except Exception as e:
-            logger.exception(f"Unexpected error setting configuration: {e}")
+            logger.error(f"Error during set operation: {e}")
             return False
     
     def reset_to_defaults(self, section: Optional[str] = None, key: Optional[str] = None) -> bool:
@@ -205,47 +231,59 @@ class ConfigManager:
     
     def is_valid_section(self, section: str) -> bool:
         """Check if a section is a valid configuration section."""
-        if not isinstance(section, str):
-            logger.error("Section must be a string.")
+        try:
+            if not isinstance(section, str):
+                logger.error("Section must be a string.")
+                return False
+            return section in self.defaults
+        except Exception as e:
+            logger.exception(f"Unexpected error validating section: {e}")
             return False
-        return section in self.defaults
     
     def is_valid_key(self, section: str, key: str) -> bool:
         """Check if a key is a valid configuration key within a section."""
-        if not isinstance(section, str):
-            logger.error("Section must be a string.")
-            return False
-        if not isinstance(key, str):
-            logger.error("Key must be a string.")
-            return False
+        try:
+            if not isinstance(section, str):
+                logger.error("Section must be a string.")
+                return False
+            if not isinstance(key, str):
+                logger.error("Key must be a string.")
+                return False
 
-        if not self.is_valid_section(section):
+            if not self.is_valid_section(section):
+                return False
+            return key in self.defaults[section]
+        except Exception as e:
+            logger.exception(f"Unexpected error validating key: {e}")
             return False
-        return key in self.defaults[section]
 
     def _validate_section_and_key(self, section: str, key: str, check_valid: bool = True) -> bool:
         """Validate section and key, logging errors if invalid."""
-        if not isinstance(section, str):
-            logger.error("Section must be a string.")
-            return False
-        if not isinstance(key, str):
-            logger.error("Key must be a string.")
-            return False
+        try:
+            if not isinstance(section, str):
+                logger.error("Section must be a string.")
+                return False
+            if not isinstance(key, str):
+                logger.error("Key must be a string.")
+                return False
 
-        if check_valid and not self.is_valid_section(section):
-            logger.error(f"Section '{section}' is not a valid configuration section.")
+            if check_valid and not self.is_valid_section(section):
+                logger.error(f"Section '{section}' is not a valid configuration section.")
+                return False
+            if check_valid and not self.is_valid_key(section, key):
+                logger.error(f"Key '{key}' is not a valid configuration key in section '{section}'.")
+                return False
+            return True
+        except Exception as e:
+            logger.exception(f"Unexpected error during validation: {e}")
             return False
-        if check_valid and not self.is_valid_key(section, key):
-            logger.error(f"Key '{key}' is not a valid configuration key in section '{section}'.")
-            return False
-        return True
 
 def get_config() -> ConfigManager:
     """Get the singleton configuration manager instance"""
     global _config_instance
 
     try:
-        if _config_instance is None:
+        if (_config_instance is None):
             _config_instance = ConfigManager()
             logger.debug("ConfigManager instance created.")
         else:

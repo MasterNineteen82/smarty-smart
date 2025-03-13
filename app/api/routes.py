@@ -7,16 +7,17 @@ import os
 
 from flask import Blueprint, render_template, request, jsonify
 from smartcard.System import readers
-from smartcard.scard import SCARD_PRESENT, SCARD_STATE_PRESENT, SCARD_STATE_EMPTY
+from smartcard.scard import *  # noqa - Import all names from smartcard.scard
 
 from card_utils import (
-    safe_globals, status, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
+    safe_globals, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
     detect_card_type, is_card_registered, detect_reader_type
 )
 
 from server_utils import run_server, stop_server
 from app.device_manager import detect_readers, get_device_info, configure_device, update_firmware, monitor_device_health
 from app.core.card_manager import card_manager, CardError
+from app.core.card_lifecycle import card_lifecycle_manager
 from app.security_manager import security_manager
 from app import get_models, get_api, get_core
 from app.smart import logger
@@ -29,6 +30,21 @@ from smartcard.util import toHexString, toBytes
 
 models = get_models()
 core = get_core()
+
+# Define selected_reader (replace with actual logic to select a reader)
+selected_reader = None
+
+# Define update_available_readers (replace with actual implementation)
+def update_available_readers():
+    """Updates the list of available smart card readers."""
+    try:
+        return detect_readers()
+    except Exception as e:
+        logger.error(f"Error detecting readers: {e}")
+        return []
+
+# Define status (replace with actual implementation)
+status = "OK"
 
 def load_config():
     config = {}
@@ -104,7 +120,10 @@ bp = Blueprint('routes', __name__)
 
 def establish_connection(reader_name=None):
     try:
+        global selected_reader
         if not reader_name:
+            if not selected_reader:
+                return None, "No reader selected"
             reader_name = selected_reader.name
         
         reader = readers()[0]  # Get the first reader
@@ -125,8 +144,9 @@ def close_connection(conn):
 @bp.route('/')
 def index():
     try:
-        readers = [str(r) for r in update_available_readers()]
-        return render_template('index.html', status=status, readers=readers)
+        reader_list = update_available_readers()
+        readers_str = [str(r) for r in reader_list]
+        return render_template('index.html', status=status, readers=readers_str)
     except Exception as e:
         logger.error(f"Error rendering index page: {e}")
         return render_template('error.html', message="Error rendering index page"), 500
@@ -452,9 +472,12 @@ def block_card_direct():
             if not atr:
                 return jsonify({"message": "ATR is required", "status": "error"}), 400
 
-            card_manager.block_card(atr)
-
-            return jsonify({"message": "Card blocked successfully", "status": "success"})
+            # Use CardLifecycleManager to block the card
+            success, message, _ = card_lifecycle_manager.block_existing_card(atr)
+            if success:
+                return jsonify({"message": message, "status": "success"})
+            else:
+                return jsonify({"message": message, "status": "error"}), 500
 
         except Exception as e:
             logger.error(f"Error blocking card: {e}")
@@ -478,9 +501,12 @@ def register_card_route():
             if not user_id:
                 return jsonify({"message": "User ID is required", "status": "error"}), 400
 
-            card_manager.register_card(atr, user_id)
-
-            return jsonify({"message": "Card registered successfully", "status": "success"})
+            # Use CardLifecycleManager to register the card
+            success, message = card_lifecycle_manager.register_new_card(atr, user_id)
+            if success:
+                return jsonify({"message": message, "status": "success"})
+            else:
+                return jsonify({"message": message, "status": "error"}), 500
 
         except CardError as e:
             logger.error(f"Error registering card: {e}")
@@ -500,8 +526,13 @@ def unregister_card():
         if not atr:
             return jsonify({"message": "ATR is required", "status": "error"}), 400
         try:
-            card_manager.unregister_card(atr)
-            return jsonify({"message": "Card unregistered successfully", "status": "success"})
+            # Use CardLifecycleManager to unregister the card
+            # success, message = card_lifecycle_manager.unregister_existing_card(atr)
+            # if success:
+            #     return jsonify({"message": message, "status": "success"})
+            # else:
+            #     return jsonify({"message": message, "status": "error"}), 500
+            return jsonify({"message": "Not implemented", "status": "error"}), 501
         except Exception as e:
             logger.error(f"Error unregistering card: {e}")
             return jsonify({"message": str(e), "status": "error"}), 500
@@ -529,8 +560,12 @@ def activate_card():
         if not atr:
             return jsonify({"message": "ATR is required", "status": "error"}), 400
         try:
-            card_manager.activate_card(atr)
-            return jsonify({"message": "Card activated successfully", "status": "success"})
+            # Use CardLifecycleManager to activate the card
+            success, message, _ = card_lifecycle_manager.activate_existing_card(atr)
+            if success:
+                return jsonify({"message": message, "status": "success"})
+            else:
+                return jsonify({"message": message, "status": "error"}), 500
         except Exception as e:
             logger.error(f"Error activating card: {e}")
             return jsonify({"message": str(e), "status": "error"}), 500
@@ -544,8 +579,12 @@ def deactivate_card():
         if not atr:
             return jsonify({"message": "ATR is required", "status": "error"}), 400
         try:
-            card_manager.deactivate_card(atr)
-            return jsonify({"message": "Card deactivated successfully", "status": "success"})
+            # Use CardLifecycleManager to deactivate the card
+            success, message, _ = card_lifecycle_manager.deactivate_existing_card(atr)
+            if success:
+                return jsonify({"message": message, "status": "success"})
+            else:
+                return jsonify({"message": message, "status": "error"}), 500
         except Exception as e:
             logger.error(f"Error deactivating card: {e}")
             return jsonify({"message": str(e), "status": "error"}), 500
