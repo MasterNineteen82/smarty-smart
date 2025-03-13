@@ -1,0 +1,151 @@
+
+.E2025-03-12 19:28:09,346 - INFO - card_utils:801 - Card backup created: test_backup_path.json
+INFO:card_utils:Card backup created: test_backup_path.json
+2025-03-12 19:28:09,346 - DEBUG - card_utils:473 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 19:28:09,346 - DEBUG - card_utils:473 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 19:28:09,346 - ERROR - card_utils:133 - Cleanup after thread-safe operation failed: [WinError 3] The system cannot find the path specified: 'test_backup_path.json'
+ERROR:card_utils:Cleanup after thread-safe operation failed: [WinError 3] The system cannot find the path specified: 'test_backup_path.json'
+.2025-03-12 19:28:09,346 - INFO - card_utils:716 - Card blocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card blocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 19:28:09,346 - DEBUG - card_utils:473 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 19:28:09,346 - INFO - card_utils:756 - Card unblocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card unblocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 19:28:09,346 - DEBUG - card_utils:473 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+.2025-03-12 19:28:09,346 - INFO - card_utils:516 - Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 19:28:09,362 - DEBUG - card_utils:473 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 19:28:09,362 - WARNING - card_utils:590 - Registered cards file not found, starting with empty registry
+WARNING:card_utils:Registered cards file not found, starting with empty registry
+2025-03-12 19:28:09,362 - DEBUG - card_utils:473 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+FFFF2025-03-12 19:28:09,362 - ERROR - card_utils:927 - Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+ERROR:card_utils:Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+F2025-03-12 19:28:09,362 - ERROR - card_utils:927 - Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+ERROR:card_utils:Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+.2025-03-12 19:28:09,378 - INFO - card_utils:173 - Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+INFO:card_utils:Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+WARNING:server_utils:Server is not running
+.WARNING:server_utils:Server is not running
+E2025-03-12 19:28:09,378 - DEBUG - card_utils:91 - Starting operation: Get Reader Capabilities
+DEBUG:card_utils:Starting operation: Get Reader Capabilities
+2025-03-12 19:28:09,378 - DEBUG - card_utils:97 - Operation completed: Get Reader Capabilities in 0.00ms
+DEBUG:card_utils:Operation completed: Get Reader Capabilities in 0.00ms
+2025-03-12 19:28:09,378 - DEBUG - card_utils:105 - Operation Get Reader Capabilities finished, total duration: 0.00ms
+DEBUG:card_utils:Operation Get Reader Capabilities finished, total duration: 0.00ms
+2025-03-12 19:28:09,378 - DEBUG - card_utils:91 - Starting operation: Get Reader Capabilities
+DEBUG:card_utils:Starting operation: Get Reader Capabilities
+2025-03-12 19:28:09,378 - DEBUG - card_utils:97 - Operation completed: Get Reader Capabilities in 0.00ms
+DEBUG:card_utils:Operation completed: Get Reader Capabilities in 0.00ms
+2025-03-12 19:28:09,394 - DEBUG - card_utils:105 - Operation Get Reader Capabilities finished, total duration: 0.00ms
+DEBUG:card_utils:Operation Get Reader Capabilities finished, total duration: 0.00ms
+WARNING:server_utils:Server is not running
+F2025-03-12 19:28:09,394 - DEBUG - card_utils:91 - Starting operation: Start Server
+DEBUG:card_utils:Starting operation: Start Server
+INFO:server_utils:Server started on localhost:5000
+2025-03-12 19:28:09,397 - DEBUG - card_utils:97 - Operation completed: Start Server in 3.23ms
+DEBUG:card_utils:Operation completed: Start Server in 3.23ms
+2025-03-12 19:28:09,397 - DEBUG - card_utils:105 - Operation Start Server finished, total duration: 3.23ms
+DEBUG:card_utils:Operation Start Server finished, total duration: 3.23ms
+2025-03-12 19:28:09,397 - DEBUG - card_utils:91 - Starting operation: Stop Server
+DEBUG:card_utils:Starting operation: Stop Server
+INFO:server_utils:Server stopped
+2025-03-12 19:28:09,902 - DEBUG - card_utils:97 - Operation completed: Stop Server in 504.42ms
+DEBUG:card_utils:Operation completed: Stop Server in 504.42ms
+2025-03-12 19:28:09,902 - DEBUG - card_utils:105 - Operation Stop Server finished, total duration: 504.42ms
+DEBUG:card_utils:Operation Stop Server finished, total duration: 504.42ms
+WARNING:server_utils:Server is not running
+.
+======================================================================
+ERROR: test_activation_deactivation (test_card_operations.TestCardOperations)
+Test card activation and deactivation
+----------------------------------------------------------------------
+TypeError: TestCardOperations.test_activation_deactivation() missing 3 required positional arguments: 'mock_is_registered', 'mock_card_status', and 'mock_establish_connection'
+
+======================================================================
+ERROR: test_invalid_endpoint (test_server.TestServer)
+Test accessing an invalid endpoint
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_server.py", line 70, in test_invalid_endpoint
+    data = json.loads(response.data)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\json\decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+======================================================================
+FAIL: test_card_registration_lifecycle (test_card_operations.TestCardOperations)
+Test card registration, check, and unregistration
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 119, in test_card_registration_lifecycle
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_delete_backup (test_card_operations.TestCardOperations)
+Test delete backup functionality
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 316, in test_delete_backup
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_detect_card_type (test_card_operations.TestCardOperations)
+Test card type detection based on ATR
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 89, in test_detect_card_type
+    self.assertEqual(detect_card_type(mifare_classic_atr), "MIFARE_CLASSIC")
+AssertionError: 'ISO_14443_A' != 'MIFARE_CLASSIC'
+- ISO_14443_A
++ MIFARE_CLASSIC
+
+
+======================================================================
+FAIL: test_hex_conversion (test_card_utils.TestCardUtils)
+Test hex string conversion utility
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_utils.py", line 68, in test_hex_conversion
+    with self.assertRaises(TypeError):
+AssertionError: TypeError not raised
+
+======================================================================
+FAIL: test_reader_detection (test_card_utils.TestCardUtils)
+Test reader type detection
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_utils.py", line 33, in test_reader_detection
+    self.assertEqual(reader_info['type'], "GENERIC")
+AssertionError: 'UNKNOWN' != 'GENERIC'
+- UNKNOWN
++ GENERIC
+
+
+======================================================================
+FAIL: test_reader_capabilities (test_server.TestServer)
+Test reader capabilities endpoint
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_server.py", line 61, in test_reader_capabilities
+    self.assertEqual(response.status_code, 404)
+AssertionError: 200 != 404
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.553s
+
+FAILED (failures=6, errors=2)

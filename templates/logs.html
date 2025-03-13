@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Logs - Smart Card Manager{% endblock %}
+
+{% block additional_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/logs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Log Viewer</h1>
+    <div>
+        <button class="btn btn-sm btn-outline-secondary me-2" id="theme-toggle" onclick="toggleTheme()">
+            <i class="bi bi-circle-half"></i> Toggle Theme
+        </button>
+        <a href="/" class="btn btn-outline-secondary">
+            <i class="bi bi-house"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Filter controls -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="log-level" class="form-label">Log Level</label>
+                <select class="form-select" id="log-level">
+                    <option value="ALL">All Levels</option>
+                    <option value="DEBUG">Debug</option>
+                    <option value="INFO">Info</option>
+                    <option value="WARNING">Warning</option>
+                    <option value="ERROR">Error</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="log-file" class="form-label">Log File</label>
+                <select class="form-select" id="log-file">
+                    <option value="main">Main Log</option>
+                    <option value="smart_card.log">Card Operations</option>
+                    <option value="smarty_development.log">Development</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="log-lines" class="form-label">Lines</label>
+                <input type="number" class="form-control" id="log-lines" value="100" min="10" max="1000">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label d-block">&nbsp;</label>
+                <button class="btn btn-primary w-100" onclick="fetchLogs()">
+                    <i class="bi bi-search"></i> Apply
+                </button>
+            </div>
+        </div>
+        
+        <div class="row mt-3 g-3">
+            <div class="col-md-4">
+                <label for="log-search" class="form-label">Search Logs</label>
+                <input type="text" class="form-control" id="log-search" placeholder="Enter search term...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label d-block">&nbsp;</label>
+                <button class="btn btn-primary w-100" onclick="fetchLogs()">
+                    <i class="bi bi-search"></i> Filter
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="auto-scroll" checked>
+                <label class="form-check-label" for="auto-scroll">Auto-scroll to bottom</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="auto-refresh">
+                <label class="form-check-label" for="auto-refresh">Auto-refresh (5s)</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0" id="log-stats">Log Entries</h5>
+        <div>
+            <span class="badge bg-secondary" id="log-count">0 entries</span>
+            <div class="btn-group ms-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="fetchLogs()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="clearLogs()">
+                    <i class="bi bi-trash"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div id="log-container" class="log-container"></div>
+    </div>
+</div>
+
+<!-- Tool navigation links -->
+<div class="mt-4 d-flex justify-content-center">
+    <div class="btn-group">
+        <a href="/api-explorer" class="btn btn-outline-primary">
+            <i class="bi bi-code-slash"></i> API Explorer
+        </a>
+        <a href="/config_manager" class="btn btn-outline-primary">
+            <i class="bi bi-gear"></i> Configuration
+        </a>
+        <a href="/" class="btn btn-outline-secondary">
+            <i class="bi bi-house"></i> Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script src="{{ url_for('static', filename='js/logs.js') }}"></script>
+{% endblock %}

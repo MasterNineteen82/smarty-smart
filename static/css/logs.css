@@ -1,0 +1,60 @@
+/* Styles for log viewer */
+
+#log-container {
+    font-family: 'Consolas', 'Courier New', monospace;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    height: 70vh;
+    overflow: auto;
+    background-color: #212529;
+    color: #e9ecef;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+    line-height: 1.5;
+}
+
+.log-line {
+    padding: 2px 0;
+    display: flex;
+    align-items: flex-start;
+}
+
+.log-icon {
+    margin-right: 8px;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+}
+
+.log-debug { color: #adb5bd; }
+.log-info { color: #0d6efd; }
+.log-warning { color: #fd7e14; }
+.log-error { color: #dc3545; }
+.log-critical { color: #6f42c1; }
+.log-timestamp { color: #20c997; font-weight: bold; }
+.log-module { color: #6f42c1; }
+.log-highlight { background-color: #ffc107; color: #000; }
+.log-indent { padding-left: 24px; display: block; opacity: 0.8; }
+
+.log-error-icon { color: #dc3545; }
+.log-warning-icon { color: #fd7e14; }
+.log-info-icon { color: #0d6efd; }
+.log-debug-icon { color: #adb5bd; }
+
+/* Light theme variations */
+.light-theme #log-container {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.light-theme .log-debug { color: #6c757d; }
+.light-theme .log-info { color: #0d6efd; }
+.light-theme .log-warning { color: #fd7e14; }
+.light-theme .log-error { color: #dc3545; }
+.light-theme .log-critical { color: #6f42c1; }
+
+.spinner-grow {
+    width: 1rem;
+    height: 1rem;
+}

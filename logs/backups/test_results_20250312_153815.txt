@@ -1,0 +1,105 @@
+
+.2025-03-12 15:38:15,565 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+F2025-03-12 15:38:15,569 - INFO - card_utils:721 - Card backup created: test_backup_path.json
+INFO:card_utils:Card backup created: test_backup_path.json
+2025-03-12 15:38:15,570 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 15:38:15,570 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+.2025-03-12 15:38:15,573 - INFO - card_utils:636 - Card blocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card blocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 15:38:15,573 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 15:38:15,573 - INFO - card_utils:676 - Card unblocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card unblocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 15:38:15,574 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+.2025-03-12 15:38:15,575 - INFO - card_utils:454 - Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 15:38:15,576 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 15:38:15,576 - ERROR - card_utils:493 - Card unregistration failed: UNREGISTERED
+ERROR:card_utils:Card unregistration failed: UNREGISTERED
+2025-03-12 15:38:15,576 - DEBUG - card_utils:411 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+FFF..E2025-03-12 15:38:15,596 - INFO - card_utils:151 - Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+INFO:card_utils:Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+WARNING:server_utils:Server is not running
+.2025-03-12 15:38:15,602 - DEBUG - card_utils:68 - Starting operation: Get Reader Capabilities
+DEBUG:card_utils:Starting operation: Get Reader Capabilities
+2025-03-12 15:38:15,603 - DEBUG - card_utils:74 - Operation completed: Get Reader Capabilities in 1.00ms
+DEBUG:card_utils:Operation completed: Get Reader Capabilities in 1.00ms
+WARNING:server_utils:Server is not running
+.2025-03-12 15:38:15,603 - DEBUG - card_utils:68 - Starting operation: Start Server
+DEBUG:card_utils:Starting operation: Start Server
+INFO:server_utils:Server started on localhost:5000
+2025-03-12 15:38:15,617 - DEBUG - card_utils:74 - Operation completed: Start Server in 14.08ms
+DEBUG:card_utils:Operation completed: Start Server in 14.08ms
+2025-03-12 15:38:15,617 - DEBUG - card_utils:68 - Starting operation: Stop Server
+DEBUG:card_utils:Starting operation: Stop Server
+ERROR:server_utils:Failed to stop server: 'ThreadedWSGIServer' object has no attribute 'is_running'
+2025-03-12 15:38:15,617 - DEBUG - card_utils:74 - Operation completed: Stop Server in 0.00ms
+DEBUG:card_utils:Operation completed: Stop Server in 0.00ms
+ERROR:server_utils:Failed to stop server: 'ThreadedWSGIServer' object has no attribute 'is_running'
+.
+======================================================================
+ERROR: test_reader_timeout (test_card_utils.TestCardUtils)
+Test reader timeout settings
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_utils.py", line 30, in test_reader_timeout
+    cherry_timeout = get_reader_timeout("CHERRY Smart Terminal ST-1234")
+  File "x:\smarty\card_utils.py", line 848, in get_reader_timeout
+    return TIMEOUTS.get(reader_type, TIMEOUTS["DEFAULT"])
+TypeError: unhashable type: 'dict'
+
+======================================================================
+FAIL: test_activation_deactivation (test_card_operations.TestCardOperations)
+Test card activation and deactivation
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 140, in test_activation_deactivation
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_card_registration_lifecycle (test_card_operations.TestCardOperations)
+Test card registration, check, and unregistration
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 121, in test_card_registration_lifecycle
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_delete_backup (test_card_operations.TestCardOperations)
+Test delete backup functionality
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 214, in test_delete_backup
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_detect_card_type (test_card_operations.TestCardOperations)
+Test card type detection based on ATR
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 91, in test_detect_card_type
+    self.assertEqual(detect_card_type(mifare_classic_atr), "MIFARE_CLASSIC")
+AssertionError: 'ISO_14443_A' != 'MIFARE_CLASSIC'
+- ISO_14443_A
++ MIFARE_CLASSIC
+
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.057s
+
+FAILED (failures=4, errors=1)

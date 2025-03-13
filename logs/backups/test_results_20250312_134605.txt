@@ -1,0 +1,223 @@
+Running Smart Card Manager tests...
+
+
+Summary: FAILED
+
+test_list_readers (tests.test_card_operations.TestCLIInterface)
+Test listing readers ... ok
+test_activation_deactivation (tests.test_card_operations.TestCardOperations)
+Test card activation and deactivation ... 2025-03-12 13:46:05,512 - DEBUG - card_utils:349 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+FAIL
+ERROR
+test_backup_restore (tests.test_card_operations.TestCardOperations)
+Test backup and restore operations ... 2025-03-12 13:46:05,512 - INFO - card_utils:659 - Card backup created: test_backup_path.json
+INFO:card_utils:Card backup created: test_backup_path.json
+2025-03-12 13:46:05,512 - DEBUG - card_utils:349 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 13:46:05,512 - DEBUG - card_utils:349 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+ERROR
+test_block_unblock (tests.test_card_operations.TestCardOperations)
+Test card blocking and unblocking ... ERROR
+ERROR
+test_card_registration_lifecycle (tests.test_card_operations.TestCardOperations)
+Test card registration, check, and unregistration ... 2025-03-12 13:46:05,512 - INFO - card_utils:392 - Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 13:46:05,512 - DEBUG - card_utils:349 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 13:46:05,512 - INFO - card_utils:428 - Card unregistered: Test Card, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card unregistered: Test Card, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 13:46:05,512 - DEBUG - card_utils:349 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+ERROR
+test_delete_backup (tests.test_card_operations.TestCardOperations)
+Test delete backup functionality ... FAIL
+ERROR
+test_detect_card_type (tests.test_card_operations.TestCardOperations)
+Test card type detection based on ATR ... FAIL
+ERROR
+test_hex_conversion (tests.test_card_utils.TestCardUtils)
+Test hex string conversion utility ... ok
+test_reader_detection (tests.test_card_utils.TestCardUtils)
+Test reader type detection ... ERROR
+test_reader_timeout (tests.test_card_utils.TestCardUtils)
+Test reader timeout settings ... ok
+test_index_page (tests.test_server.TestServer)
+Test that the index page loads ... 2025-03-12 13:46:05,528 - INFO - card_utils:146 - Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+INFO:card_utils:Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+WARNING:server_utils:Server is not running
+ok
+test_reader_capabilities (tests.test_server.TestServer)
+Test reader capabilities endpoint ... 2025-03-12 13:46:05,543 - DEBUG - card_utils:53 - Starting operation: Get Reader Capabilities
+DEBUG:card_utils:Starting operation: Get Reader Capabilities
+2025-03-12 13:46:05,543 - DEBUG - card_utils:59 - Operation completed: Get Reader Capabilities in 0.00ms
+DEBUG:card_utils:Operation completed: Get Reader Capabilities in 0.00ms
+WARNING:server_utils:Server is not running
+FAIL
+test_server_start_stop (tests.test_server.TestServer)
+Test server start/stop functionality ... 2025-03-12 13:46:05,543 - DEBUG - card_utils:53 - Starting operation: Start Server
+DEBUG:card_utils:Starting operation: Start Server
+2025-03-12 13:46:05,543 - ERROR - card_utils:64 - Operation failed: Start Server after 0.00ms - run_server() missing 1 required positional argument: 'app'
+ERROR:card_utils:Operation failed: Start Server after 0.00ms - run_server() missing 1 required positional argument: 'app'
+WARNING:server_utils:Server is not running
+ERROR
+
+======================================================================
+ERROR: test_activation_deactivation (tests.test_card_operations.TestCardOperations)
+Test card activation and deactivation
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 72, in tearDown
+    os.unlink(self.temp_reg_file.name)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\email\\AppData\\Local\\Temp\\tmp8pbvxlox'
+
+======================================================================
+ERROR: test_backup_restore (tests.test_card_operations.TestCardOperations)
+Test backup and restore operations
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 72, in tearDown
+    os.unlink(self.temp_reg_file.name)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\email\\AppData\\Local\\Temp\\tmp6qzc4nr2'
+
+======================================================================
+ERROR: test_block_unblock (tests.test_card_operations.TestCardOperations)
+Test card blocking and unblocking
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 150, in test_block_unblock
+    mock_card_status.name = CardStatus.ACTIVE.name
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\enum.py", line 437, in __getattr__
+    raise AttributeError(name) from None
+AttributeError: ACTIVE
+
+======================================================================
+ERROR: test_block_unblock (tests.test_card_operations.TestCardOperations)
+Test card blocking and unblocking
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 72, in tearDown
+    os.unlink(self.temp_reg_file.name)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\email\\AppData\\Local\\Temp\\tmppvg8uqlz'
+
+======================================================================
+ERROR: test_card_registration_lifecycle (tests.test_card_operations.TestCardOperations)
+Test card registration, check, and unregistration
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 72, in tearDown
+    os.unlink(self.temp_reg_file.name)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\email\\AppData\\Local\\Temp\\tmpu67a_vnl'
+
+======================================================================
+ERROR: test_delete_backup (tests.test_card_operations.TestCardOperations)
+Test delete backup functionality
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 72, in tearDown
+    os.unlink(self.temp_reg_file.name)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\email\\AppData\\Local\\Temp\\tmppvpmr025'
+
+======================================================================
+ERROR: test_detect_card_type (tests.test_card_operations.TestCardOperations)
+Test card type detection based on ATR
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 72, in tearDown
+    os.unlink(self.temp_reg_file.name)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\email\\AppData\\Local\\Temp\\tmpuxp8kq6d'
+
+======================================================================
+ERROR: test_reader_detection (tests.test_card_utils.TestCardUtils)
+Test reader type detection
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_utils.py", line 17, in test_reader_detection
+    self.assertEqual(reader_info['type'], "CHERRY_ST")
+TypeError: string indices must be integers
+
+======================================================================
+ERROR: test_server_start_stop (tests.test_server.TestServer)
+Test server start/stop functionality
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_server.py", line 40, in test_server_start_stop
+    response = self.client.post('/start_server')
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\test.py", line 1167, in post
+    return self.open(*args, **kw)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\testing.py", line 234, in open
+    response = super().open(
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\test.py", line 1116, in open
+    response_parts = self.run_wsgi_app(request.environ, buffered=buffered)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\test.py", line 988, in run_wsgi_app
+    rv = run_wsgi_app(self.application, environ, buffered=buffered)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\test.py", line 1264, in run_wsgi_app
+    app_rv = app(environ, start_response)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "x:\smarty\routes.py", line 56, in wrapper
+    result = f(*args, **kwargs)
+  File "x:\smarty\routes.py", line 78, in start_server_route_bp
+    run_server()
+TypeError: run_server() missing 1 required positional argument: 'app'
+
+======================================================================
+FAIL: test_activation_deactivation (tests.test_card_operations.TestCardOperations)
+Test card activation and deactivation
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 131, in test_activation_deactivation
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_delete_backup (tests.test_card_operations.TestCardOperations)
+Test delete backup functionality
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 205, in test_delete_backup
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_detect_card_type (tests.test_card_operations.TestCardOperations)
+Test card type detection based on ATR
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 86, in test_detect_card_type
+    self.assertEqual(detect_card_type(mifare_ul_atr), "MIFARE_ULTRALIGHT")
+AssertionError: 'MIFARE_CLASSIC' != 'MIFARE_ULTRALIGHT'
+- MIFARE_CLASSIC
++ MIFARE_ULTRALIGHT
+
+
+======================================================================
+FAIL: test_reader_capabilities (tests.test_server.TestServer)
+Test reader capabilities endpoint
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_server.py", line 51, in test_reader_capabilities
+    self.assertEqual(response.status_code, 200)
+AssertionError: 400 != 200
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.040s
+
+FAILED (failures=4, errors=9)

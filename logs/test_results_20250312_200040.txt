@@ -1,0 +1,162 @@
+
+.2025-03-12 20:00:39,984 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+FE2025-03-12 20:00:39,992 - INFO - card_utils:757 - Card backup created: test_backup_path.json
+INFO:card_utils:Card backup created: test_backup_path.json
+2025-03-12 20:00:39,992 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 20:00:39,992 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 20:00:39,994 - ERROR - card_utils:134 - Cleanup after thread-safe operation failed: [WinError 3] The system cannot find the path specified: 'test_backup_path.json'
+ERROR:card_utils:Cleanup after thread-safe operation failed: [WinError 3] The system cannot find the path specified: 'test_backup_path.json'
+.2025-03-12 20:00:39,994 - INFO - card_utils:672 - Card blocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card blocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 20:00:39,994 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 20:00:39,997 - INFO - card_utils:712 - Card unblocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card unblocked successfully, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 20:00:39,997 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+.2025-03-12 20:00:39,997 - INFO - card_utils:472 - Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+INFO:card_utils:Card registered: Test Card, User: user123, ATR: 3B 8F 80 01 80 4F 0C A0 00 00 03 06
+2025-03-12 20:00:39,997 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+2025-03-12 20:00:39,997 - WARNING - card_utils:546 - Registered cards file not found, starting with empty registry
+WARNING:card_utils:Registered cards file not found, starting with empty registry
+2025-03-12 20:00:39,997 - DEBUG - card_utils:429 - Connection closed successfully
+DEBUG:card_utils:Connection closed successfully
+FFFF2025-03-12 20:00:40,000 - ERROR - card_utils:907 - Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+ERROR:card_utils:Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+F2025-03-12 20:00:40,000 - ERROR - card_utils:907 - Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+ERROR:card_utils:Error detecting reader type for 'None': argument of type 'NoneType' is not iterable
+.2025-03-12 20:00:40,016 - INFO - card_utils:174 - Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+INFO:card_utils:Detected readers: ['ACS ACR122 0', 'CHERRY Smart Terminal xx44 0']
+WARNING:server_utils:Server is not running
+.WARNING:server_utils:Server is not running
+.2025-03-12 20:00:40,016 - DEBUG - card_utils:91 - Starting operation: Get Reader Capabilities
+DEBUG:card_utils:Starting operation: Get Reader Capabilities
+2025-03-12 20:00:40,016 - DEBUG - card_utils:97 - Operation completed: Get Reader Capabilities in 0.00ms
+DEBUG:card_utils:Operation completed: Get Reader Capabilities in 0.00ms
+2025-03-12 20:00:40,016 - DEBUG - card_utils:105 - Operation Get Reader Capabilities finished, total duration: 0.00ms
+DEBUG:card_utils:Operation Get Reader Capabilities finished, total duration: 0.00ms
+2025-03-12 20:00:40,016 - DEBUG - card_utils:91 - Starting operation: Get Reader Capabilities
+DEBUG:card_utils:Starting operation: Get Reader Capabilities
+2025-03-12 20:00:40,016 - DEBUG - card_utils:97 - Operation completed: Get Reader Capabilities in 0.00ms
+DEBUG:card_utils:Operation completed: Get Reader Capabilities in 0.00ms
+2025-03-12 20:00:40,016 - DEBUG - card_utils:105 - Operation Get Reader Capabilities finished, total duration: 0.00ms
+DEBUG:card_utils:Operation Get Reader Capabilities finished, total duration: 0.00ms
+WARNING:server_utils:Server is not running
+F2025-03-12 20:00:40,016 - DEBUG - card_utils:91 - Starting operation: Start Server
+DEBUG:card_utils:Starting operation: Start Server
+INFO:server_utils:Server started on localhost:5000
+2025-03-12 20:00:40,032 - DEBUG - card_utils:97 - Operation completed: Start Server in 15.72ms
+DEBUG:card_utils:Operation completed: Start Server in 15.72ms
+2025-03-12 20:00:40,032 - DEBUG - card_utils:105 - Operation Start Server finished, total duration: 15.72ms
+DEBUG:card_utils:Operation Start Server finished, total duration: 15.72ms
+2025-03-12 20:00:40,032 - DEBUG - card_utils:91 - Starting operation: Stop Server
+DEBUG:card_utils:Starting operation: Stop Server
+INFO:server_utils:Server stopped
+2025-03-12 20:00:40,536 - DEBUG - card_utils:97 - Operation completed: Stop Server in 503.84ms
+DEBUG:card_utils:Operation completed: Stop Server in 503.84ms
+2025-03-12 20:00:40,536 - DEBUG - card_utils:105 - Operation Stop Server finished, total duration: 503.84ms
+DEBUG:card_utils:Operation Stop Server finished, total duration: 503.84ms
+WARNING:server_utils:Server is not running
+.
+======================================================================
+ERROR: test_activation_deactivation_simplified (test_card_operations.TestCardOperations)
+Test simplified card activation and deactivation
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1376, in patched
+    with self.decoration_helper(patched,
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1358, in decoration_helper
+    arg = exit_stack.enter_context(patching)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 492, in enter_context
+    result = _cm_type.__enter__(cm)
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'card_utils' from 'x:\\smarty\\card_utils.py'> does not have the attribute 'get_card_status'
+
+======================================================================
+FAIL: test_activation_deactivation (test_card_operations.TestCardOperations)
+Test card activation and deactivation, including edge cases and exceptions
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 139, in test_activation_deactivation
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_card_registration_lifecycle (test_card_operations.TestCardOperations)
+Test card registration, check, and unregistration
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 120, in test_card_registration_lifecycle
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_delete_backup (test_card_operations.TestCardOperations)
+Test delete backup functionality
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\email\AppData\Local\Programs\Python\Python310\lib\unittest\mock.py", line 1379, in patched
+    return func(*newargs, **newkeywargs)
+  File "x:\smarty\tests\test_card_operations.py", line 269, in test_delete_backup
+    self.assertTrue(success)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_detect_card_type (test_card_operations.TestCardOperations)
+Test card type detection based on ATR
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_operations.py", line 94, in test_detect_card_type
+    self.assertEqual(detect_card_type(mifare_ul_atr), "MIFARE_ULTRALIGHT")
+AssertionError: 'MIFARE_CLASSIC' != 'MIFARE_ULTRALIGHT'
+- MIFARE_CLASSIC
++ MIFARE_ULTRALIGHT
+
+
+======================================================================
+FAIL: test_hex_conversion (test_card_utils.TestCardUtils)
+Test hex string conversion utility
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_utils.py", line 68, in test_hex_conversion
+    with self.assertRaises(TypeError):
+AssertionError: TypeError not raised
+
+======================================================================
+FAIL: test_reader_detection (test_card_utils.TestCardUtils)
+Test reader type detection
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_card_utils.py", line 33, in test_reader_detection
+    self.assertEqual(reader_info['type'], "GENERIC")
+AssertionError: 'UNKNOWN' != 'GENERIC'
+- UNKNOWN
++ GENERIC
+
+
+======================================================================
+FAIL: test_reader_capabilities (test_server.TestServer)
+Test reader capabilities endpoint
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "x:\smarty\tests\test_server.py", line 61, in test_reader_capabilities
+    self.assertEqual(response.status_code, 404)
+AssertionError: 200 != 404
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.554s
+
+FAILED (failures=7, errors=1)
