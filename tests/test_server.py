@@ -5,7 +5,10 @@ import json
 from unittest.mock import patch
 
 # Add parent directory to path to import modules
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# filepath: test_server.py
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(PROJECT_ROOT)
+print(f"Adding project root to sys.path: {PROJECT_ROOT}")  # Debugging line
 
 import smart
 from server_utils import stop_server
