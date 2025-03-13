@@ -85,6 +85,7 @@ class CardManager:
         self.last_operation = None
         self.last_operation_time = None
         self.recovery_mode = False
+        self.registered_cards = {}  # In-memory storage for registered cards
     
     def handle_operation(self, operation_func, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
         """Execute card operation with retry logic and error handling"""
@@ -337,6 +338,39 @@ class CardManager:
             logger.info("Recovery mode disabled. State transitions will be validated.")
         else:
             logger.info("Recovery mode is already disabled.")
+
+    def register_card(self, atr, user_id):
+        """Register a card with a specific user ID."""
+        logger.info(f"Registering card with ATR {atr} for user {user_id}")
+        if atr in self.registered_cards:
+            raise CardError(f"Card with ATR {atr} is already registered.")
+        self.registered_cards[atr] = user_id
+
+    def unregister_card(self, atr):
+        """Unregister a card."""
+        logger.info(f"Unregistering card with ATR {atr}")
+        if atr not in self.registered_cards:
+            raise CardError(f"Card with ATR {atr} is not registered.")
+        del self.registered_cards[atr]
+
+    def block_card(self, atr):
+        """Block a card."""
+        logger.info(f"Blocking card with ATR {atr}")
+        # Implement logic to block the card (e.g., set a flag in the database)
+
+    def activate_card(self, atr):
+        """Activate a card."""
+        logger.info(f"Activating card with ATR {atr}")
+        # Implement logic to activate the card (e.g., set a flag in the database)
+
+    def deactivate_card(self, atr):
+        """Deactivate a card."""
+        logger.info(f"Deactivating card with ATR {atr}")
+        # Implement logic to deactivate the card (e.g., set a flag in the database)
+
+    def is_card_registered(self):
+        """Check if a card is registered."""
+        return atr in self.registered_cards
 
 def backup_registry(backup_path=None):
     """Backup the card registry to a file."""

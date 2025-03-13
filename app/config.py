@@ -60,9 +60,17 @@ RECOVERY_MODE = False
 DEBUG_APDU = False
 
 # --- Logging Configuration ---
+LOG_DIR = Path(__file__).resolve().parent.parent / 'app' / 'logs'
 LOG_FILE = LOG_DIR / 'smarty.log'
 LOG_LEVEL = logging.DEBUG
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(name)s:%(lineno)d - %(message)s'
+BROWSER_LOG_FILE = LOG_DIR / 'browsererrors.log'
+
+# --- Database Configuration ---
+DATABASE_URL = os.environ.get('SMARTY_DATABASE_URL', 'sqlite:///smarty.db')
+
+# --- Feature Flags ---
+ENABLE_NFC_SUPPORT = os.environ.get('SMARTY_ENABLE_NFC', 'True').lower() == 'true'
 
 # --- Reader-Specific Configurations ---
 READER_CONFIG = {
@@ -90,7 +98,7 @@ elif ENV == 'testing':
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
 elif ENV == 'production':
     DEBUG = False
-    LOG_LEVEL = logging.WARNING
+    LOG_LEVEL = logging.INFO
 
 # --- Load Production Configuration ---
 PROD_CONFIG_PATH = os.environ.get('SMARTY_PROD_CONFIG')

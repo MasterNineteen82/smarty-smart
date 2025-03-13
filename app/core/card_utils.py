@@ -161,8 +161,6 @@ class CardType(Enum):
 
 # --- Global State with Thread Safety ---
 _lock = threading.RLock()
-selected_reader = None
-card = None
 # Rename variable to avoid collision with function name
 current_connection = None  # Changed from card_connection
 status: Dict[str, str] = {"message": "Disconnected", "atr": ""}

@@ -11,11 +11,13 @@ from smartcard.scard import SCARD_PRESENT, SCARD_STATE_PRESENT, SCARD_STATE_EMPT
 
 from card_utils import (
     safe_globals, status, card_status, CardStatus, pin_attempts, MAX_PIN_ATTEMPTS, logger,
-    update_available_readers, selected_reader, card_info, detect_card_type, is_card_registered, detect_reader_type
+    detect_card_type, is_card_registered, detect_reader_type
 )
 
 from server_utils import run_server, stop_server
-from card_manager import card_manager
+from app.device_manager import detect_readers, get_device_info, configure_device, update_firmware, monitor_device_health
+from app.core.card_manager import card_manager, CardError
+from app.security_manager import security_manager
 from app import get_models, get_api, get_core
 from app.smart import logger
 
@@ -146,16 +148,16 @@ def start_server_route_bp():
 @handle_card_exceptions
 def get_card_status():
     try:
-        from smartcard.System import readers
-        reader_list = readers()
+        # Use device_manager to detect readers
+        reader_list = detect_readers()
         if not reader_list:
             return jsonify({"status": "warning", "message": "No readers detected"})
-        
+
         reader = str(reader_list[0])
         conn, err = establish_connection(reader)
         if err:
             return jsonify({"status": "error", "message": f"Card not present: {err}"})
-        
+
         atr = toHexString(conn.getATR())
         card_type = detect_card_type(atr)
         close_connection(conn)
@@ -223,27 +225,24 @@ def verify_pin():
         if pin_attempts >= MAX_PIN_ATTEMPTS:
             card_status = CardStatus.BLOCKED
             return jsonify({"message": "Card blocked: Too many PIN attempts", "status": "error"}), 403
-        
+
         conn, err = establish_connection()
         if err:
             return jsonify({"message": err, "status": "error"}), 400
-        
+
         try:
             pin = request.json.get('pin', DEFAULT_PIN)
             if not isinstance(pin, str) or len(pin) != 3 or not pin.isdigit():
                 return jsonify({"message": "PIN must be a 3-digit number", "status": "error"}), 400
-            
-            pin_bytes = [ord(c) for c in pin]
-            apdu = [0xFF, 0x20, 0x00, 0x00, 0x03] + pin_bytes
-            data, sw1, sw2 = conn.transmit(apdu)
-            
-            if sw1 == 0x90 and sw2 == 0x00:
+
+            # Use security_manager to verify PIN
+            if security_manager.verify_pin(pin):
                 pin_attempts = 0
                 return jsonify({"message": "PIN verified", "status": "success"})
             else:
                 pin_attempts += 1
                 remaining = MAX_PIN_ATTEMPTS - pin_attempts
-                msg = f"PIN failed: SW1={sw1:02X}, SW2={sw2:02X}. {remaining} attempts left"
+                msg = f"PIN failed: {remaining} attempts left"
                 if pin_attempts >= MAX_PIN_ATTEMPTS:
                     card_status = CardStatus.BLOCKED
                     msg += " Card blocked."
@@ -483,6 +482,9 @@ def register_card_route():
 
             return jsonify({"message": "Card registered successfully", "status": "success"})
 
+        except CardError as e:
+            logger.error(f"Error registering card: {e}")
+            return jsonify({"message": str(e), "status": "error"}), 500
         except Exception as e:
             logger.error(f"Error registering card: {e}")
             return jsonify({"message": str(e), "status": "error"}), 500
@@ -547,3 +549,13 @@ def deactivate_card():
         except Exception as e:
             logger.error(f"Error deactivating card: {e}")
             return jsonify({"message": str(e), "status": "error"}), 500
+
+@bp.route('/readers', methods=['GET'])
+def list_readers():
+    """Lists available smart card readers."""
+    try:
+        readers = detect_readers()
+        return jsonify(readers)
+    except Exception as e:
+        logger.error(f"Error listing readers: {e}")
+        return jsonify({"error": str(e)}), 500

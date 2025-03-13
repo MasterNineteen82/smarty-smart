@@ -10,7 +10,46 @@ from server_utils import run_server, stop_server
 from smartcard.System import readers
 from app.config import LOG_FILE, LOG_LEVEL, LOG_FORMAT, DEBUG
 
-app = Flask(__name__, template_folder='templates', static_folder='static')
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('app.config')  # Load configuration from config.py
+
+    # Configure logging
+    configure_logging(app)
+
+    # Register blueprints
+    register_blueprints(app)
+
+    return app
+
+def configure_logging(app):
+    """Configure logging for the application."""
+    log_level = app.config['LOG_LEVEL']  # Get log level from config
+    log_file = app.config['LOG_FILE']
+    log_format = app.config['LOG_FORMAT']
+
+    logger = logging.getLogger('smarty')
+    logger.setLevel(log_level)
+
+    file_handler = RotatingFileHandler(
+        log_file,
+        maxBytes=10 * 1024 * 1024,
+        backupCount=5
+    )
+    console_handler = logging.StreamHandler()
+
+    formatter = logging.Formatter(log_format)
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    file_handler.setLevel(log_level)
+    console_handler.setLevel(log_level if app.config['DEBUG'] else logging.WARNING)
+
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+    return logger
+
+app = create_app()
 
 # Configuration
 BACKUP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backups')
@@ -19,31 +58,6 @@ if not os.path.exists(BACKUP_DIR):
 
 app.secret_key = config.SECRET_KEY
 app.debug = config.DEBUG
-
-# Logging setup
-def setup_logging():
-    logger = logging.getLogger('smarty')
-    logger.setLevel(LOG_LEVEL)
-
-    file_handler = RotatingFileHandler(
-        LOG_FILE, 
-        maxBytes=10*1024*1024,
-        backupCount=5
-    )
-    console_handler = logging.StreamHandler()
-
-    formatter = logging.Formatter(LOG_FORMAT)
-    file_handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
-
-    file_handler.setLevel(LOG_LEVEL)
-    console_handler.setLevel(LOG_LEVEL if DEBUG else logging.WARNING)
-
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-    return logger
-
-logger = setup_logging()
 
 # Register Blueprints
 app.register_blueprint(routes_bp)
