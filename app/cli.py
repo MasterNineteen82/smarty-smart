@@ -1,299 +1,219 @@
 """
-Smart Card Manager - Command Line Interface
-Provides quick access to common card operations via terminal
+Command-line interface module for the Smartcard Manager application.
+
+This module provides a comprehensive CLI for managing smart cards and NFC devices
+with consistent error handling and user feedback.
 """
 
-import sys
-import argparse
 import logging
-from typing import List, Tuple, Optional
+import sys
+from typing import Optional
 
-from card_utils import (
-    establish_connection, close_connection, select_reader, 
-    detect_card_type, is_card_registered, register_card, unregister_card, 
-    backup_card_data, restore_card_data, secure_dispose_card,
-    activate_card, deactivate_card, block_card, unblock_card,
-    list_backups, delete_backup
+import click
+from app.db import init_db
+from app.core.card_manager import card_manager
+from app.core.nfc import nfc_manager
+from app.core.exceptions import (
+    CardRegistrationError, CardNotFoundError, 
+    CardOperationError, NFCOperationError,
+    DatabaseError
 )
+from app.api.routes import bp as routes_bp
 
-# Constants
-LOG_LEVEL = logging.INFO
-LOG_FORMAT = '%(levelname)s: %(message)s'
-DEFAULT_READER_PROMPT = "Enter reader number or name: "
-CONFIRM_DISPOSE_MESSAGE = "WARNING: This will permanently erase all data from the card. Continue? (y/N): "
-OPERATION_CANCELLED = "Operation cancelled"
-NO_BACKUPS_FOUND = "No backups found"
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('smartcard-cli')
 
-# Logging Configuration
-logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
-logger = logging.getLogger('cli')
-
-def handle_card_operation(operation, *args, **kwargs):
+@click.group()
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
+@click.pass_context
+def cli(ctx, verbose):
+    """Smartcard and NFC Manager CLI.
+    
+    Provides tools to manage smartcards and NFC devices in a unified interface.
     """
-    Handles the execution of a card operation with centralized error handling.
+    ctx.ensure_object(dict)
+    ctx.obj['VERBOSE'] = verbose
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+
+@cli.command()
+def initdb():
+    """Initialize the database schema for card management."""
+    try:
+        init_db()
+        click.echo("Database initialized successfully.")
+        logger.info("Database initialized")
+    except DatabaseError as e:
+        logger.error(f"Database initialization failed: {e}")
+        click.echo(f"Error initializing database: {e}", err=True)
+        sys.exit(1)
+
+@cli.command()
+def list_cards():
+    """List all registered cards in the system."""
+    try:
+        cards = card_manager.list_cards()
+        if not cards:
+            click.echo("No cards registered in the system.")
+            return
+            
+        click.echo("Registered cards:")
+        for card in cards:
+            status = "ACTIVE" if card.is_active else "INACTIVE"
+            blocked = " [BLOCKED]" if card.is_blocked else ""
+            click.echo(f"ID: {card.id} | ATR: {card.atr} | User: {card.user_id} | Status: {status}{blocked}")
+    except Exception as e:
+        logger.error(f"Error listing cards: {e}")
+        click.echo(f"Error retrieving card list: {e}", err=True)
+
+@cli.command()
+@click.argument('atr')
+@click.argument('user_id')
+@click.option('--activate', is_flag=True, help='Activate the card after registration')
+def register_card(atr, user_id, activate):
+    """Register a smart card with the given ATR to a user.
+    
+    ATR: The Answer To Reset string that uniquely identifies the card
+    USER_ID: The ID of the user to associate with this card
     """
     try:
-        return operation(*args, **kwargs)
-    except Exception as e:
-        logger.error(f"Error during {operation.__name__}: {str(e)}")
-        return False, str(e)  # Consistent return of (success, message)
-
-def select_card_reader(reader_identifier: Optional[str]) -> bool:
-    """Selects a card reader based on the given identifier."""
-    if reader_identifier is None:
-        return True  # No reader specified, assume default or auto-select
-    try:
-        select_reader(reader_identifier)
-        return True
-    except Exception as e:
-        logger.error(f"Error selecting reader: {str(e)}")
-        print(f"Error selecting reader: {str(e)}")
-        return False
-
-def display_card_status():
-    """Retrieves and displays the card status."""
-    conn, err = establish_connection()
-    if err:
-        print(f"Error: {err}")
-        return
-
-    try:
-        from smartcard.util import toHexString
-        atr = toHexString(conn.getATR())
-        card_type = detect_card_type(atr)
-        registered = is_card_registered(atr)
-
-        print(f"Card detected:")
-        print(f"  ATR: {atr}")
-        print(f"  Type: {card_type}")
-        print(f"  Registered: {'Yes' if registered else 'No'}")
-    except Exception as e:
-        print(f"Error retrieving card status: {str(e)}")
-    finally:
-        close_connection(conn)
-
-def list_readers() -> None:
-    """List available card readers"""
-    from smartcard.System import readers
-    reader_list = readers()
-    
-    if not reader_list:
-        print("No card readers found.")
-        return
-    
-    print("Available readers:")
-    for i, reader in enumerate(reader_list):
-        print(f"  {i+1}. {reader}")
-
-def execute_card_command(command: str, args: argparse.Namespace) -> None:
-    """Execute a card command based on arguments"""
-    if command == "list-readers":
-        list_readers()
-        return
-    
-    # Select reader if specified
-    if args.reader is not None:
-        try:
-            select_reader(args.reader)
-        except Exception as e:
-            print(f"Error selecting reader: {str(e)}")
-            return
-
-    if command == "status":
-        display_card_status()
-
-    elif command == "register":
-        if not args.name or not args.user_id:
-            print("Error: name and user-id are required for registration")
-            return
-
-        try:
-            success, message = register_card(args.name, args.user_id)
-            print(message)
-        except Exception as e:
-            print(f"Error registering card: {str(e)}")
-
-    elif command == "unregister":
-        try:
-            success, message = unregister_card()
-            print(message)
-        except Exception as e:
-            print(f"Error unregistering card: {str(e)}")
-
-    elif command == "activate":
-        try:
-            success, message = activate_card()
-            print(message)
-        except Exception as e:
-            print(f"Error activating card: {str(e)}")
-
-    elif command == "deactivate":
-        try:
-            success, message = deactivate_card()
-            print(message)
-        except Exception as e:
-            print(f"Error deactivating card: {str(e)}")
-
-    elif command == "block":
-        try:
-            success, message = block_card()
-            print(message)
-        except Exception as e:
-            print(f"Error blocking card: {str(e)}")
-
-    elif command == "unblock":
-        try:
-            success, message = unblock_card()
-            print(message)
-        except Exception as e:
-            print(f"Error unblocking card: {str(e)}")
-
-    elif command == "backup":
-        try:
-            success, message, backup_id = backup_card_data()
-            print(message)
-            if success:
-                print(f"Backup ID: {backup_id}")
-        except Exception as e:
-            print(f"Error backing up card: {str(e)}")
-
-    elif command == "restore":
-        if not args.backup_id:
-            print("Error: backup-id is required for restore operation")
-            return
-
-        try:
-            success, message = restore_card_data(args.backup_id)
-            print(message)
-        except Exception as e:
-            print(f"Error restoring card: {str(e)}")
-
-    elif command == "list-backups":
-        try:
-            backups = list_backups()
-            if not backups:
-                print("No backups found")
-                return
-
-            print(f"Found {len(backups)} backups:")
-            for backup in backups:
-                print(f"  ID: {backup['backup_id']}")
-                print(f"    Date: {backup['backup_time']}")
-                print(f"    Card Type: {backup['card_type']}")
-                print()
-        except Exception as e:
-            print(f"Error listing backups: {str(e)}")
-
-    elif command == "delete-backup":
-        if not args.backup_id:
-            print("Error: backup-id is required for delete operation")
-            return
-
-        try:
-            success, message = delete_backup(args.backup_id)
-            print(message)
-        except Exception as e:
-            print(f"Error deleting backup: {str(e)}")
-
-    elif command == "dispose":
-        if not args.force:
-            confirm = input("WARNING: This will permanently erase all data from the card. Continue? (y/N): ")
-            if confirm.lower() != 'y':
-                print("Operation cancelled")
-                return
-
-        try:
-            success, message = secure_dispose_card()
-            print(message)
-        except Exception as e:
-            print(f"Error disposing card: {str(e)}")
+        card = card_manager.register_card(atr, user_id)
+        click.echo(f"Card with ATR {atr} registered to user {user_id} (Card ID: {card.id}).")
         
-        success, message = secure_dispose_card()
-        print(message)
+        if activate:
+            card_manager.activate_card(atr)
+            click.echo(f"Card activated successfully.")
+    except CardRegistrationError as e:
+        logger.error(f"Card registration failed: {e}")
+        click.echo(f"Error registering card: {e}", err=True)
+    except CardOperationError as e:
+        logger.error(f"Card activation failed: {e}")
+        click.echo(f"Card registered but activation failed: {e}", err=True)
 
-def create_parser() -> argparse.ArgumentParser:
-    """Creates the argument parser for the CLI."""
-    parser = argparse.ArgumentParser(description="Smart Card Manager CLI")
-    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
-
-    # Define common argument
-    reader_arg = {"help": "Specify reader number or name"}
-
-    # Helper function to add common arguments
-    def add_common_args(subparser):
-        subparser.add_argument("--reader", **reader_arg)
-
-    # List readers command
-    list_readers_parser = subparsers.add_parser("list-readers", help="List available card readers")
-
-    # Status command
-    status_parser = subparsers.add_parser("status", help="Show card status")
-    add_common_args(status_parser)
-
-    # Register command
-    register_parser = subparsers.add_parser("register", help="Register a card")
-    add_common_args(register_parser)
-    register_parser.add_argument("--name", help="Card name", required=True)
-    register_parser.add_argument("--user-id", help="User ID", required=True)
-
-    # Unregister command
-    unregister_parser = subparsers.add_parser("unregister", help="Unregister a card")
-    add_common_args(unregister_parser)
-
-    # Activate command
-    activate_parser = subparsers.add_parser("activate", help="Activate a card")
-    add_common_args(activate_parser)
-
-    # Deactivate command
-    deactivate_parser = subparsers.add_parser("deactivate", help="Deactivate a card")
-    add_common_args(deactivate_parser)
-
-    # Block command
-    block_parser = subparsers.add_parser("block", help="Block a card")
-    add_common_args(block_parser)
-
-    # Unblock command
-    unblock_parser = subparsers.add_parser("unblock", help="Unblock a card")
-    add_common_args(unblock_parser)
-
-    # Backup command
-    backup_parser = subparsers.add_parser("backup", help="Backup a card")
-    add_common_args(backup_parser)
-
-    # Restore command
-    restore_parser = subparsers.add_parser("restore", help="Restore a card from backup")
-    add_common_args(restore_parser)
-    restore_parser.add_argument("--backup-id", help="Backup ID to restore", required=True)
-
-    # List backups command
-    list_backups_parser = subparsers.add_parser("list-backups", help="List available backups")
-
-    # Delete backup command
-    delete_backup_parser = subparsers.add_parser("delete-backup", help="Delete a backup")
-    delete_backup_parser.add_argument("--backup-id", help="Backup ID to delete", required=True)
-
-    # Dispose command
-    dispose_parser = subparsers.add_parser("dispose", help="Securely dispose a card")
-    add_common_args(dispose_parser)
-    dispose_parser.add_argument("--force", action="store_true", help="Skip confirmation")
-
-    return parser
-
-def main(args: List[str] = None) -> int:
-    """Main entry point for the CLI application"""
-    parser = create_parser()
-    args = parser.parse_args(args)
+@cli.command()
+@click.argument('card_identifier')
+@click.option('--by-id', is_flag=True, help='Use card ID instead of ATR')
+@click.confirmation_option(prompt='Are you sure you want to block this card?')
+def block_card(card_identifier, by_id):
+    """Block a smart card to prevent its usage.
     
-    if not args.command:
-        parser.print_help()
-        return 1
-    
+    CARD_IDENTIFIER: The ATR string or ID of the card to block
+    """
     try:
-        execute_card_command(args.command, args)
-        return 0
-    except Exception as e:
-        logger.error(f"Error: {str(e)}")
-        return 1
+        if by_id:
+            card = card_manager.block_card_by_id(int(card_identifier))
+        else:
+            card = card_manager.block_card(card_identifier)
+        click.echo(f"Card {card_identifier} blocked successfully.")
+    except CardNotFoundError as e:
+        logger.error(f"Card not found: {e}")
+        click.echo(f"Error: {e}", err=True)
+    except CardOperationError as e:
+        logger.error(f"Block operation failed: {e}")
+        click.echo(f"Error blocking card: {e}", err=True)
 
-if __name__ == "__main__":
-    sys.exit(main())
+@cli.command()
+@click.argument('card_identifier')
+@click.option('--by-id', is_flag=True, help='Use card ID instead of ATR')
+def activate_card(card_identifier, by_id):
+    """Activate a smart card for use.
+    
+    CARD_IDENTIFIER: The ATR string or ID of the card to activate
+    """
+    try:
+        if by_id:
+            card = card_manager.activate_card_by_id(int(card_identifier))
+        else:
+            card = card_manager.activate_card(card_identifier)
+        click.echo(f"Card {card_identifier} activated successfully.")
+    except CardNotFoundError as e:
+        logger.error(f"Card not found: {e}")
+        click.echo(f"Error: {e}", err=True)
+    except CardOperationError as e:
+        logger.error(f"Activation operation failed: {e}")
+        click.echo(f"Error activating card: {e}", err=True)
+
+@cli.command()
+@click.argument('card_identifier')
+@click.option('--by-id', is_flag=True, help='Use card ID instead of ATR')
+def deactivate_card(card_identifier, by_id):
+    """Deactivate a smart card.
+    
+    CARD_IDENTIFIER: The ATR string or ID of the card to deactivate
+    """
+    try:
+        if by_id:
+            card = card_manager.deactivate_card_by_id(int(card_identifier))
+        else:
+            card = card_manager.deactivate_card(card_identifier)
+        click.echo(f"Card {card_identifier} deactivated successfully.")
+    except CardNotFoundError as e:
+        logger.error(f"Card not found: {e}")
+        click.echo(f"Error: {e}", err=True)
+    except CardOperationError as e:
+        logger.error(f"Deactivation operation failed: {e}")
+        click.echo(f"Error deactivating card: {e}", err=True)
+
+@cli.command()
+@click.argument('card_id', type=int)
+@click.option('--raw', is_flag=True, help='Output raw data without formatting')
+def read_nfc(card_id, raw):
+    """Read data from an NFC card.
+    
+    CARD_ID: The ID of the NFC card to read from
+    """
+    try:
+        data = nfc_manager.read_nfc_data(card_id)
+        if raw:
+            click.echo(data)
+        else:
+            click.echo(f"NFC data from card {card_id}: {data}")
+    except CardNotFoundError as e:
+        logger.error(f"NFC card not found: {e}")
+        click.echo(f"Error: {e}", err=True)
+    except NFCOperationError as e:
+        logger.error(f"NFC read operation failed: {e}")
+        click.echo(f"Error reading NFC data: {e}", err=True)
+
+@cli.command()
+@click.argument('card_id', type=int)
+@click.argument('data')
+@click.confirmation_option(prompt='Writing data will overwrite existing data. Continue?')
+def write_nfc(card_id, data):
+    """Write data to an NFC card.
+    
+    CARD_ID: The ID of the NFC card to write to
+    DATA: The data string to write to the card
+    """
+    try:
+        nfc_manager.write_nfc_data(card_id, data)
+        click.echo(f"Data successfully written to NFC card {card_id}.")
+    except CardNotFoundError as e:
+        logger.error(f"NFC card not found: {e}")
+        click.echo(f"Error: {e}", err=True)
+    except NFCOperationError as e:
+        logger.error(f"NFC write operation failed: {e}")
+        click.echo(f"Error writing NFC data: {e}", err=True)
+
+@cli.command()
+def scan_devices():
+    """Scan for connected NFC readers and smart card devices."""
+    try:
+        devices = nfc_manager.scan_devices()
+        if not devices:
+            click.echo("No NFC or smartcard devices detected.")
+            return
+            
+        click.echo("Detected devices:")
+        for i, device in enumerate(devices, 1):
+            click.echo(f"{i}. {device.name} ({device.device_type})")
+    except NFCOperationError as e:
+        logger.error(f"Device scanning failed: {e}")
+        click.echo(f"Error scanning for devices: {e}", err=True)
+
+if __name__ == '__main__':
+    cli()

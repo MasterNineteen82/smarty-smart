@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from app import get_core
+from app.core.nfc import nfc_manager
 
 # Use the modules
 core = get_core()

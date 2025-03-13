@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from app.api.card_manager import CardManager
+from app.core.card_manager import CardManager
 from app.exceptions import CardError  # Assuming you have custom exceptions
 
 @pytest.fixture

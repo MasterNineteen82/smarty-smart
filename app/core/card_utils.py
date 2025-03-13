@@ -39,32 +39,24 @@ class ConfigManager:
         self._configure_logging()
 
     def _load_from_env(self):
-        """Override configuration from environment variables."""
-        for key in self._config:
-            env_key = f"SMARTCARD_{key}"
-            if env_key in os.environ:
-                value = os.environ[env_key]
-                # Attempt type conversion based on default type
+        """Load configuration from environment variables."""
+        for key in self._config.keys():
+            env_key = key.upper()
+            env_value = os.environ.get(env_key)
+            if env_value is not None:
                 try:
+                    # Attempt to convert the environment variable to the correct type
                     if isinstance(self._config[key], bool):
-                        value = value.lower() == 'true'
+                        value = env_value.lower() == 'true'
                     elif isinstance(self._config[key], int):
-                        try:
-                            value = int(value)
-                        except ValueError:
-                            logger.warning(f"Could not convert '{env_key}' value '{value}' to integer.")
-                            continue  # Skip this variable if conversion fails
+                        value = int(env_value)
                     elif isinstance(self._config[key], float):
-                        try:
-                            value = float(value)
-                        except ValueError:
-                            logger.warning(f"Could not convert '{env_key}' value '{value}' to float.")
-                            continue  # Skip this variable if conversion fails
-                except Exception as e:
-                    logger.error(f"Error processing environment variable {env_key}: {e}")
-                    continue  # Skip to the next variable in case of error
-        self._config[key] = value
-        return value
+                        value = float(env_value)
+                    else:
+                        value = str(env_value)  # Default to string
+                    self._config[key] = value
+                except ValueError:
+                    logger.warning(f"Could not convert environment variable {env_key} to correct type, using default value.")
 
     def mask_sensitive_data(self, data_str):
         """Mask sensitive data if configured to do so"""

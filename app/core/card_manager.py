@@ -7,7 +7,7 @@ from datetime import datetime
 
 from smartcard.util import toHexString
 
-from card_utils import (
+from app.core.card_utils import (
     establish_connection, close_connection, safe_globals,
     detect_card_type, detect_reader_type, is_card_registered,
     register_card, unregister_card, activate_card, deactivate_card,

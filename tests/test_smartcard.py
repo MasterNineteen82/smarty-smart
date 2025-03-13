@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 # from smartcard.util import toHexString  # Remove this line
 from app import get_core
+from app.core.smartcard import smartcard_manager
 
 # Use the modules
 core = get_core()

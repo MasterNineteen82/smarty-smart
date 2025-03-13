@@ -9,11 +9,13 @@ import time # noqa
 # Add parent directory to path so we can import our modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from card_utils import (
-    detect_card_type, register_card, unregister_card, 
-    activate_card, deactivate_card, block_card, unblock_card,
-    backup_card_data, restore_card_data, delete_backup,
-    is_card_registered, CardStatus
+from app.core.card_utils import (
+    establish_connection, close_connection, safe_globals,
+    detect_card_type, detect_reader_type, is_card_registered,
+    register_card, unregister_card, activate_card, deactivate_card,
+    block_card, unblock_card, backup_card_data, restore_card_data,
+    secure_dispose_card, card_info, card_status, CardStatus,
+    CHERRY_ST_IDENTIFIER, ACR122U_IDENTIFIER
 )
 
 class MockCardConnection:

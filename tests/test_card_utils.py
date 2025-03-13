@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch
 from app.api import card_utils
+from app.core import card_utils
 from enum import Enum
 
 # Add parent directory to path to import modules
