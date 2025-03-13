@@ -104,3 +104,213 @@
 2025-03-13 18:16:51,348 - INFO - All critical checks passed! The application should start correctly.
 2025-03-13 18:16:51,348 - INFO - Info: Starting Smart Card Manager...
 2025-03-13 18:16:51,348 - INFO - Starting Smart Card Manager...
+2025-03-13 19:39:00,603 - INFO - Header: Smart Card Manager Setup Checker
+2025-03-13 19:39:00,631 - INFO - System: Windows 10 (64bit)
+2025-03-13 19:39:00,631 - INFO - Python: 3.10.11
+2025-03-13 19:39:00,631 - INFO - Time: 2025-03-13 19:39:00
+2025-03-13 19:39:00,631 - INFO - Success: Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:39:00,631 - INFO - Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:39:01,018 - INFO - Success: pip is installed and working
+2025-03-13 19:39:01,018 - INFO - pip is installed and working
+2025-03-13 19:39:01,018 - WARNING - Warning: Not running inside a virtual environment.
+2025-03-13 19:39:01,018 - WARNING - Not running inside a virtual environment.
+2025-03-13 19:39:01,022 - INFO - Info: It is recommended to run this application within a virtual environment.
+2025-03-13 19:39:01,022 - INFO - It is recommended to run this application within a virtual environment.
+2025-03-13 19:39:01,022 - INFO - Header: Setting Up Directories
+2025-03-13 19:39:01,022 - INFO - Info: Directory already exists: logs
+2025-03-13 19:39:01,022 - INFO - Directory already exists: logs
+2025-03-13 19:39:01,022 - INFO - Info: Directory already exists: data
+2025-03-13 19:39:01,022 - INFO - Directory already exists: data
+2025-03-13 19:39:01,022 - INFO - Info: Directory already exists: logs\backups
+2025-03-13 19:39:01,022 - INFO - Directory already exists: logs\backups
+2025-03-13 19:39:01,022 - INFO - Header: Checking Required Packages
+2025-03-13 19:39:01,022 - WARNING - Warning: pyscard is not installed. Attempting to install...
+2025-03-13 19:39:01,022 - INFO - Info: Installing pyscard...
+2025-03-13 19:39:01,022 - INFO - Installing pyscard...
+2025-03-13 19:39:02,872 - INFO - Success: pyscard was successfully installed
+2025-03-13 19:39:02,872 - INFO - pyscard was successfully installed
+2025-03-13 19:39:02,875 - INFO - Success: fastapi is installed
+2025-03-13 19:39:02,875 - INFO - Success: uvicorn is installed
+2025-03-13 19:39:02,875 - INFO - Success: werkzeug is installed
+2025-03-13 19:39:02,879 - INFO - Success: cryptography is installed
+2025-03-13 19:39:02,879 - WARNING - Warning: pyopenssl is not installed. Attempting to install...
+2025-03-13 19:39:02,879 - INFO - Info: Installing pyopenssl...
+2025-03-13 19:39:02,879 - INFO - Installing pyopenssl...
+2025-03-13 19:39:04,697 - INFO - Success: pyopenssl was successfully installed
+2025-03-13 19:39:04,697 - INFO - pyopenssl was successfully installed
+2025-03-13 19:39:04,711 - WARNING - Warning: python-dateutil is not installed. Attempting to install...
+2025-03-13 19:39:04,711 - INFO - Info: Installing python-dateutil...
+2025-03-13 19:39:04,711 - INFO - Installing python-dateutil...
+2025-03-13 19:39:06,528 - INFO - Success: python-dateutil was successfully installed
+2025-03-13 19:39:06,528 - INFO - python-dateutil was successfully installed
+2025-03-13 19:39:06,528 - INFO - Header: Checking PC/SC Service
+2025-03-13 19:39:06,547 - INFO - Success: PC/SC service (SCardSvr) is running
+2025-03-13 19:39:06,547 - INFO - PC/SC service (SCardSvr) is running
+2025-03-13 19:39:06,547 - INFO - Header: Checking for Card Readers
+2025-03-13 19:39:06,574 - INFO - Success: Found 2 card reader(s):
+2025-03-13 19:39:06,574 - INFO - Found 2 card reader(s):
+2025-03-13 19:39:06,574 - INFO - Info:   1. ACS ACR122 0
+2025-03-13 19:39:06,574 - INFO -   1. ACS ACR122 0
+2025-03-13 19:39:06,574 - INFO - Info:   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:39:06,574 - INFO -   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:39:06,574 - INFO - Header: Setup Check Summary
+2025-03-13 19:39:06,574 - INFO - Success: All critical checks passed! The application should start correctly.
+2025-03-13 19:39:06,574 - INFO - All critical checks passed! The application should start correctly.
+2025-03-13 19:39:06,574 - INFO - Info: Starting Smart Card Manager...
+2025-03-13 19:39:06,574 - INFO - Starting Smart Card Manager...
+2025-03-13 19:39:35,207 - INFO - Header: Smart Card Manager Setup Checker
+2025-03-13 19:39:35,223 - INFO - System: Windows 10 (64bit)
+2025-03-13 19:39:35,223 - INFO - Python: 3.10.11
+2025-03-13 19:39:35,223 - INFO - Time: 2025-03-13 19:39:35
+2025-03-13 19:39:35,223 - INFO - Success: Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:39:35,223 - INFO - Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:39:35,553 - INFO - Success: pip is installed and working
+2025-03-13 19:39:35,553 - INFO - pip is installed and working
+2025-03-13 19:39:35,553 - INFO - Success: Running inside a virtual environment.
+2025-03-13 19:39:35,553 - INFO - Running inside a virtual environment.
+2025-03-13 19:39:35,560 - INFO - Header: Setting Up Directories
+2025-03-13 19:39:35,560 - INFO - Info: Directory already exists: logs
+2025-03-13 19:39:35,560 - INFO - Directory already exists: logs
+2025-03-13 19:39:35,560 - INFO - Info: Directory already exists: data
+2025-03-13 19:39:35,560 - INFO - Directory already exists: data
+2025-03-13 19:39:35,560 - INFO - Info: Directory already exists: logs\backups
+2025-03-13 19:39:35,560 - INFO - Directory already exists: logs\backups
+2025-03-13 19:39:35,560 - INFO - Header: Checking Required Packages
+2025-03-13 19:39:35,562 - WARNING - Warning: pyscard is not installed. Attempting to install...
+2025-03-13 19:39:35,562 - INFO - Info: Installing pyscard...
+2025-03-13 19:39:35,562 - INFO - Installing pyscard...
+2025-03-13 19:39:36,388 - INFO - Success: pyscard was successfully installed
+2025-03-13 19:39:36,388 - INFO - pyscard was successfully installed
+2025-03-13 19:39:36,401 - INFO - Success: fastapi is installed
+2025-03-13 19:39:36,401 - INFO - Success: uvicorn is installed
+2025-03-13 19:39:36,401 - INFO - Success: werkzeug is installed
+2025-03-13 19:39:36,401 - INFO - Success: cryptography is installed
+2025-03-13 19:39:36,401 - WARNING - Warning: pyopenssl is not installed. Attempting to install...
+2025-03-13 19:39:36,401 - INFO - Info: Installing pyopenssl...
+2025-03-13 19:39:36,401 - INFO - Installing pyopenssl...
+2025-03-13 19:39:37,241 - INFO - Success: pyopenssl was successfully installed
+2025-03-13 19:39:37,241 - INFO - pyopenssl was successfully installed
+2025-03-13 19:39:37,257 - WARNING - Warning: python-dateutil is not installed. Attempting to install...
+2025-03-13 19:39:37,257 - INFO - Info: Installing python-dateutil...
+2025-03-13 19:39:37,257 - INFO - Installing python-dateutil...
+2025-03-13 19:39:38,079 - INFO - Success: python-dateutil was successfully installed
+2025-03-13 19:39:38,079 - INFO - python-dateutil was successfully installed
+2025-03-13 19:39:38,079 - INFO - Header: Checking PC/SC Service
+2025-03-13 19:39:38,090 - INFO - Success: PC/SC service (SCardSvr) is running
+2025-03-13 19:39:38,090 - INFO - PC/SC service (SCardSvr) is running
+2025-03-13 19:39:38,094 - INFO - Header: Checking for Card Readers
+2025-03-13 19:39:38,111 - INFO - Success: Found 2 card reader(s):
+2025-03-13 19:39:38,113 - INFO - Found 2 card reader(s):
+2025-03-13 19:39:38,113 - INFO - Info:   1. ACS ACR122 0
+2025-03-13 19:39:38,113 - INFO -   1. ACS ACR122 0
+2025-03-13 19:39:38,113 - INFO - Info:   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:39:38,113 - INFO -   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:39:38,113 - INFO - Header: Setup Check Summary
+2025-03-13 19:39:38,113 - INFO - Success: All critical checks passed! The application should start correctly.
+2025-03-13 19:39:38,113 - INFO - All critical checks passed! The application should start correctly.
+2025-03-13 19:39:38,113 - INFO - Info: Starting Smart Card Manager...
+2025-03-13 19:39:38,113 - INFO - Starting Smart Card Manager...
+2025-03-13 19:42:17,754 - INFO - Header: Smart Card Manager Setup Checker
+2025-03-13 19:42:17,767 - INFO - System: Windows 10 (64bit)
+2025-03-13 19:42:17,767 - INFO - Python: 3.10.11
+2025-03-13 19:42:17,767 - INFO - Time: 2025-03-13 19:42:17
+2025-03-13 19:42:17,767 - INFO - Success: Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:42:17,767 - INFO - Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:42:18,093 - INFO - Success: pip is installed and working
+2025-03-13 19:42:18,093 - INFO - pip is installed and working
+2025-03-13 19:42:18,093 - INFO - Success: Running inside a virtual environment.
+2025-03-13 19:42:18,093 - INFO - Running inside a virtual environment.
+2025-03-13 19:42:18,100 - INFO - Header: Setting Up Directories
+2025-03-13 19:42:18,100 - INFO - Info: Directory already exists: logs
+2025-03-13 19:42:18,100 - INFO - Directory already exists: logs
+2025-03-13 19:42:18,100 - INFO - Info: Directory already exists: data
+2025-03-13 19:42:18,100 - INFO - Directory already exists: data
+2025-03-13 19:42:18,100 - INFO - Info: Directory already exists: logs\backups
+2025-03-13 19:42:18,100 - INFO - Directory already exists: logs\backups
+2025-03-13 19:42:18,100 - INFO - Header: Checking Required Packages
+2025-03-13 19:42:18,100 - WARNING - Warning: pyscard is not installed. Attempting to install...
+2025-03-13 19:42:18,100 - INFO - Info: Installing pyscard...
+2025-03-13 19:42:18,100 - INFO - Installing pyscard...
+2025-03-13 19:42:18,940 - INFO - Success: pyscard was successfully installed
+2025-03-13 19:42:18,951 - INFO - pyscard was successfully installed
+2025-03-13 19:42:18,952 - INFO - Success: fastapi is installed
+2025-03-13 19:42:18,952 - INFO - Success: uvicorn is installed
+2025-03-13 19:42:18,952 - INFO - Success: werkzeug is installed
+2025-03-13 19:42:18,952 - INFO - Success: cryptography is installed
+2025-03-13 19:42:18,952 - WARNING - Warning: pyopenssl is not installed. Attempting to install...
+2025-03-13 19:42:18,952 - INFO - Info: Installing pyopenssl...
+2025-03-13 19:42:18,952 - INFO - Installing pyopenssl...
+2025-03-13 19:42:19,781 - INFO - Success: pyopenssl was successfully installed
+2025-03-13 19:42:19,781 - INFO - pyopenssl was successfully installed
+2025-03-13 19:42:19,793 - WARNING - Warning: python-dateutil is not installed. Attempting to install...
+2025-03-13 19:42:19,793 - INFO - Info: Installing python-dateutil...
+2025-03-13 19:42:19,793 - INFO - Installing python-dateutil...
+2025-03-13 19:42:20,627 - INFO - Success: python-dateutil was successfully installed
+2025-03-13 19:42:20,627 - INFO - python-dateutil was successfully installed
+2025-03-13 19:42:20,627 - INFO - Header: Checking PC/SC Service
+2025-03-13 19:42:20,633 - INFO - Success: PC/SC service (SCardSvr) is running
+2025-03-13 19:42:20,633 - INFO - PC/SC service (SCardSvr) is running
+2025-03-13 19:42:20,633 - INFO - Header: Checking for Card Readers
+2025-03-13 19:42:20,658 - INFO - Success: Found 2 card reader(s):
+2025-03-13 19:42:20,658 - INFO - Found 2 card reader(s):
+2025-03-13 19:42:20,658 - INFO - Info:   1. ACS ACR122 0
+2025-03-13 19:42:20,658 - INFO -   1. ACS ACR122 0
+2025-03-13 19:42:20,658 - INFO - Info:   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:42:20,658 - INFO -   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:42:20,658 - INFO - Header: Setup Check Summary
+2025-03-13 19:42:20,659 - INFO - Success: All critical checks passed! The application should start correctly.
+2025-03-13 19:42:20,659 - INFO - All critical checks passed! The application should start correctly.
+2025-03-13 19:42:20,659 - INFO - Info: Starting Smart Card Manager...
+2025-03-13 19:42:20,659 - INFO - Starting Smart Card Manager...
+2025-03-13 19:44:04,111 - INFO - Header: Smart Card Manager Setup Checker
+2025-03-13 19:44:04,132 - INFO - System: Windows 10 (64bit)
+2025-03-13 19:44:04,132 - INFO - Python: 3.10.11
+2025-03-13 19:44:04,132 - INFO - Time: 2025-03-13 19:44:04
+2025-03-13 19:44:04,132 - INFO - Success: Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:44:04,132 - INFO - Python version 3.10.11 detected (required: 3.8+)
+2025-03-13 19:44:04,444 - INFO - Success: pip is installed and working
+2025-03-13 19:44:04,444 - INFO - pip is installed and working
+2025-03-13 19:44:04,444 - INFO - Success: Running inside a virtual environment.
+2025-03-13 19:44:04,444 - INFO - Running inside a virtual environment.
+2025-03-13 19:44:04,449 - INFO - Header: Setting Up Directories
+2025-03-13 19:44:04,449 - INFO - Info: Directory already exists: logs
+2025-03-13 19:44:04,449 - INFO - Directory already exists: logs
+2025-03-13 19:44:04,449 - INFO - Info: Directory already exists: data
+2025-03-13 19:44:04,449 - INFO - Directory already exists: data
+2025-03-13 19:44:04,449 - INFO - Info: Directory already exists: logs\backups
+2025-03-13 19:44:04,449 - INFO - Directory already exists: logs\backups
+2025-03-13 19:44:04,449 - INFO - Header: Checking Required Packages
+2025-03-13 19:44:04,449 - WARNING - Warning: pyscard is not installed. Attempting to install...
+2025-03-13 19:44:04,449 - INFO - Info: Installing pyscard...
+2025-03-13 19:44:04,449 - INFO - Installing pyscard...
+2025-03-13 19:44:05,278 - INFO - Success: pyscard was successfully installed
+2025-03-13 19:44:05,278 - INFO - pyscard was successfully installed
+2025-03-13 19:44:05,280 - INFO - Success: fastapi is installed
+2025-03-13 19:44:05,280 - INFO - Success: uvicorn is installed
+2025-03-13 19:44:05,280 - INFO - Success: werkzeug is installed
+2025-03-13 19:44:05,280 - INFO - Success: cryptography is installed
+2025-03-13 19:44:05,280 - WARNING - Warning: pyopenssl is not installed. Attempting to install...
+2025-03-13 19:44:05,280 - INFO - Info: Installing pyopenssl...
+2025-03-13 19:44:05,280 - INFO - Installing pyopenssl...
+2025-03-13 19:44:06,113 - INFO - Success: pyopenssl was successfully installed
+2025-03-13 19:44:06,113 - INFO - pyopenssl was successfully installed
+2025-03-13 19:44:06,114 - WARNING - Warning: python-dateutil is not installed. Attempting to install...
+2025-03-13 19:44:06,114 - INFO - Info: Installing python-dateutil...
+2025-03-13 19:44:06,114 - INFO - Installing python-dateutil...
+2025-03-13 19:44:06,937 - INFO - Success: python-dateutil was successfully installed
+2025-03-13 19:44:06,937 - INFO - python-dateutil was successfully installed
+2025-03-13 19:44:06,937 - INFO - Header: Checking PC/SC Service
+2025-03-13 19:44:06,944 - INFO - Success: PC/SC service (SCardSvr) is running
+2025-03-13 19:44:06,944 - INFO - PC/SC service (SCardSvr) is running
+2025-03-13 19:44:06,944 - INFO - Header: Checking for Card Readers
+2025-03-13 19:44:06,964 - INFO - Success: Found 2 card reader(s):
+2025-03-13 19:44:06,964 - INFO - Found 2 card reader(s):
+2025-03-13 19:44:06,964 - INFO - Info:   1. ACS ACR122 0
+2025-03-13 19:44:06,964 - INFO -   1. ACS ACR122 0
+2025-03-13 19:44:06,964 - INFO - Info:   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:44:06,964 - INFO -   2. CHERRY Smart Terminal xx44 0
+2025-03-13 19:44:06,964 - INFO - Header: Setup Check Summary
+2025-03-13 19:44:06,964 - INFO - Success: All critical checks passed! The application should start correctly.
+2025-03-13 19:44:06,964 - INFO - All critical checks passed! The application should start correctly.
+2025-03-13 19:44:06,964 - INFO - Info: Starting Smart Card Manager...
+2025-03-13 19:44:06,964 - INFO - Starting Smart Card Manager...

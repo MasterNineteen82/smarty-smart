@@ -1,5 +1,5 @@
 # Core application dependencies
-pyscard==3.0.3
+pyscard
 fastapi==0.109.0
 uvicorn==0.27.0
 werkzeug==3.0.1
@@ -14,6 +14,7 @@ itsdangerous==2.1.2
 celery[redis]==5.3.6
 marshmallow==3.20.2
 SQLAlchemy==2.0.25
+psycopg2
 psycopg2-binary==2.9.9
 aioredis==2.0.1
 fastapi-limiter==0.1.6

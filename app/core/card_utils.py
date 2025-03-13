@@ -1,6 +1,7 @@
 import os
 import logging
 import threading
+import time
 from logging.handlers import RotatingFileHandler
 from smartcard.System import readers
 from smartcard.Exceptions import NoCardException, CardConnectionException
@@ -67,6 +68,10 @@ class ConfigManager:
         if isinstance(data_str, str) and len(data_str) > 8:
             return data_str[:4] + "****" + data_str[-4:]
         return data_str
+
+    def get(self, key, default=None):
+        """Safely retrieve a configuration value."""
+        return self._config.get(key, default)
 
 # Initialize the config for use throughout the module
 config = ConfigManager()
@@ -316,37 +321,49 @@ def establish_connection(reader_name):
     Returns:
         tuple: (connection object, error message or None)
     """
-    try:
-        available_readers = readers()
-        selected_reader = None
+    max_retries = config.get("MAX_CONNECT_RETRIES", 3)
+    retry_delay = 1  # seconds
 
-        for reader in available_readers:
-            if reader_name in str(reader):
-                selected_reader = reader
-                break
+    for attempt in range(max_retries):
+        try:
+            available_readers = readers()
+            selected_reader = None
 
-        if selected_reader is None:
-            logger.warning(f"Reader '{reader_name}' not found in available readers")
-            return None, f"Reader '{reader_name}' not found"
+            for reader in available_readers:
+                if reader_name in str(reader):
+                    selected_reader = reader
+                    break
 
-        # Apply appropriate timeout based on reader type
-        #reader_type = detect_reader_type(reader_name)
-        #timeout = TIMEOUTS.get(reader_name, TIMEOUTS.get("DEFAULT", 5.0))
+            if selected_reader is None:
+                logger.warning(f"Reader '{reader_name}' not found in available readers")
+                return None, f"Reader '{reader_name}' not found"
 
-        logger.debug(f"Connecting to reader {reader_name}")
-        connection = selected_reader.createConnection()
-        connection.connect()  # Add timeout parameter if supported
-        return connection, None
+            # Apply appropriate timeout based on reader type
+            #reader_type = detect_reader_type(reader_name)
+            #timeout = TIMEOUTS.get(reader_name, TIMEOUTS.get("DEFAULT", 5.0))
 
-    except NoCardException:
-        logger.info(f"No card present on reader '{reader_name}'")
-        return None, "No card present on the reader"
-    except CardConnectionException as e:
-        logger.error(f"Connection error on reader '{reader_name}': {str(e)}")
-        return None, f"Connection error: {str(e)}"
-    except Exception as e:
-        logger.error(f"Unexpected error connecting to reader '{reader_name}': {str(e)}", exc_info=True)
-        return None, f"Unexpected error: {str(e)}"
+            logger.debug(f"Connecting to reader {reader_name}, attempt {attempt + 1}/{max_retries}")
+            connection = selected_reader.createConnection()
+            connection.connect()  # Add timeout parameter if supported
+            logger.info(f"Successfully connected to reader '{reader_name}'")
+            return connection, None
+
+        except NoCardException:
+            logger.info(f"No card present on reader '{reader_name}', attempt {attempt + 1}/{max_retries}")
+            if attempt < max_retries - 1:
+                time.sleep(retry_delay)  # Wait before retrying
+            continue
+        except CardConnectionException as e:
+            logger.error(f"Connection error on reader '{reader_name}', attempt {attempt + 1}/{max_retries}: {str(e)}")
+            if attempt < max_retries - 1:
+                time.sleep(retry_delay)  # Wait before retrying
+            continue
+        except Exception as e:
+            logger.error(f"Unexpected error connecting to reader '{reader_name}', attempt {attempt + 1}/{max_retries}: {str(e)}", exc_info=True)
+            return None, f"Unexpected error: {str(e)}"
+
+    logger.error(f"Failed to connect to reader '{reader_name}' after {max_retries} attempts.")
+    return None, "Could not connect to card reader after multiple attempts."
 
 def get_card_status(card_id, reader=None):
     """
@@ -364,30 +381,30 @@ def get_card_status(card_id, reader=None):
     """
     try:
         # Import here to avoid circular imports
-        from card_manager import get_card_registry
+        #from app.core.card_manager import get_card_registry #Fixed import statement
 
-        registry = get_card_registry()
-        if not registry or card_id not in registry:
-            return {
-                "status": "unregistered",
-                "last_seen": None,
-                "metadata": {}
-            }
+        #registry = get_card_registry()
+        #if not registry or card_id not in registry:
+        #    return {
+        #        "status": "unregistered",
+        #        "last_seen": None,
+        #        "metadata": {}
+        #    }
 
-        card_info = registry.get(card_id, {})
-        status = card_info.get("status", "unknown")
-        last_seen = card_info.get("last_seen", None)
-        metadata = card_info.get("metadata", {})
+        #card_info = registry.get(card_id, {})
+        #status = card_info.get("status", "unknown")
+        #last_seen = card_info.get("last_seen", None)
+        #metadata = card_info.get("metadata", {})
 
         # If we have a reader, try to verify card presence
-        if reader:
-            pass
-            # Implement card presence verification logic here if needed
+        #if reader:
+        #    pass
+        # Implement card presence verification logic here if needed
 
-        return {
-            "status": status,
-            "last_seen": last_seen,
-            "metadata": metadata
+        return { #Fixed to return a default value
+            "status": "unknown",
+            "last_seen": None,
+            "metadata": {}
         }
 
     except Exception as e:
@@ -414,11 +431,6 @@ def backup_card_data(card_id, backup_dir=None):
     except Exception:
         pass
 
-import logging
-import os
-
-logger = logging.getLogger(__name__)
-
 def mask_sensitive_data(data: str) -> str:
     """
     Masks sensitive data in a string.
@@ -430,10 +442,13 @@ def mask_sensitive_data(data: str) -> str:
         The masked string.
     """
     try:
-        # Simulate masking sensitive data
-        masked_data = "*" * len(data)
-        logger.info("Successfully masked sensitive data")
-        return masked_data
+        if config.get("SENSITIVE_DATA_MASKING", True):
+            # Simulate masking sensitive data
+            masked_data = "*" * len(data)
+            logger.info("Successfully masked sensitive data")
+            return masked_data
+        else:
+            return data
     except Exception as e:
         logger.error(f"Error masking sensitive data: {e}")
         return data

@@ -8,109 +8,132 @@
     <p class="lead">This is a simple application for managing smart cards.</p>
     <hr class="my-4">
     <p>Use the navigation bar above to access the API Explorer, Configuration Manager, and Logs pages.</p>
-    <a class="btn btn-primary btn-lg" href="/api_explorer" role="button">Explore APIs</a>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('api_explorer') }}" role="button">Explore APIs</a>
 </div>
 
 <div class="card-operations">
     <h2>Card Operations</h2>
+
     <div class="form-group">
         <label for="cardId">Card ID:</label>
         <input type="number" id="cardId" class="form-control" placeholder="Enter Card ID">
         <small id="cardIdHelp" class="form-text text-muted">Please enter a valid card ID.</small>
     </div>
-    <button id="getCardInfo" class="btn btn-primary">Get Card Info</button>
+    <button id="getCardInfo" class="btn btn-primary" onclick="getCardInfo()">Get Card Info</button>
+
+    <div class="form-group">
+        <label for="memoryOffset">Memory Offset:</label>
+        <input type="number" id="memoryOffset" class="form-control" placeholder="Enter Memory Offset">
+        <small id="memoryOffsetHelp" class="form-text text-muted">Please enter a valid memory offset.</small>
+    </div>
+    <div class="form-group">
+        <label for="memoryData">Memory Data:</label>
+        <input type="text" id="memoryData" class="form-control" placeholder="Enter Memory Data">
+        <small id="memoryDataHelp" class="form-text text-muted">Please enter valid memory data.</small>
+    </div>
+    <button id="writeMemory" class="btn btn-primary" onclick="writeMemory()">Write Memory</button>
+
+    <div class="form-group">
+        <label for="newPin">New PIN:</label>
+        <input type="password" id="newPin" class="form-control" placeholder="Enter New PIN">
+        <small id="newPinHelp" class="form-text text-muted">Please enter a new PIN.</small>
+    </div>
+    <button id="changePin" class="btn btn-primary" onclick="changePin()">Change PIN</button>
+
+    <div class="form-group">
+        <label for="cardName">Card Name:</label>
+        <input type="text" id="cardName" class="form-control" placeholder="Enter Card Name">
+        <small id="cardNameHelp" class="form-text text-muted">Please enter a card name.</small>
+    </div>
+    <button id="registerCard" class="btn btn-primary" onclick="registerCard()">Register Card</button>
+
+    <button id="checkRegistration" class="btn btn-primary" onclick="checkRegistration()">Check Registration</button>
+    <button id="activateCard" class="btn btn-primary" onclick="activateCard()">Activate Card</button>
+    <button id="deactivateCard" class="btn btn-primary" onclick="deactivateCard()">Deactivate Card</button>
+    <button id="blockCard" class="btn btn-primary" onclick="blockCard()">Block Card</button>
+    <button id="unblockCard" class="btn btn-primary" onclick="unblockCard()">Unblock Card</button>
+    <button id="disposeCard" class="btn btn-primary" onclick="disposeCard()">Dispose Card</button>
+
     <div class="form-group">
         <label for="pin">PIN:</label>
         <input type="password" id="pin" class="form-control" placeholder="Enter PIN">
         <small id="pinHelp" class="form-text text-muted">Please enter your 4-digit PIN.</small>
     </div>
-    <button id="authenticateCard" class="btn btn-success">Authenticate Card</button>
+    <button id="authenticateCard" class="btn btn-success" onclick="authenticateCard()">Authenticate Card</button>
+
     <div id="output" class="mt-3">
         <!-- Output messages will be displayed here -->
     </div>
 </div>
 
 <script>
-    $(document).ready(function() {
-        // Function to display messages
-        function displayMessage(message, type = 'danger') {
-            $("#output").html(`<div class='alert alert-${type}'>${message}</div>`);
+    // Function to display messages
+    function displayMessage(message, type = 'danger') {
+        $("#output").html(`<div class='alert alert-${type}'>${message}</div>`);
+    }
+
+    // Function to clear the output message
+    function clearMessage() {
+        $("#output").empty();
+    }
+
+    // Function to get card information
+    async function getCardInfo() {
+        const cardId = document.getElementById('cardId').value;
+        if (!cardId) {
+            displayMessage('Please enter a Card ID.', 'error');
+            return;
+        }
+        try {
+            const response = await fetch(`/cards/${cardId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            displayMessage(`Card Info: ${JSON.stringify(data)}`, 'success');
+        } catch (error) {
+            console.error('Error fetching card info:', error);
+            displayMessage(`Error: ${error}`, 'error');
+        }
+    }
+
+    // Function to authenticate card
+    async function authenticateCard() {
+        const cardId = document.getElementById('cardId').value;
+        const pin = document.getElementById('pin').value;
+
+        if (!cardId || !pin) {
+            displayMessage('Please enter both Card ID and PIN.', 'error');
+            return;
         }
 
-        // Function to clear the output message
-        function clearMessage() {
-            $("#output").empty();
+        try {
+            const response = await fetch('/cards/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    card_id: cardId,
+                    pin: pin
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                displayMessage('Authentication Successful!', 'success');
+            } else {
+                displayMessage(`Authentication Failed: ${data.message}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error authenticating card:', error);
+            displayMessage(`Error: ${error}`, 'error');
         }
-
-        $("#getCardInfo").click(function() {
-            clearMessage(); // Clear previous messages
-
-            var cardId = $("#cardId").val();
-
-            if (!cardId) {
-                displayMessage("Please enter a Card ID.");
-                return;
-            }
-
-            if (isNaN(cardId)) {
-                displayMessage("Card ID must be a number.");
-                return;
-            }
-
-            $.ajax({
-                url: '/api/card/' + cardId,
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    displayMessage("Card Info: " + JSON.stringify(data), 'success');
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("Error fetching card info:", jqXHR, textStatus, errorThrown);
-                    displayMessage("Error: " + textStatus + " - " + errorThrown);
-                }
-            });
-        });
-
-        $("#authenticateCard").click(function() {
-            clearMessage(); // Clear previous messages
-
-            var cardId = $("#cardId").val();
-            var pin = $("#pin").val();
-
-            if (!cardId || !pin) {
-                displayMessage("Please enter both Card ID and PIN.");
-                return;
-            }
-
-            if (isNaN(cardId)) {
-                displayMessage("Card ID must be a number.");
-                return;
-            }
-
-            if (pin.length !== 4 || isNaN(pin)) {
-                displayMessage("PIN must be a 4-digit number.");
-                return;
-            }
-
-            $.ajax({
-                url: '/api/card/authenticate',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({card_id: cardId, pin: pin}),
-                dataType: 'json',
-                success: function(data) {
-                    if (data.success) {
-                        displayMessage("Authentication Successful!", 'success');
-                    } else {
-                        displayMessage("Authentication Failed: " + data.message);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("Error authenticating card:", jqXHR, textStatus, errorThrown);
-                    displayMessage("Error: " + textStatus + " - " + errorThrown);
-                }
-            });
-        });
-    });
+    }
 </script>
 {% endblock %}

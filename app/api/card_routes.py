@@ -1,3 +1,9 @@
+try:
+    import psycopg2
+except ImportError as e:
+    print(f"Error importing psycopg2: {e}")
+    raise
+
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import Optional, Dict, Any, List
 import logging

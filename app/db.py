@@ -12,8 +12,13 @@ from sqlalchemy.orm import sessionmaker, relationship, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from contextlib import contextmanager
+from sqlalchemy.pool import QueuePool
 
 from app.config import DATABASE_URL, DB_POOL_SIZE, DB_MAX_OVERFLOW
+from app.core.config_utils import config  # Import the config object
+
+# Get the database URL from the environment or use a default
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./test.db")
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -22,8 +27,9 @@ logger = logging.getLogger(__name__)
 try:
     engine = create_engine(
         DATABASE_URL,
-        pool_size=getattr(DB_POOL_SIZE, 10),
-        max_overflow=getattr(DB_MAX_OVERFLOW, 20),
+        poolclass=QueuePool,
+        pool_size=5,
+        max_overflow=10,
         pool_pre_ping=True  # Verify connections before using them
     )
     logger.info("Database engine created successfully")
@@ -39,18 +45,18 @@ SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
 
 @contextmanager
-async def session_scope():
+def session_scope():
     """Provide a transactional scope around a series of operations."""
     session = Session()
     try:
         yield session
-        await session.commit()
+        session.commit()
     except SQLAlchemyError as e:
-        await session.rollback()
+        session.rollback()
         logger.error(f"Database error: {e}")
         raise
     finally:
-        await session.close()
+        session.close()
 
 class User(Base):
     """
