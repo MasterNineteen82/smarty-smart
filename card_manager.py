@@ -282,6 +282,122 @@ class CardManager:
         else:
             logger.info("Recovery mode is already disabled.")
 
+def backup_registry(backup_path=None):
+    """
+    Backup the card registry to a file.
+    
+    Args:
+        backup_path (str, optional): Path where to save the backup.
+            If None, uses default backup location.
+            
+    Returns:
+        dict: Status of the backup operation
+    """
+    import os
+    import json
+    from datetime import datetime
+    
+    # Ensure backup directory exists
+    if backup_path is None:
+        backup_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backups')
+        os.makedirs(backup_dir, exist_ok=True)
+        backup_path = os.path.join(backup_dir, f'card_registry_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
+    else:
+        # Ensure the directory for the specified path exists
+        backup_dir = os.path.dirname(os.path.abspath(backup_path))
+        os.makedirs(backup_dir, exist_ok=True)
+    
+    try:
+        registry = get_card_registry()
+        with open(backup_path, 'w') as f:
+            json.dump(registry, f, indent=2)
+        return {"status": "success", "path": backup_path}
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to backup registry: {str(e)}")
+        return {"status": "error", "error": str(e)}
+
+def delete_backup(backup_path):
+    """
+    Delete a backup file.
+    
+    Args:
+        backup_path (str): Path to the backup file to delete
+        
+    Returns:
+        dict: Status of the delete operation
+    """
+    import os
+    
+    try:
+        # Verify the file exists before attempting to delete
+        if not os.path.exists(backup_path):
+            return {"status": "error", "error": f"File not found: {backup_path}"}
+            
+        os.remove(backup_path)
+        return {"status": "success"}
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to delete backup: {str(e)}")
+        return {"status": "error", "error": str(e)}
+
+def get_card_registry():
+    """
+    Get the card registry, handling file not found gracefully.
+    
+    Returns:
+        dict: Dictionary of registered cards
+    """
+    import os
+    import json
+    import logging
+    
+    registry_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'card_registry.json')
+    
+    try:
+        # Ensure the data directory exists
+        os.makedirs(os.path.dirname(registry_path), exist_ok=True)
+        
+        if (os.path.exists(registry_path)):
+            with open(registry_path, 'r') as f:
+                return json.load(f)
+        else:
+            logging.warning("Registered cards file not found, creating a new registry")
+            # Initialize with empty registry and save
+            empty_registry = {}
+            with open(registry_path, 'w') as f:
+                json.dump(empty_registry, f, indent=2)
+            return empty_registry
+    except Exception as e:
+        logging.error(f"Error loading card registry: {str(e)}")
+        return {}
+
+def save_card_registry(registry):
+    """
+    Save the card registry to file.
+    
+    Args:
+        registry (dict): Dictionary of registered cards
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    import os
+    import json
+    import logging
+    
+    registry_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'card_registry.json')
+    
+    try:
+        # Ensure the data directory exists
+        os.makedirs(os.path.dirname(registry_path), exist_ok=True)
+        
+        with open(registry_path, 'w') as f:
+            json.dump(registry, f, indent=2)
+        return True
+    except Exception as e:
+        logging.error(f"Error saving card registry: {str(e)}")
+        return False
 
 # Create a global instance
 card_manager = CardManager()
