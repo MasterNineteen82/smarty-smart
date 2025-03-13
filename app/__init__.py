@@ -1,7 +1,7 @@
-from flask import Flask, jsonify
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 import logging
 import os
-from werkzeug.exceptions import HTTPException
 
 # Use lazy imports to avoid circular dependencies
 def get_models():
@@ -19,58 +19,58 @@ def get_core():
 # Define __all__ to control which modules are imported with "from app import *"
 __all__ = ["get_models", "get_api", "get_core"]
 
-def create_app(config=None):
-    app = Flask(__name__)
-    configure_logging(app)
-    load_configuration(app, config)
-    register_blueprints(app)
-    register_error_handlers(app)
-    register_health_check(app)
-    return app
+app = FastAPI()
 
-def configure_logging(app):
+def configure_logging():
+    logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    app.logger.addHandler(handler)
-    app.logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    return logger
 
-def load_configuration(app, config):
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev_key'),
+logger = configure_logging()
+
+def load_configuration():
+    config = {
+        "SECRET_KEY": os.environ.get("SECRET_KEY", "dev_key"),
         # Add other default configs here, e.g., DATABASE_URL
-    )
-    if config:
-        app.config.from_mapping(config)
+    }
+    return config
 
-def register_blueprints(app):
+app.state.config = load_configuration()
+
+def register_routes():
     try:
-        from .routes import bp
-        app.register_blueprint(bp)
+        from .routes import router
+        app.include_router(router)
     except ImportError as e:
-        app.logger.error(f"Failed to import routes: {e}")
-        print(f"Error: {e}. Ensure 'routes.py' exists and has a blueprint named 'bp'. Also, check dependencies.")
+        logger.error(f"Failed to import routes: {e}")
+        print(f"Error: {e}. Ensure 'routes.py' exists and has a router named 'router'. Also, check dependencies.")
 
-def register_error_handlers(app):
-    @app.errorhandler(HTTPException)
-    def handle_http_exception(e):
-        """Handles HTTP exceptions, returning JSON responses."""
-        response = jsonify({'code': e.code, 'description': e.description})
-        response.status_code = e.code
-        return response
+register_routes()
 
-    @app.errorhandler(Exception)
-    def handle_generic_exception(e):
-        """Handles all other exceptions, logging them and returning a generic error."""
-        app.logger.exception("An unexpected error occurred: %s", e)
-        response = jsonify({'code': 500, 'description': 'Internal Server Error'})
-        response.status_code = 500
-        return response
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    """Handles HTTP exceptions, returning JSON responses."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"code": exc.status_code, "description": exc.detail},
+    )
 
-def register_health_check(app):
-    @app.route('/health')
-    def health_check():
-        return jsonify({"status": "ok"})
+@app.exception_handler(Exception)
+async def generic_exception_handler(request, exc):
+    """Handles all other exceptions, logging them and returning a generic error."""
+    logger.exception(f"An unexpected error occurred: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"code": 500, "description": "Internal Server Error"},
+    )
 
-if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
