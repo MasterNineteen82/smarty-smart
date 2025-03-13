@@ -1,8 +1,3 @@
-"""
-Device management module for Smart Card Manager.
-Handles device detection, configuration, and monitoring.
-"""
-
 import logging
 from smartcard.System import readers
 from smartcard.Exceptions import SmartcardException
@@ -16,7 +11,7 @@ class DeviceManagerError(Exception):
     """Custom exception for device management errors."""
     pass
 
-def detect_readers():
+async def detect_readers():
     """Detect available smart card readers."""
     try:
         reader_list = readers()
@@ -31,13 +26,13 @@ def detect_readers():
         logger.error(f"Unexpected error detecting readers: {e}")
         raise DeviceManagerError(f"Unexpected error: {e}") from e
 
-def get_device_info(reader_name):
+async def get_device_info(reader_name):
     """Get device information for a specific reader."""
     try:
         # Implement logic to get device information (model, firmware version, etc.)
         # This may require using specific APIs for the reader type.
         logger.info(f"Getting device info for {reader_name}")
-        reader_type = detect_reader_type(reader_name)
+        reader_type = await detect_reader_type(reader_name)
         # Simulate fetching device info
         if reader_type == "CHERRY_ST":
             firmware_version = "1.2.3"
@@ -50,7 +45,7 @@ def get_device_info(reader_name):
         logger.error(f"Error getting device info: {e}")
         raise DeviceManagerError(f"Failed to get device info: {e}") from e
 
-def get_firmware_version(reader_name):
+async def get_firmware_version(reader_name):
     """Simulates getting the firmware version from a device."""
     # Replace with actual device API call
     try:
@@ -61,7 +56,7 @@ def get_firmware_version(reader_name):
         logger.error(f"Error getting firmware version for {reader_name}: {e}")
         raise DeviceManagerError(f"Error getting firmware: {e}") from e
 
-def configure_device(reader_name, config):
+async def configure_device(reader_name, config):
     """Configure device settings for a specific reader."""
     logger.info(f"Configuring device {reader_name} with {config}")
     try:
@@ -88,7 +83,7 @@ def configure_device(reader_name, config):
         logger.error(f"Unexpected error configuring {reader_name}: {e}")
         raise DeviceManagerError(f"Unexpected error configuring device: {e}") from e
 
-def update_firmware(reader_name, firmware_file):
+async def update_firmware(reader_name, firmware_file):
     """Update device firmware for a specific reader."""
     logger.info(f"Updating firmware for {reader_name} with {firmware_file}")
     try:
@@ -115,7 +110,7 @@ def update_firmware(reader_name, firmware_file):
         logger.error(f"Unexpected error updating firmware for {reader_name}: {e}")
         raise DeviceManagerError(f"Unexpected error updating firmware: {e}") from e
 
-def monitor_device_health(reader_name):
+async def monitor_device_health(reader_name):
     """Monitor device health for a specific reader."""
     logger.info(f"Monitoring device health for {reader_name}")
     try:
@@ -132,7 +127,7 @@ def monitor_device_health(reader_name):
         logger.error(f"Error monitoring device health for {reader_name}: {e}")
         raise DeviceManagerError(f"Error monitoring device health: {e}") from e
 
-def detect_reader_type(reader_name):
+async def detect_reader_type(reader_name):
     """Detect the type of smart card reader based on its name."""
     if not isinstance(reader_name, str):
         raise TypeError("Reader name must be a string.")
@@ -147,10 +142,10 @@ def detect_reader_type(reader_name):
     else:
         return "GENERIC"
 
-def get_reader_timeout(reader_name):
+async def get_reader_timeout(reader_name):
     """Get the timeout setting for a specific reader type."""
     try:
-        reader_type = detect_reader_type(reader_name)
+        reader_type = await detect_reader_type(reader_name)
         config = READER_CONFIG.get(reader_type, {})
         timeout = config.get('timeout')
         if timeout is None:

@@ -1,11 +1,11 @@
 # Core application dependencies
-pyscard==2.0.7
-fastapi==0.109.2
+pyscard==3.0.3
+fastapi==0.109.0
 uvicorn==0.27.0
 werkzeug==3.0.1
 cryptography==42.0.2
 pyopenssl==24.0.0
-python-dateutil==2.9.0
+python-dateutil==2.9.0.post0
 structlog==24.1.0
 python-dotenv==1.0.1
 requests==2.31.0
@@ -13,12 +13,14 @@ passlib==1.7.4
 itsdangerous==2.1.2
 celery[redis]==5.3.6
 marshmallow==3.20.2
-SQLAlchemy==2.0.27
+SQLAlchemy==2.0.25
 psycopg2-binary==2.9.9
 aioredis==2.0.1
 fastapi-limiter==0.1.6
 python-jose==3.3.0
 email-validator==2.1.0.post1
+asyncpg==0.29.0
+aiofiles==23.2.1
 
 # Testing dependencies
 pytest==8.0.1

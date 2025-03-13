@@ -1,6 +1,6 @@
 import os
 import json
-import time
+import asyncio
 import logging
 from typing import Dict, List, Tuple, Optional, Any
 from datetime import datetime
@@ -13,7 +13,7 @@ from app.core.card_utils import (
     register_card, unregister_card, activate_card, deactivate_card,
     block_card, unblock_card, backup_card_data, restore_card_data,
     secure_dispose_card, card_info, card_status, CardStatus,
-    CHERRY_ST_IDENTIFIER, ACR122U_IDENTIFIER
+    ACR122U_IDENTIFIER
 )
 
 # Configuration & Constants
@@ -87,7 +87,7 @@ class CardManager:
         self.recovery_mode = False
         self.registered_cards = {}  # In-memory storage for registered cards
     
-    def handle_operation(self, operation_func, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
+    async def handle_operation(self, operation_func, *args, **kwargs) -> Tuple[bool, str, Optional[Any]]:
         """Execute card operation with retry logic and error handling"""
         retries = 0
         self.last_operation = operation_func.__name__
@@ -96,7 +96,7 @@ class CardManager:
         while retries < Config.MAX_RETRIES:
             try:
                 # Attempt operation
-                result = operation_func(*args, **kwargs)
+                result = await operation_func(*args, **kwargs)
                 if isinstance(result, tuple):
                     success, message, *extra = result
                     extra_data = extra[0] if extra else None  # Safely extract extra data
@@ -110,7 +110,7 @@ class CardManager:
                 
                 if retries < Config.MAX_RETRIES:
                     logger.info(f"Retrying operation (attempt {retries+1}/{Config.MAX_RETRIES})...")
-                    time.sleep(Config.RETRY_DELAY)
+                    await asyncio.sleep(Config.RETRY_DELAY)
                 else:
                     return False, f"Operation failed after {Config.MAX_RETRIES} attempts: {str(e)}", None
         
@@ -338,19 +338,23 @@ class CardManager:
             logger.info("Recovery mode disabled. State transitions will be validated.")
         else:
             logger.info("Recovery mode is already disabled.")
-
+    
+    class CardError(Exception):
+        """Custom exception for card-related errors."""
+        pass
+    
     def register_card(self, atr, user_id):
         """Register a card with a specific user ID."""
         logger.info(f"Registering card with ATR {atr} for user {user_id}")
         if atr in self.registered_cards:
-            raise CardError(f"Card with ATR {atr} is already registered.")
+            raise self.CardError(f"Card with ATR {atr} is already registered.")
         self.registered_cards[atr] = user_id
-
+    
     def unregister_card(self, atr):
         """Unregister a card."""
         logger.info(f"Unregistering card with ATR {atr}")
         if atr not in self.registered_cards:
-            raise CardError(f"Card with ATR {atr} is not registered.")
+            raise self.CardError(f"Card with ATR {atr} is not registered.")
         del self.registered_cards[atr]
 
     def block_card(self, atr):
@@ -368,7 +372,7 @@ class CardManager:
         logger.info(f"Deactivating card with ATR {atr}")
         # Implement logic to deactivate the card (e.g., set a flag in the database)
 
-    def is_card_registered(self):
+    def is_card_registered(self, atr):
         """Check if a card is registered."""
         return atr in self.registered_cards
 

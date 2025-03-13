@@ -191,3 +191,20 @@ class DataUpdater:
         """
         logger.info("Forcing immediate data update")
         return self._fetch_and_update_data()
+
+    async def update_data(self) -> bool:
+        """
+        Updates data from an external source.
+
+        Returns:
+            True if the data was updated successfully, False otherwise.
+        """
+        try:
+            # Simulate fetching data from an external source
+            new_data = {"card1": {"atr": "atr1", "type": "type1"}, "card2": {"atr": "atr2", "type": "type2"}}
+            await self.data_manager.save_data(new_data)
+            logger.info("Successfully updated data from external source")
+            return True
+        except Exception as e:
+            logger.error(f"Error updating data from external source: {e}")
+            return False

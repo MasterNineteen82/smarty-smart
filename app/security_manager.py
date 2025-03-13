@@ -1,8 +1,3 @@
-"""
-Security management module for Smart Card Manager.
-Handles user authentication, authorization, and encryption key management.
-"""
-
 import logging
 import hashlib
 import os
@@ -38,7 +33,7 @@ class SecurityManager:
             self.key = key
         self.cipher = Fernet(self.key)
 
-    def authenticate_user(self, username, password):
+    async def authenticate_user(self, username, password):
         """
         Authenticate a user by checking the provided credentials against stored credentials.
         Hashes the password before comparison.
@@ -46,7 +41,7 @@ class SecurityManager:
         logger.info(f"Authenticating user {username}")
         try:
             # Retrieve stored password hash from database based on username
-            stored_password_hash = self._get_password_hash_from_db(username)  # Corrected method name
+            stored_password_hash = await self._get_password_hash_from_db(username)  # Corrected method name
 
             # Hash the provided password
             hashed_password = self._hash_password(password)
@@ -62,7 +57,7 @@ class SecurityManager:
             logger.error(f"Authentication failed for user {username}: {e}")
             raise AuthenticationError("Authentication failed.") from e
 
-    def _get_password_hash_from_db(self, username):
+    async def _get_password_hash_from_db(self, username):
         """
         Retrieve the password hash from the database.
         This is a placeholder; replace with actual database retrieval logic.
@@ -73,14 +68,14 @@ class SecurityManager:
         else:
             raise ValueError("User not found.")
 
-    def authorize_user(self, username, permission):
+    async def authorize_user(self, username, permission):
         """
         Authorize a user to perform a specific action based on their roles and permissions.
         """
         logger.info(f"Authorizing user {username} for permission {permission}")
         try:
             # Retrieve user roles from database
-            user_roles = self._get_user_roles_from_db(username)
+            user_roles = await self._get_user_roles_from_db(username)
 
             # Check if user has the required permission based on their roles
             if self._check_permission(user_roles, permission):
@@ -93,7 +88,7 @@ class SecurityManager:
             logger.error(f"Authorization failed for user {username}: {e}")
             raise AuthorizationError("Authorization failed.") from e
 
-    def _get_user_roles_from_db(self, username):
+    async def _get_user_roles_from_db(self, username):
         """
         Retrieve user roles from the database.
         This is a placeholder; replace with actual database retrieval logic.
@@ -170,7 +165,7 @@ class SecurityManager:
         """
         Verify PIN against stored PIN using hashing.
         """
-        logger.info(f"Verifying PIN")
+        logger.info("Verifying PIN")
         try:
             # Retrieve stored PIN hash from database
             stored_pin_hash = self._get_pin_hash_from_db()
@@ -229,46 +224,3 @@ class SecurityManager:
                 return func(*args, **kwargs)
             return wrapper
         return decorator
-
-# Example usage
-if __name__ == '__main__':
-    # Configure logging
-    logging.basicConfig(level=logging.INFO)
-
-    # Instantiate the SecurityManager
-    security_manager = SecurityManager()
-
-    # Authentication example
-    try:
-        if security_manager.authenticate_user("testuser", "password"):
-            print("User authenticated successfully.")
-        else:
-            print("User authentication failed.")
-    except AuthenticationError as e:
-        print(f"Authentication error: {e}")
-
-    # Authorization example
-    try:
-        if security_manager.authorize_user("testuser", "read"):
-            print("User authorized successfully.")
-        else:
-            print("User authorization failed.")
-    except AuthorizationError as e:
-        print(f"Authorization error: {e}")
-
-    # Encryption example
-    try:
-        key = security_manager.generate_encryption_key()
-        data = "Sensitive data"
-        encrypted_data = security_manager.encrypt_data(data, key)
-        print(f"Encrypted data: {encrypted_data}")
-        decrypted_data = security_manager.decrypt_data(encrypted_data, key)
-        print(f"Decrypted data: {decrypted_data}")
-    except EncryptionError as e:
-        print(f"Encryption error: {e}")
-
-    # PIN verification example
-    if security_manager.verify_pin("1234"):
-        print("PIN verification successful.")
-    else:
-        print("PIN verification failed.")

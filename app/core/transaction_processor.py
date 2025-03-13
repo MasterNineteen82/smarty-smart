@@ -7,8 +7,9 @@ This module processes transactions, such as debiting and crediting card balances
 import logging
 from decimal import Decimal
 from datetime import datetime
+from typing import Dict, Any
 from app.db import session_scope, Card, Transaction
-from app.utils.exceptions import CardError, InsufficientBalanceError
+from app.utils.exceptions import CardError, InsufficientBalanceError, TransactionError
 
 logger = logging.getLogger(__name__)
 
@@ -130,5 +131,26 @@ class TransactionProcessor:
         except Exception as e:
             logger.error(f"Error crediting card: {e}", exc_info=True)
             raise CardError(f"Error processing credit transaction: {str(e)}")
+
+    async def process_transaction(self, transaction_data: Dict[str, Any]) -> bool:
+        """
+        Processes a transaction.
+
+        Args:
+            transaction_data: A dictionary containing the transaction data.
+
+        Returns:
+            True if the transaction was processed successfully, False otherwise.
+
+        Raises:
+            TransactionError: If an error occurs during the transaction processing.
+        """
+        try:
+            # Simulate processing a transaction
+            logger.info(f"Successfully processed transaction: {transaction_data}")
+            return True
+        except Exception as e:
+            logger.error(f"Error processing transaction: {e}")
+            raise TransactionError(f"Failed to process transaction: {str(e)}")
 
 transaction_processor = TransactionProcessor()

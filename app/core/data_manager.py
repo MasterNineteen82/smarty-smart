@@ -9,6 +9,7 @@ from threading import Lock
 from typing import Any, Dict, Optional, Tuple, Union
 
 import schedule
+import aiofiles
 
 # Setup logging with proper format
 logging.basicConfig(
@@ -84,7 +85,7 @@ class SmartcardDataManager:
             logger.error(f"Failed to initialize data directory: {e}")
             raise StorageError(f"Cannot access data directory: {e}")
 
-    def load_data(self) -> Dict[str, Dict[str, Any]]:
+    async def load_data(self) -> Dict[str, Dict[str, Any]]:
         """
         Loads structured smartcard/NFC data from a JSON file.
         
@@ -99,8 +100,8 @@ class SmartcardDataManager:
                 logger.warning(f"Data file {self.data_file} not found. Initializing with empty data.")
                 return {}
                 
-            with open(self.data_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            async with aiofiles.open(self.data_file, "r", encoding="utf-8") as f:
+                data = json.loads(await f.read())
                 logger.info(f"Data loaded successfully from {self.data_file}")
                 return data
         except json.JSONDecodeError as e:

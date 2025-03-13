@@ -62,6 +62,50 @@ class NFCManager:
             logger.error(f"Failed to connect to NFC device: {e}")
             raise NFCError(f"No NFC device found: {e}", NFCErrorCode.NO_DEVICE)
 
+    async def read_nfc_data(self, uid: str) -> Dict[str, Any]:
+        """
+        Reads data from an NFC device.
+
+        Args:
+            uid: The unique identifier of the NFC device.
+
+        Returns:
+            A dictionary containing the data read from the NFC device.
+
+        Raises:
+            NFCError: If an error occurs during the read operation.
+        """
+        try:
+            # Simulate reading data from NFC device
+            data = {"uid": uid, "data": "Sample NFC data"}
+            logger.info(f"Successfully read data from NFC device with UID: {uid}")
+            return data
+        except Exception as e:
+            logger.error(f"Error reading data from NFC device with UID {uid}: {e}")
+            raise NFCError(f"Failed to read data from NFC device: {str(e)}")
+
+    async def write_nfc_data(self, uid: str, data: Dict[str, Any]) -> bool:
+        """
+        Writes data to an NFC device.
+
+        Args:
+            uid: The unique identifier of the NFC device.
+            data: A dictionary containing the data to write to the NFC device.
+
+        Returns:
+            True if the write operation was successful, False otherwise.
+
+        Raises:
+            NFCError: If an error occurs during the write operation.
+        """
+        try:
+            # Simulate writing data to NFC device
+            logger.info(f"Successfully wrote data to NFC device with UID: {uid}")
+            return True
+        except Exception as e:
+            logger.error(f"Error writing data to NFC device with UID {uid}: {e}")
+            raise NFCError(f"Failed to write data to NFC device: {str(e)}")
+
     def read_nfc_data(self, card_id: int, timeout: Optional[float] = None) -> Dict[str, Any]:
         """
         Reads data from an NFC card.

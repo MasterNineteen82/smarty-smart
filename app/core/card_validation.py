@@ -17,7 +17,7 @@ class CardValidator:
     Validates smart cards by checking their ATR against a database of known cards.
     """
 
-    def validate_card(self, atr: str) -> Dict[str, Union[bool, Optional[str]]]:
+    async def validate_card(self, atr: str) -> Dict[str, Union[bool, Optional[str]]]:
         """
         Validates a smart card by checking its ATR against a database of known cards.
 
@@ -37,8 +37,8 @@ class CardValidator:
             raise InvalidInputError("ATR cannot be None or empty")
             
         try:
-            with session_scope() as session:
-                card = session.query(Card).filter_by(atr=atr).first()
+            async with session_scope() as session:
+                card = await session.query(Card).filter_by(atr=atr).first()
                 if card:
                     logger.info(f"Card with ATR {atr} is valid")
                     return {

@@ -1,70 +1,56 @@
-from flask import Flask, jsonify
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 import os
-from werkzeug.exceptions import HTTPException
 
-def create_app(config_override=None):
-    app = Flask(__name__)
-    configure_app(app, config_override)
-    configure_logging(app)
-    register_blueprints(app)
-    register_error_handlers(app)
-    register_health_check(app)
-    return app
+app = FastAPI()
 
-def configure_app(app, config_override=None):
-    app.config.from_object('config.DefaultConfig')
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev_key')
+# Logging Configuration
+log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
+try:
+    log_level = getattr(logging, log_level)
+except AttributeError:
+    log_level = logging.INFO
+    logging.warning("Invalid log level specified. Defaulting to INFO.")
+
+logging.basicConfig(level=log_level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Custom Middleware Example (can be expanded)
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        logger.info(f"Request: {request.method} {request.url}")
+        response = await call_next(request)
+        logger.info(f"Response status code: {response.status_code}")
+        return response
+
+# Register Middleware
+app = FastAPI(middleware=[Middleware(LoggingMiddleware)])
+
+# Error Handlers
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    logger.exception(exc)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"code": exc.status_code, "description": str(exc.detail)},
     )
-    config_file = os.environ.get('APP_CONFIG_FILE')
-    if config_file:
-        try:
-            app.config.from_pyfile(config_file)
-        except FileNotFoundError:
-            app.logger.warning(f"Config file not found: {config_file}")
-    if config_override:
-        app.config.from_mapping(config_override)
 
-def configure_logging(app):
-    log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
-    try:
-        log_level = getattr(logging, log_level)
-    except AttributeError:
-        log_level = logging.INFO
-        app.logger.warning(f"Invalid log level specified. Defaulting to INFO.")
+@app.exception_handler(Exception)
+async def generic_exception_handler(request, exc):
+    logger.exception(exc)
+    return JSONResponse(
+        status_code=500,
+        content={"code": 500, "description": str(exc)},
+    )
 
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    app.logger.addHandler(handler)
-    app.logger.setLevel(log_level)
+# Health Check Endpoint
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
-def register_blueprints(app):
-    try:
-        from .routes import bp
-        app.register_blueprint(bp)
-    except ImportError as e:
-        app.logger.error(f"Failed to import routes: {e}")
-
-def register_error_handlers(app):
-    def create_error_response(e, status_code):
-        app.logger.exception(e)
-        return jsonify({'code': status_code, 'description': str(e)}), status_code
-
-    @app.errorhandler(HTTPException)
-    def handle_http_exception(e):
-        return create_error_response(e, e.code)
-
-    @app.errorhandler(Exception)
-    def handle_generic_exception(e):
-        return create_error_response(e, 500)
-
-def register_health_check(app):
-    @app.route('/health')
-    def health_check():
-        return jsonify({"status": "ok"})
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)
+# Include your routes
+# from .routes import router
+# app.include_router(router)

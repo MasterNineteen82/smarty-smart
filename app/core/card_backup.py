@@ -7,11 +7,11 @@ import logging
 import os
 import json
 import datetime
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional
 from enum import Enum
-from pathlib import Path
 from app.core.card_manager import CardManager
 from app.utils.exceptions import CardError, BackupError, RestoreError
+import aiofiles
 
 logger = logging.getLogger(__name__)
 
@@ -42,12 +42,12 @@ class CardBackupManager:
             os.makedirs(self.backup_dir, exist_ok=True)
         except PermissionError as e:
             logger.error(f"Permission denied when creating backup directory: {e}")
-            raise BackupError(f"Cannot create backup directory: Permission denied")
+            raise BackupError("Cannot create backup directory: Permission denied")
         except OSError as e:
             logger.error(f"OS error when creating backup directory: {e}")
             raise BackupError(f"Cannot create backup directory: {str(e)}")
 
-    def backup_card_data(self, 
+    async def backup_card_data(self, 
                          identifier: str, 
                          device_type: DeviceType = DeviceType.SMARTCARD, 
                          metadata: Optional[Dict[str, Any]] = None) -> str:
@@ -94,8 +94,8 @@ class CardBackupManager:
             filename = f"{device_type.value}_{identifier.replace(':', '_')}_{timestamp}.json"
             backup_file = os.path.join(self.backup_dir, filename)
             
-            with open(backup_file, 'w') as f:
-                json.dump(card_data, f, indent=4)
+            async with aiofiles.open(backup_file, 'w') as f:
+                await f.write(json.dumps(card_data, indent=4))
 
             logger.info(f"{device_type.value.capitalize()} data for {identifier} backed up to {backup_file}")
             return backup_file
@@ -105,7 +105,7 @@ class CardBackupManager:
             raise
         except PermissionError as e:
             logger.error(f"Permission denied when writing backup file: {e}")
-            raise BackupError(f"Cannot write backup file: Permission denied")
+            raise BackupError("Cannot write backup file: Permission denied")
         except Exception as e:
             logger.error(f"Error backing up card data: {e}")
             raise BackupError(f"Error backing up card data: {str(e)}")

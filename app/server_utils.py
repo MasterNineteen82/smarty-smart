@@ -1,14 +1,10 @@
-"""
-Server utility functions for Smart Card Manager.
-Contains shared server management functions.
-"""
-
 import logging
 import threading
 from typing import Optional
 
-from flask import Flask
-from smartcard import System as scard
+import smartcard.System as scard
+
+from fastapi import FastAPI
 
 # Constants
 HOST = 'localhost'
@@ -28,12 +24,12 @@ server_running: bool = False  # Flag to track server status
 logger = logging.getLogger('server_utils')
 
 
-def run_server(app: Optional[Flask] = None) -> dict:
+async def run_server(app: Optional[FastAPI] = None) -> dict:
     """
-    Start the Flask server in a separate thread.
+    Start the FastAPI server in a separate thread.
 
     Args:
-        app: Flask app instance. If None, attempts to import it from smart.py.
+        app: FastAPI app instance. If None, attempts to import it from smart.py.
 
     Returns:
         A dictionary with the status of the server operation.
@@ -45,16 +41,17 @@ def run_server(app: Optional[Flask] = None) -> dict:
 
     if not app:
         try:
-            from app.app import app as smart_app
+            from app.smart import app as smart_app
             app = smart_app
         except ImportError:
             logger.error("No app provided and couldn't import from smart.py")
-            return {"status": "error", "message": "No Flask app provided and failed to import."}
+            return {"status": "error", "message": "No FastAPI app provided and failed to import."}
 
     def run_in_thread():
-        """Runs the Flask app."""
+        """Runs the FastAPI app."""
         try:
-            app.run(host=HOST, port=PORT, debug=False, use_reloader=False)
+            import uvicorn
+            uvicorn.run(app, host=HOST, port=PORT, log_level="info")
         except Exception as e:
             logger.error(f"Server thread failed: {e}", exc_info=True)
             return  # Exit thread if app.run fails
@@ -71,9 +68,9 @@ def run_server(app: Optional[Flask] = None) -> dict:
         return {"status": "error", "message": str(e)}
 
 
-def stop_server() -> dict:
+async def stop_server() -> dict:
     """
-    Stop the Flask server.
+    Stop the FastAPI server.
 
     Returns:
         A dictionary with the status of the server operation.

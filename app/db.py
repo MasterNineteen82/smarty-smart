@@ -39,18 +39,18 @@ SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
 
 @contextmanager
-def session_scope():
+async def session_scope():
     """Provide a transactional scope around a series of operations."""
     session = Session()
     try:
         yield session
-        session.commit()
+        await session.commit()
     except SQLAlchemyError as e:
-        session.rollback()
+        await session.rollback()
         logger.error(f"Database error: {e}")
         raise
     finally:
-        session.close()
+        await session.close()
 
 class User(Base):
     """
