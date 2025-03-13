@@ -11,17 +11,39 @@ import json
 import subprocess
 from pathlib import Path
 import logging
+import traceback
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(module)s - %(funcName)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 def create_env_file(env_type, host, port, log_level, admin_key):
-    """Create environment file for deployment"""
+    """
+    Create environment file for deployment.
+
+    Args:
+        env_type (str): The environment type (development, testing, production).
+        host (str): The host address.
+        port (int): The port number.
+        log_level (str): The logging level.
+        admin_key (str, optional): The admin key. Defaults to None.
+
+    Returns:
+        str: The filename of the created environment file.
+
+    Raises:
+        ValueError: If the environment type is invalid.
+        OSError: If there is an issue creating the environment file.
+    """
+    logger.info(f"Creating environment file for {env_type} environment.")
+    if env_type not in ['development', 'testing', 'production']:
+        logger.error(f"Invalid environment type: {env_type}")
+        raise ValueError(f"Invalid environment type: {env_type}")
+    
     env_vars = {
         'SMARTY_ENV': env_type,
         'SMARTY_HOST': host,
-        'SMARTY_PORT': port,
+        'SMARTY_PORT': str(port),  # Ensure port is a string
         'SMARTY_LOG_LEVEL': log_level,
         'SMARTY_ADMIN_KEY': admin_key or 'change-me-in-production',
         'SMARTY_SECRET_KEY': os.urandom(24).hex(),
@@ -38,12 +60,26 @@ def create_env_file(env_type, host, port, log_level, admin_key):
                 f.write(f"{key}={value}\n")
         logger.info(f"Created environment file: {filename}")
         return filename
-    except Exception as e:
-        logger.error(f"Failed to create environment file: {e}")
-        raise
+    except OSError as e:
+        logger.error(f"Failed to create environment file: {e}\n{traceback.format_exc()}")
+        raise OSError(f"Failed to create environment file: {e}")
 
 def create_systemd_service(name, user, path):
-    """Create systemd service file for Linux deployment"""
+    """
+    Create systemd service file for Linux deployment.
+
+    Args:
+        name (str): The name of the service.
+        user (str): The user to run the service as.
+        path (str): The path to the application directory.
+
+    Returns:
+        str: The filename of the created systemd service file.
+
+    Raises:
+        OSError: If there is an issue creating the systemd service file.
+    """
+    logger.info(f"Creating systemd service file: {name}.service for user {user} at path {path}")
     service_content = f"""[Unit]
 Description=Smart Card Manager Service
 After=network.target
@@ -67,9 +103,9 @@ WantedBy=multi-user.target
         logger.info(f"Created systemd service file: {filename}")
         logger.info(f"To install, copy to /etc/systemd/system/ and run: sudo systemctl enable {name}")
         return filename
-    except Exception as e:
-        logger.error(f"Failed to create systemd service file: {e}")
-        raise
+    except OSError as e:
+        logger.error(f"Failed to create systemd service file: {e}\n{traceback.format_exc()}")
+        raise OSError(f"Failed to create systemd service file: {e}")
 
 def create_windows_service(name, path):
     """Create Windows service configuration"""
