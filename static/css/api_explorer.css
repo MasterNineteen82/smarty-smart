@@ -1,41 +1,93 @@
-/* Styles for API explorer */
+/* Enhanced Styles for API explorer */
+
+/* Consistent Font Family */
+body {
+    font-family: 'Arial', sans-serif; /* Or your preferred font */
+}
+
+/* Consistent Color Palette (adjust as needed) */
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-color: #eee;
+}
 
 .endpoint-container {
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 1.5rem;
 }
 
 .endpoint-path {
     font-family: monospace;
     font-weight: 500;
+    color: var(--dark-color); /* Use a consistent text color */
 }
 
 .method-badge {
     min-width: 60px;
+    text-align: center;
+    color: white; /* Ensure text is readable on badges */
+    border-radius: 0.2rem; /* Add slight rounding */
+    padding: 0.25rem 0.5rem; /* Add padding for better appearance */
+    display: inline-block; /* Ensures consistent width */
 }
 
-.method-get { background-color: #0d6efd; }
-.method-post { background-color: #198754; }
-.method-put { background-color: #fd7e14; }
-.method-delete { background-color: #dc3545; }
+.method-get { background-color: var(--primary-color); }
+.method-post { background-color: var(--success-color); }
+.method-put { background-color: var(--warning-color); }
+.method-delete { background-color: var(--danger-color); }
 
 .response-container {
-    background-color: #f8f9fa;
+    background-color: var(--light-color);
     border-radius: 0.25rem;
     padding: 1rem;
     margin-top: 1rem;
     overflow-x: auto;
+    border: 1px solid var(--border-color); /* Add a subtle border */
 }
 
 .api-category {
     margin-bottom: 2rem;
+    border-top: 2px solid var(--primary-color); /* Category separator */
+    padding-top: 0.5rem;
 }
 
 pre {
     margin: 0;
+    background-color: #e9ecef; /* A slightly darker background for code */
+    padding: 0.5rem;
+    overflow-x: auto; /* Ensure code doesn't overflow */
+    border-radius: 0.2rem;
+}
+
+.params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.params-table th, .params-table td {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    text-align: left;
 }
 
 .params-table th {
     width: 120px;
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
+
+/* Add hover effects for better interactivity */
+.method-badge:hover {
+    opacity: 0.8;
+}
+
+.params-table tr:nth-child(even) {
+    background-color: #f9f9f9;
 }

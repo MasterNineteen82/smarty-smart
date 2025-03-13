@@ -1,41 +1,105 @@
 /* Styles for configuration manager */
 
-.settings-sidebar {
-    min-width: 200px;
+/* Variables for consistent styling */
+:root {
+    --base-font-color: #333;
+    --border-color: #eee;
+    --border-radius: 0.25rem;
+    --padding-small: 0.5rem;
+    --padding-medium: 0.75rem;
+    --padding-large: 1rem;
+    --transition-duration: 0.2s;
+    --base-background-color: #f8f9fa;
 }
 
+/* Consistent sidebar styling */
+.settings-sidebar {
+    min-width: 220px;
+    padding: var(--padding-large);
+    border-right: 1px solid var(--border-color);
+}
+
+/* Sticky navigation adjustments */
 .settings-nav {
     position: sticky;
-    top: 1rem;
+    top: 1.5rem;
+    z-index: 10;
 }
 
+.settings-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.settings-nav li {
+    margin-bottom: var(--padding-small);
+}
+
+.settings-nav a {
+    display: block;
+    padding: var(--padding-small) var(--padding-large);
+    color: var(--base-font-color);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-duration) ease-in-out;
+}
+
+.settings-nav a:hover {
+    background-color: var(--base-background-color);
+}
+
+/* Consistent row styling */
 .config-row {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    padding: var(--padding-medium);
+    border-bottom: 1px solid var(--border-color);
 }
 
+/* Label styling */
 .config-label {
-    font-weight: 500;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
 }
 
+/* Value styling */
 .config-value {
     font-family: monospace;
+    word-break: break-word;
+}
+
+/* Consistent status indicators */
+.config-experimental,
+.config-modified {
+    padding: var(--padding-medium);
+    margin-bottom: var(--padding-large);
+    border-radius: var(--border-radius);
 }
 
 .config-experimental {
-    background-color: #fff3cd;
-    border-left: 3px solid #ffc107;
+    background-color: #fff8e7;
+    border-left: 3px solid #e6b800;
+    color: #856404;
 }
 
 .config-modified {
-    background-color: #d1e7dd;
-    border-left: 3px solid #198754;
+    background-color: #e6f4ec;
+    border-left: 3px solid #146c43;
+    color: #0f5132;
 }
 
+/* Wide switch styling */
 .form-switch.config-wide {
-    padding-left: 2.5em;
+    padding-left: 3em;
 }
 
+/* JSON view styling */
 #json-view pre {
-    max-height: 400px;
+    max-height: 500px;
     overflow: auto;
+    padding: var(--padding-large);
+    background-color: var(--base-background-color);
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 0.85rem;
 }

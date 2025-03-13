@@ -1,39 +1,18 @@
-/* Styles for configuration manager */
+/* Enhanced Styles for Configuration Manager */
 
+/* General layout and structure */
+.settings-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+/* Sidebar for settings navigation */
 .settings-sidebar {
-    min-width: 200px;
-    border-right: 1px solid #dee2e6;
-}
-
-.config-row {
-    margin-bottom: 1rem;
-}
-
-.config-label {
-    font-weight: 500;
-}
-
-.config-value {
-    font-family: monospace;
-}
-
-.config-experimental {
-    background-color: #fff3cd;
-    border-left: 3px solid #ffc107;
-}
-
-.config-modified {
-    background-color: #d1e7dd;
-    border-left: 3px solid #198754;
-}
-
-.form-switch.config-wide {
-    padding-left: 2.5em;
-}
-
-#config-json-display {
-    font-family: monospace;
-    font-size: 0.9rem;
+    min-width: 220px; /* Slightly wider for better readability */
+    border-right: 1px solid #ced4da; /* Softer border color */
+    padding: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow for depth */
 }
 
 .settings-nav {
@@ -41,10 +20,84 @@
     top: 1rem;
 }
 
-.tab-content {
-    padding-left: 1rem;
+.settings-nav .nav-link {
+    padding: 0.5rem 1rem;
+    color: #495057;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
+.settings-nav .nav-link:hover {
+    background-color: #f8f9fa;
+}
+
+.settings-nav .nav-link.active {
+    color: #007bff;
+    font-weight: 500;
+}
+
+/* Main content area for settings */
+.settings-content {
+    flex-grow: 1;
+    padding: 1rem;
+}
+
+/* Individual configuration row */
+.config-row {
+    margin-bottom: 1.25rem; /* Slightly more spacing */
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee; /* Light border to separate rows */
+}
+
+.config-row:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.config-label {
+    font-weight: 600; /* Stronger font weight */
+    margin-bottom: 0.25rem;
+    display: block; /* Ensure it takes full width */
+}
+
+.config-value {
+    font-family: monospace;
+    font-size: 1rem;
+    color: #212529;
+}
+
+/* Special styling for experimental and modified configurations */
+.config-experimental {
+    background-color: #fff8e7; /* Lighter background */
+    border-left: 3px solid #ffc107;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.config-modified {
+    background-color: #e6f4ea; /* Lighter background */
+    border-left: 3px solid #198754;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+/* Wide form switch styling */
+.form-switch.config-wide {
+    padding-left: 3em; /* More padding for better visibility */
+}
+
+/* JSON display area */
+#config-json-display {
+    font-family: monospace;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    overflow-x: auto; /* Enable horizontal scrolling for long JSON strings */
+    white-space: pre-wrap; /* Preserve formatting */
+}
+
+/* Path input group */
 .path-input-group {
     display: flex;
 }
@@ -52,6 +105,7 @@
 .path-input-group .form-control {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    flex-grow: 1; /* Allow input to take up remaining space */
 }
 
 .path-input-group .btn {
@@ -59,8 +113,37 @@
     border-bottom-left-radius: 0;
 }
 
+/* Setting description text */
 .setting-description {
     font-size: 0.875rem;
     color: #6c757d;
     margin-top: 0.25rem;
+    font-style: italic; /* Add emphasis */
+}
+
+/* Validation states */
+.is-invalid .config-value {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+    font-size: 0.875rem;
+    color: #dc3545;
+    margin-top: 0.25rem;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .settings-container {
+        flex-direction: column;
+    }
+
+    .settings-sidebar {
+        min-width: auto;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ced4da;
+        margin-bottom: 1rem;
+    }
 }

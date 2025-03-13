@@ -9,7 +9,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Configuration Manager</h1>
-    <a href="/" class="btn btn-outline-secondary">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Back to App
     </a>
 </div>
@@ -19,6 +19,10 @@
         <!-- Config status alert -->
         <div class="alert alert-success d-none" id="configStatus">
             <i class="bi bi-check-circle me-2"></i> Configuration saved successfully
+        </div>
+        <!-- Config error alert -->
+        <div class="alert alert-danger d-none" id="configError">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Error: <span id="configErrorMessage"></span>
         </div>
     </div>
 </div>
@@ -145,13 +149,13 @@
 <!-- Tool navigation links -->
 <div class="mt-4 d-flex justify-content-center">
     <div class="btn-group">
-        <a href="/api-explorer" class="btn btn-outline-primary">
+        <a href="{{ url_for('api_explorer') }}" class="btn btn-outline-primary">
             <i class="bi bi-code-slash"></i> API Explorer
         </a>
-        <a href="/logs" class="btn btn-outline-primary">
+        <a href="{{ url_for('log_viewer') }}" class="btn btn-outline-primary">
             <i class="bi bi-journal-code"></i> Log Viewer
         </a>
-        <a href="/" class="btn btn-outline-secondary">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-house"></i> Dashboard
         </a>
     </div>
@@ -161,4 +165,25 @@
 {% block additional_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='js/config_manager.js') }}"></script>
+<script>
+    // Add a global error handling function
+    window.addEventListener('error', function(event) {
+        console.error('An unhandled error occurred:', event.error);
+        displayError('An unexpected error occurred. Check the console for details.');
+    });
+
+    // Function to display error messages
+    function displayError(message) {
+        const errorAlert = document.getElementById('configError');
+        const errorMessageSpan = document.getElementById('configErrorMessage');
+
+        errorMessageSpan.textContent = message;
+        errorAlert.classList.remove('d-none');
+
+        // Hide the error message after a few seconds
+        setTimeout(() => {
+            errorAlert.classList.add('d-none');
+        }, 5000); // Adjust the time as needed
+    }
+</script>
 {% endblock %}

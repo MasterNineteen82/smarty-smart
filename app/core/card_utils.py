@@ -7,49 +7,62 @@ from smartcard.Exceptions import NoCardException, CardConnectionException
 from enum import Enum, auto
 from typing import Optional, Dict, Any
 
-# Add this class near the top of the file after imports
-class SmartCardConfig:
-    """Configuration manager for smart card operations"""
+# --- Configuration Management ---
+class ConfigManager:
+    """Centralized configuration management with dynamic loading."""
 
-    # Default configuration values
     _instance = None
-    _config = {
+    _lock = threading.Lock()
+    _config: Dict[str, Any] = {}
+    _defaults = {
         "MAX_PIN_ATTEMPTS": 3,
         "CONNECTION_TIMEOUT": 10,
         "MAX_CONNECT_RETRIES": 3,
         "LOG_LEVEL": "INFO",
         "BACKUP_DIR": None,
-        "SENSITIVE_DATA_MASKING": True
+        "SENSITIVE_DATA_MASKING": True,
+        "LOGS_DIR": "logs",  # Default logs directory
     }
 
     def __new__(cls):
-        """Singleton pattern to ensure only one config instance exists"""
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialize()
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super().__new__(cls)
+                cls._instance._initialize()
         return cls._instance
 
     def _initialize(self):
-        """Initialize configuration with defaults and environment values"""
-        global logs_dir
-        logs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
-        self._config["BACKUP_DIR"] = os.path.join(logs_dir, 'backups')
+        """Initialize configuration: defaults -> env vars -> dynamic loading."""
+        self._config = self._defaults.copy()
+        self._load_from_env()
+        self._setup_directories()
+        self._configure_logging()
 
-        # Load from environment variables if available
+    def _load_from_env(self):
+        """Override configuration from environment variables."""
         for key in self._config:
             env_key = f"SMARTCARD_{key}"
             if env_key in os.environ:
-                self._config[key] = os.environ[env_key]
-
-        # Ensure backup directory exists
-        os.makedirs(self._config["BACKUP_DIR"], exist_ok=True)
-
-    def get(self, key, default=None):
-        """Get a configuration value"""
-        return self._config.get(key, default)
-
-    def set(self, key, value):
-        """Set a configuration value"""
+                value = os.environ[env_key]
+                # Attempt type conversion based on default type
+                try:
+                    if isinstance(self._config[key], bool):
+                        value = value.lower() == 'true'
+                    elif isinstance(self._config[key], int):
+                        try:
+                            value = int(value)
+                        except ValueError:
+                            logger.warning(f"Could not convert '{env_key}' value '{value}' to integer.")
+                            continue  # Skip this variable if conversion fails
+                    elif isinstance(self._config[key], float):
+                        try:
+                            value = float(value)
+                        except ValueError:
+                            logger.warning(f"Could not convert '{env_key}' value '{value}' to float.")
+                            continue  # Skip this variable if conversion fails
+                except Exception as e:
+                    logger.error(f"Error processing environment variable {env_key}: {e}")
+                    continue  # Skip to the next variable in case of error
         self._config[key] = value
         return value
 
@@ -64,7 +77,7 @@ class SmartCardConfig:
         return data_str
 
 # Initialize the config for use throughout the module
-config = SmartCardConfig()
+config = ConfigManager()
 
 # Device identifiers
 CHERRY_ST_IDENTIFIER = "CHERRY Smart Terminal ST"

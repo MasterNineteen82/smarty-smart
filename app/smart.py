@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import os
 import sys
 import logging
@@ -11,91 +11,107 @@ from smartcard.System import readers
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
-# Ensure backup directory exists
+# Configuration
 BACKUP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backups')
 if not os.path.exists(BACKUP_DIR):
     os.makedirs(BACKUP_DIR)
 
-# Register Blueprints
-app.register_blueprint(routes_bp)
-
-# Update logging configuration
-logger = logging.getLogger('smarty')
-logger.setLevel(config.LOG_LEVEL)
-
-# Create handlers
-file_handler = RotatingFileHandler(
-    config.LOG_FILE, 
-    maxBytes=10*1024*1024,  # 10MB
-    backupCount=5
-)
-console_handler = logging.StreamHandler()
-
-# Set log levels
-file_handler.setLevel(config.LOG_LEVEL)
-console_handler.setLevel(config.LOG_LEVEL if config.DEBUG else logging.WARNING)
-
-# Create formatter
-formatter = logging.Formatter(config.LOG_FORMAT)
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
-
-# Add handlers
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
-
-# Update app configuration
 app.secret_key = config.SECRET_KEY
 app.debug = config.DEBUG
 
-# Update server start function to use config
-def start_server(host=None, port=None):
+# Logging setup
+def setup_logging():
+    logger = logging.getLogger('smarty')
+    logger.setLevel(config.LOG_LEVEL)
+
+    file_handler = RotatingFileHandler(
+        config.LOG_FILE, 
+        maxBytes=10*1024*1024,
+        backupCount=5
+    )
+    console_handler = logging.StreamHandler()
+
+    formatter = logging.Formatter(config.LOG_FORMAT)
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    file_handler.setLevel(config.LOG_LEVEL)
+    console_handler.setLevel(config.LOG_LEVEL if config.DEBUG else logging.WARNING)
+
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+    return logger
+
+logger = setup_logging()
+
+# Register Blueprints
+app.register_blueprint(routes_bp)
+
+# Server management functions
+def manage_server(action, host=None, port=None):
     host = host or config.SERVER_HOST
     port = port or config.SERVER_PORT
+    
     try:
-        success = run_server(app, host, port)
-        if success and config.DEFAULT_READER:
-            # Import here to avoid circular import
-            from card_utils import select_reader, poll_card_presence
-            select_reader(config.DEFAULT_READER)
-            poll_card_presence()
-        return success
+        if action == 'start':
+            success = run_server(app, host, port)
+            if success and config.DEFAULT_READER:
+                from card_utils import select_reader, poll_card_presence
+                select_reader(config.DEFAULT_READER)
+                poll_card_presence()
+            return success, "Server started"
+        elif action == 'stop':
+            stop_server()
+            return True, "Server stopped"
+        else:
+            return False, "Invalid action"
     except Exception as e:
-        logger.error(f"Exception occurred while starting server: {e}")
-        return False
+        logger.error(f"Exception occurred during {action}: {e}")
+        return False, f"Internal server error: {str(e)}"
 
+# Routes
 @app.route('/')
 def index():
-    return render_template('index.html', readers=[str(r) for r in readers()])
+    try:
+        reader_list = [str(r) for r in readers()]
+        return render_template('index.html', readers=reader_list)
+    except Exception as e:
+        logger.error(f"Error rendering index page: {e}")
+        return render_template('error.html', error_message="Failed to load the main page.")
 
-@app.route('/start_server', methods=['POST'], endpoint='app_start_server')  # Added unique endpoint
+@app.route('/start_server', methods=['POST'], endpoint='app_start_server')
 def start_server_route():
-    try:
-        if start_server():
-            return {"message": "Server started"}, 200
-        else:
-            return {"message": "Failed to start server"}, 500
-    except Exception as e:
-        logger.error(f"Exception occurred while starting server: {e}")
-        return {"message": "Internal server error"}, 500
+    success, message = manage_server('start')
+    status_code = 200 if success else 500
+    return jsonify({"message": message}), status_code
 
-@app.route('/stop_server', methods=['POST'], endpoint='app_stop_server')  # Added unique endpoint
+@app.route('/stop_server', methods=['POST'], endpoint='app_stop_server')
 def stop_server_route():
-    try:
-        stop_server()
-        return {"message": "Server stopped"}, 200
-    except Exception as e:
-        logger.error(f"Exception occurred while stopping server: {e}")
-        return {"message": "Internal server error"}, 500
+    success, message = manage_server('stop')
+    status_code = 200 if success else 500
+    return jsonify({"message": message}), status_code
 
+# Error handling
+@app.errorhandler(500)
+def internal_server_error(e):
+    logger.error(f"Internal Server Error: {e}")
+    return render_template('error.html', error_message="Internal server error"), 500
+
+@app.errorhandler(404)
+def page_not_found(e):
+    logger.warning(f"Page Not Found: {e}")
+    return render_template('error.html', error_message="Page not found"), 404
+
+# Main execution
 if __name__ == '__main__':
-    if start_server():
+    success, message = manage_server('start')
+    if success:
         try:
             while True:
-                time.sleep(1)  # Keep main thread alive
+                time.sleep(1)
         except KeyboardInterrupt:
-            stop_server()
+            manage_server('stop')
             sys.exit(0)
     else:
-        logger.error("Failed to start the server. Exiting.")
+        logger.error(message)
         sys.exit(1)

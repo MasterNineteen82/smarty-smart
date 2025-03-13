@@ -5,6 +5,8 @@ import logging
 from typing import Dict, List, Tuple, Optional, Any
 from datetime import datetime
 
+from smartcard.util import toHexString
+
 from card_utils import (
     establish_connection, close_connection, safe_globals,
     detect_card_type, detect_reader_type, is_card_registered,
@@ -13,15 +15,68 @@ from card_utils import (
     secure_dispose_card, card_info, card_status, CardStatus,
     CHERRY_ST_IDENTIFIER, ACR122U_IDENTIFIER
 )
-from smartcard.util import toHexString
 
-# Configure logging
+# Configuration & Constants
+class Config:
+    """Centralized configuration management."""
+    
+    # Default values (can be overridden by environment variables or config file)
+    MAX_RETRIES = int(os.environ.get("MAX_RETRIES", 3))
+    RETRY_DELAY = float(os.environ.get("RETRY_DELAY", 0.5))  # seconds
+    
+    # Registry file configuration
+    REGISTRY_SUBDIR = os.environ.get("REGISTRY_SUBDIR", "data")
+    REGISTRY_FILENAME = os.environ.get("REGISTRY_FILENAME", "card_registry.json")
+    BACKUP_SUBDIR = os.environ.get("BACKUP_SUBDIR", "backups")
+    
+    @classmethod
+    def get_registry_path(cls) -> str:
+        """Construct the registry path."""
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(base_dir, cls.REGISTRY_SUBDIR, cls.REGISTRY_FILENAME)
+    
+    @classmethod
+    def get_backup_dir(cls) -> str:
+        """Construct the backup directory path."""
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(base_dir, cls.BACKUP_SUBDIR)
+
+# Configure logging (after Config is defined in case we want to configure logging via env vars)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('card_manager')
 
-# Constants
-MAX_RETRIES = 3
-RETRY_DELAY = 0.5  # seconds
+def handle_file_operation(filepath: str, operation: str = 'read', data: Optional[Any] = None):
+    """Handles file read/write operations with comprehensive error handling."""
+    try:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        
+        if operation == 'read':
+            with open(filepath, 'r') as f:
+                return json.load(f)
+        elif operation == 'write' and data is not None:
+            with open(filepath, 'w') as f:
+                json.dump(data, f, indent=2)
+            return True
+        elif operation == 'delete':
+            if not os.path.exists(filepath):
+                raise FileNotFoundError(f"File not found: {filepath}")
+            os.remove(filepath)
+            return True
+        else:
+            raise ValueError(f"Unsupported file operation: {operation}")
+    
+    except FileNotFoundError as e:
+        logger.warning(f"File operation failed: {e}")
+        if operation == 'read':
+            return {}  # Return empty dict for registry read if file not found
+        else:
+            return False
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
+        return {} if operation == 'read' else False
+    except Exception as e:
+        logger.error(f"File operation failed: {e}")
+        return False
 
 class CardManager:
     """High-level card management class handling lifecycle operations with better error handling"""
@@ -37,25 +92,26 @@ class CardManager:
         self.last_operation = operation_func.__name__
         self.last_operation_time = datetime.now()
         
-        while retries < MAX_RETRIES:
+        while retries < Config.MAX_RETRIES:
             try:
                 # Attempt operation
-                if "backup_card" in self.last_operation:
-                    success, message, extra = operation_func(*args, **kwargs)
-                    return success, message, extra
+                result = operation_func(*args, **kwargs)
+                if isinstance(result, tuple):
+                    success, message, *extra = result
+                    extra_data = extra[0] if extra else None  # Safely extract extra data
+                    return success, message, extra_data
                 else:
-                    success, message = operation_func(*args, **kwargs)
-                    return success, message, None
+                    return result, "Operation successful", None  # Adapt for non-tuple returns
                     
             except Exception as e:
                 logger.error(f"Operation {self.last_operation} failed: {e}")
                 retries += 1
                 
-                if retries < MAX_RETRIES:
-                    logger.info(f"Retrying operation (attempt {retries+1}/{MAX_RETRIES})...")
-                    time.sleep(RETRY_DELAY)
+                if retries < Config.MAX_RETRIES:
+                    logger.info(f"Retrying operation (attempt {retries+1}/{Config.MAX_RETRIES})...")
+                    time.sleep(Config.RETRY_DELAY)
                 else:
-                    return False, f"Operation failed after {MAX_RETRIES} attempts: {str(e)}", None
+                    return False, f"Operation failed after {Config.MAX_RETRIES} attempts: {str(e)}", None
         
         return False, "Operation failed with unknown error", None
     
@@ -283,121 +339,35 @@ class CardManager:
             logger.info("Recovery mode is already disabled.")
 
 def backup_registry(backup_path=None):
-    """
-    Backup the card registry to a file.
-    
-    Args:
-        backup_path (str, optional): Path where to save the backup.
-            If None, uses default backup location.
-            
-    Returns:
-        dict: Status of the backup operation
-    """
-    import os
-    import json
-    from datetime import datetime
-    
-    # Ensure backup directory exists
+    """Backup the card registry to a file."""
     if backup_path is None:
-        backup_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backups')
+        backup_dir = Config.get_backup_dir()
         os.makedirs(backup_dir, exist_ok=True)
         backup_path = os.path.join(backup_dir, f'card_registry_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
-    else:
-        # Ensure the directory for the specified path exists
-        backup_dir = os.path.dirname(os.path.abspath(backup_path))
-        os.makedirs(backup_dir, exist_ok=True)
     
-    try:
-        registry = get_card_registry()
-        with open(backup_path, 'w') as f:
-            json.dump(registry, f, indent=2)
+    result = handle_file_operation(backup_path, operation='write', data=get_card_registry())
+    if result:
         return {"status": "success", "path": backup_path}
-    except Exception as e:
-        import logging
-        logging.error(f"Failed to backup registry: {str(e)}")
-        return {"status": "error", "error": str(e)}
+    else:
+        return {"status": "error", "error": "Backup failed (see logs for details)"}
 
 def delete_backup(backup_path):
-    """
-    Delete a backup file.
-    
-    Args:
-        backup_path (str): Path to the backup file to delete
-        
-    Returns:
-        dict: Status of the delete operation
-    """
-    import os
-    
-    try:
-        # Verify the file exists before attempting to delete
-        if not os.path.exists(backup_path):
-            return {"status": "error", "error": f"File not found: {backup_path}"}
-            
-        os.remove(backup_path)
+    """Delete a backup file."""
+    result = handle_file_operation(backup_path, operation='delete')
+    if result:
         return {"status": "success"}
-    except Exception as e:
-        import logging
-        logging.error(f"Failed to delete backup: {str(e)}")
-        return {"status": "error", "error": str(e)}
+    else:
+        return {"status": "error", "error": "Delete failed (see logs for details)"}
 
 def get_card_registry():
-    """
-    Get the card registry, handling file not found gracefully.
-    
-    Returns:
-        dict: Dictionary of registered cards
-    """
-    import os
-    import json
-    import logging
-    
-    registry_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'card_registry.json')
-    
-    try:
-        # Ensure the data directory exists
-        os.makedirs(os.path.dirname(registry_path), exist_ok=True)
-        
-        if (os.path.exists(registry_path)):
-            with open(registry_path, 'r') as f:
-                return json.load(f)
-        else:
-            logging.warning("Registered cards file not found, creating a new registry")
-            # Initialize with empty registry and save
-            empty_registry = {}
-            with open(registry_path, 'w') as f:
-                json.dump(empty_registry, f, indent=2)
-            return empty_registry
-    except Exception as e:
-        logging.error(f"Error loading card registry: {str(e)}")
-        return {}
+    """Get the card registry, handling file not found gracefully."""
+    registry_path = Config.get_registry_path()
+    return handle_file_operation(registry_path, operation='read')
 
 def save_card_registry(registry):
-    """
-    Save the card registry to file.
-    
-    Args:
-        registry (dict): Dictionary of registered cards
-        
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    import os
-    import json
-    import logging
-    
-    registry_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'card_registry.json')
-    
-    try:
-        # Ensure the data directory exists
-        os.makedirs(os.path.dirname(registry_path), exist_ok=True)
-        
-        with open(registry_path, 'w') as f:
-            json.dump(registry, f, indent=2)
-        return True
-    except Exception as e:
-        logging.error(f"Error saving card registry: {str(e)}")
-        return False
+    """Save the card registry to file."""
+    registry_path = Config.get_registry_path()
+    return handle_file_operation(registry_path, operation='write', data=registry)
 
 # Create a global instance
 card_manager = CardManager()

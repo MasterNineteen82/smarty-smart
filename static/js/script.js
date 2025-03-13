@@ -1,20 +1,66 @@
 function fetchAndDisplay(endpoint, method, data = {}) {
-    fetch(endpoint, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: method === 'POST' ? JSON.stringify(data) : undefined
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('output').textContent = data.message;
-console.log("DEBUG: Ensure this element ID exists in the HTML.");
-        document.getElementById('status').textContent = data.status === 'error' ? 'Error' : 'Connected';
-console.log("DEBUG: Ensure this element ID exists in the HTML.");
-    })
-    .catch(err => {
-        document.getElementById('output').textContent = `Error: ${err}`;
-console.log("DEBUG: Ensure this element ID exists in the HTML.");
-    });
+    const headers = { 'Content-Type': 'application/json' };
+    const body = method === 'POST' ? JSON.stringify(data) : undefined;
+
+    return fetch(endpoint, { method, headers, body })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.message) {
+                showResult(data.message, data.status || 'success');
+            } else {
+                showResult('No message received from server.', 'warning');
+            }
+            updateStatus();
+            return data;
+        })
+        .catch(error => {
+            console.error(`Error fetching ${endpoint}:`, error);
+            showResult(`Error: ${error.message}`, 'error');
+            updateStatus();
+            throw error;
+        });
+}
+
+function showResult(message, status, isHtml = false) {
+    const outputDiv = document.getElementById('output');
+
+    if (!outputDiv) {
+        console.error('Output element not found.');
+        return;
+    }
+
+    if (isHtml) {
+        outputDiv.innerHTML = message;
+    } else {
+        outputDiv.textContent = message;
+    }
+
+    outputDiv.className = `result-message result-${status}`;
+    outputDiv.scrollIntoView({ behavior: 'smooth' });
+    outputDiv.classList.add('operation-completed');
+
+    setTimeout(() => {
+        outputDiv.classList.remove('operation-completed');
+    }, 300);
+}
+
+function updateStatus() {
+    fetchAndDisplay('/card_status', 'GET')
+        .then(data => {
+            const statusIndicator = document.getElementById('card-status-indicator');
+            if (statusIndicator) {
+                statusIndicator.textContent = data.message || 'Unknown';
+                statusIndicator.className = `card-status status-${data.status || 'unknown'}`;
+            }
+        })
+        .catch(error => {
+            console.error('Failed to update status:', error);
+        });
 }
 
 function startServer() { fetchAndDisplay('/start_server', 'POST'); }
@@ -22,62 +68,16 @@ function stopServer() { fetchAndDisplay('/stop_server', 'POST'); }
 
 function connectCard() {
     const reader = document.getElementById('reader-select').value;
-    fetch('/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reader: reader })
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('status').textContent = data.message;
-console.log("DEBUG: Ensure this element ID exists in the HTML.");
-        document.getElementById('atr').textContent = `ATR: ${data.atr || ''}`;
-console.log("DEBUG: Ensure this element ID exists in the HTML.");
-        document.getElementById('output').textContent = data.message;
-console.log("DEBUG: Ensure this element ID exists in the HTML.");
-    });
+    if (!reader) {
+        showResult('Please select a reader.', 'error');
+        return;
+    }
+    fetchAndDisplay('/connect', 'POST', { reader: reader });
 }
 
 function readMemory() { fetchAndDisplay('/read_memory', 'POST'); }
-function verifyPin() {
-    const pin = document.getElementById('old-pin').value.trim();
-    
-    if (!pin) {
-        showResult('Please enter a PIN', 'error');
-        return;
-    }
-    
-    fetch('/verify_pin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ pin })
-    })
-    .then(response => response.json())
-    .then(data => {
-        showResult(data.message, data.status);
-    })
-    .catch(error => showResult('Error: ' + error, 'error'));
-}
-function updatePin() {
-    const pin = document.getElementById('new-pin').value;
-    fetchAndDisplay('/update_pin', 'POST', { pin: pin });
-}
-function readMemoryRegion() {
-    const offset = parseInt(document.getElementById('memory-offset').value, 10);
-    const length = parseInt(document.getElementById('memory-length').value, 10);
-    
-    if (isNaN(offset) || isNaN(length) || offset < 0 || length <= 0) {
-        showResult('Invalid offset or length values', 'error');
-        return;
-    }
-    
-    fetch('/read_memory_region', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+
+function
         body: JSON.stringify({ offset, length })
     })
     .then(response => response.json())
@@ -840,3 +840,73 @@ window.blockCard = blockCard;
 window.unblockCard = unblockCard;
 window.showResult = showResult;
 window.updateStatus = updateStatus;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const cardIdInput = document.getElementById('cardId');
+    const getCardInfoButton = document.getElementById('getCardInfo');
+    const authenticateCardButton = document.getElementById('authenticateCard');
+    const outputDiv = document.getElementById('output');
+    const pinInput = document.getElementById('pin');
+
+    // Function to display messages
+    function displayMessage(message, isError = false) {
+        outputDiv.textContent = message;
+        outputDiv.className = isError ? 'error' : 'success';
+    }
+
+    // Event listener for Get Card Info button
+    getCardInfoButton.addEventListener('click', function() {
+        const cardId = cardIdInput.value;
+        if (!cardId) {
+            displayMessage('Please enter a Card ID.', true);
+            return;
+        }
+
+        fetch(`/cards/${cardId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(card => {
+                displayMessage(`Card ID: ${card.card_id}, Status: ${card.status}, Balance: ${card.balance}, Type: ${card.card_type}`);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                displayMessage(`Error fetching card info: ${error.message}`, true);
+            });
+    });
+
+    // Event listener for Authenticate Card button
+    authenticateCardButton.addEventListener('click', function() {
+        const cardId = cardIdInput.value;
+        const pin = pinInput.value;
+
+        if (!cardId || !pin) {
+            displayMessage('Please enter both Card ID and PIN.', true);
+            return;
+        }
+
+        fetch(`/cards/${cardId}/authenticate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pin: pin })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayMessage(data.message);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                displayMessage(`Authentication failed: ${error.message}`, true);
+            });
+    });
+});

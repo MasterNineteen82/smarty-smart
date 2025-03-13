@@ -10,22 +10,33 @@ let cardConnected = false;
 /**
  * Connect to a card in the selected reader
  */
-function connectCard() {
+async function connectCard() {
     const readerSelect = document.getElementById('readerSelect');
     const selectedReader = readerSelect ? readerSelect.value : null;
+
+    if (!selectedReader) {
+        updateStatusMessage('No reader selected.', 'warning');
+        return;
+    }
     
     // Show loading spinner
     showSpinner('Connecting to card...');
     
-    fetch('/connect', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reader: selectedReader })
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        const response = await fetch('/connect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ reader: selectedReader })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
         if (data.status === 'success') {
             cardConnected = true;
             currentReader = selectedReader;
@@ -35,14 +46,12 @@ function connectCard() {
         } else {
             updateStatusMessage(data.message, 'error');
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error connecting to card:', error);
         updateStatusMessage('Connection failed: ' + error.message, 'error');
-    })
-    .finally(() => {
+    } finally {
         hideSpinner();
-    });
+    }
 }
 
 /**
@@ -66,7 +75,7 @@ function enableCardOperations() {
 /**
  * Verify PIN for the connected card
  */
-function verifyPIN() {
+async function verifyPIN() {
     const pinInput = document.getElementById('pinInput');
     const pin = pinInput ? pinInput.value : '';
     
@@ -77,15 +86,21 @@ function verifyPIN() {
     
     showSpinner('Verifying PIN...');
     
-    fetch('/verify_pin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ pin: pin })
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        const response = await fetch('/verify_pin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ pin: pin })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
         if (data.status === 'success') {
             updateStatusMessage('PIN verified successfully', 'success');
             // Enable additional operations that require PIN verification
@@ -93,34 +108,38 @@ function verifyPIN() {
         } else {
             updateStatusMessage(data.message, 'error');
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error verifying PIN:', error);
         updateStatusMessage('PIN verification failed: ' + error.message, 'error');
-    })
-    .finally(() => {
+    } finally {
         hideSpinner();
         // Clear PIN input for security
         if (pinInput) {
             pinInput.value = '';
         }
-    });
+    }
 }
 
 /**
  * Read memory from the card
  */
-function readMemory() {
+async function readMemory() {
     showSpinner('Reading card memory...');
     
-    fetch('/read_memory', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+    try {
+        const response = await fetch('/read_memory', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    })
-    .then(response => response.json())
-    .then(data => {
+
+        const data = await response.json();
+
         if (data.status === 'success') {
             // Display memory content in a pre-formatted area
             const memoryDisplay = document.getElementById('memoryDisplay');
@@ -132,26 +151,30 @@ function readMemory() {
         } else {
             updateStatusMessage(data.message, 'error');
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error reading memory:', error);
         updateStatusMessage('Memory read failed: ' + error.message, 'error');
-    })
-    .finally(() => {
+    } finally {
         hideSpinner();
-    });
+    }
 }
 
 /**
  * Update card information display
  */
-function updateCardInfo() {
-    fetch('/card_info', {
-        method: 'GET'
-    })
-    .then(response => response.json())
-    .then(data => {
+async function updateCardInfo() {
+    try {
+        const response = await fetch('/card_info', {
+            method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
         const cardInfoElement = document.getElementById('cardInfo');
+
         if (cardInfoElement) {
             if (data.status === 'success') {
                 try {
@@ -183,14 +206,13 @@ function updateCardInfo() {
                 cardInfoElement.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
             }
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error getting card info:', error);
         const cardInfoElement = document.getElementById('cardInfo');
         if (cardInfoElement) {
             cardInfoElement.innerHTML = `<div class="alert alert-danger">Failed to get card information: ${error.message}</div>`;
         }
-    });
+    }
 }
 
 /**

@@ -25,35 +25,30 @@ class ConfigManager:
         Args:
             config_file: Path to configuration file (relative to app root or absolute)
         """
-        # Determine config file path
+        self.config_path = self._resolve_config_path(config_file)
+        self.config: Dict[str, Dict[str, Any]] = {}
+        self.defaults: Dict[str, Dict[str, Any]] = {}
+        self._setup_defaults()
+        self.load()
+    
+    def _resolve_config_path(self, config_file: str) -> str:
+        """Determine the absolute path to the configuration file."""
         if not isinstance(config_file, str):
             raise TypeError("config_file must be a string")
 
         if os.path.isabs(config_file):
-            self.config_path = config_file
-        else:
-            # Use the app root directory
-            try:
-                app_root = os.path.dirname(os.path.abspath(__file__))
-                self.config_path = os.path.join(app_root, config_file)
-            except NameError as e:
-                # Handle case where __file__ is not defined (e.g., interactive mode)
-                logger.warning("__file__ is not defined, using current working directory.")
-                self.config_path = os.path.join(os.getcwd(), config_file)
-            except Exception as e:
-                logger.error(f"Error determining app root: {e}")
-                self.config_path = config_file  # Fallback to the provided relative path
+            return config_file
 
-        # Initialize configuration
-        self.config: Dict[str, Dict[str, Any]] = {}
-        self.defaults: Dict[str, Dict[str, Any]] = {}
-        
-        # Set up default configuration
-        self._setup_defaults()
-        
-        # Load existing configuration
-        self.load()
-    
+        try:
+            app_root = os.path.dirname(os.path.abspath(__file__))
+            return os.path.join(app_root, config_file)
+        except NameError:
+            logger.warning("__file__ is not defined, using current working directory.")
+            return os.path.join(os.getcwd(), config_file)
+        except Exception as e:
+            logger.error(f"Error determining app root: {e}")
+            return config_file  # Fallback to the provided relative path
+
     def _setup_defaults(self) -> None:
         """Set up default configuration values"""
         self.defaults = {
@@ -90,163 +85,160 @@ class ConfigManager:
     def load(self) -> None:
         """Load configuration from file"""
         try:
-            # Start with defaults
             self.config = deepcopy(self.defaults)
-            
-            # Load from file if it exists
             if os.path.exists(self.config_path):
-                try:
-                    with open(self.config_path, 'r') as f:
-                        try:
-                            file_config = json.load(f)
-                        except json.JSONDecodeError as e:
-                            logger.error(f"JSONDecodeError: Invalid JSON format in {self.config_path}: {e}")
-                            # Optionally, you could reset to defaults or re-raise
-                            self.config = deepcopy(self.defaults)
-                            return
-                except IOError as e:
-                    logger.error(f"IOError: Could not open or read file {self.config_path}: {e}")
-                    self.config = deepcopy(self.defaults)
-                    return
-                
-                # Merge with defaults (only known sections and keys)
-                if isinstance(file_config, dict):  # Validate loaded config
-                    for section, settings in file_config.items():
-                        if isinstance(section, str) and section in self.config:
-                            if isinstance(settings, dict):
-                                for key, value in settings.items():
-                                    if isinstance(key, str) and key in self.config[section]:
-                                        self.config[section][key] = value
-                            else:
-                                logger.warning(f"Section '{section}' in config file has invalid settings format (expected dict).")
-                        else:
-                            logger.warning(f"Unknown section '{section}' found in config file.")
-                else:
-                    logger.error(f"Invalid config file format.  Expected a dictionary at the root.")
-                    self.config = deepcopy(self.defaults)
+                self._load_from_file()
             else:
-                # Create config file with defaults
                 self.save()
                 logger.info(f"Created new configuration file at {self.config_path}")
         except Exception as e:
-            logger.exception(f"Unexpected error loading configuration: {e}")  # Log full traceback
-            # Ensure we have defaults if loading fails
+            logger.exception(f"Unexpected error loading configuration: {e}")
             self.config = deepcopy(self.defaults)
+    
+    def _load_from_file(self) -> None:
+        """Load configuration from the JSON file, merging with defaults."""
+        try:
+            with open(self.config_path, 'r') as f:
+                try:
+                    file_config = json.load(f)
+                    self._merge_config(file_config)
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSONDecodeError: Invalid JSON format in {self.config_path}: {e}")
+        except IOError as e:
+            logger.error(f"IOError: Could not open or read file {self.config_path}: {e}")
+
+    def _merge_config(self, file_config: Dict[str, Any]) -> None:
+         """Merge the loaded configuration with the default configuration."""
+         if not isinstance(file_config, dict):
+             logger.error("Invalid config file format. Expected a dictionary at the root.")
+             return
+
+         for section, settings in file_config.items():
+             if not isinstance(section, str):
+                 logger.warning(f"Invalid section name '{section}' (expected string); skipping.")
+                 continue
+
+             if section in self.config and isinstance(settings, dict):
+                 for key, value in settings.items():
+                     if not isinstance(key, str):
+                         logger.warning(f"Invalid key name '{key}' in section '{section}' (expected string); skipping.")
+                         continue
+                     if key in self.config[section]:
+                         self.config[section][key] = value
+                     else:
+                         logger.warning(f"Unknown key '{key}' in section '{section}'; skipping.")
+             else:
+                 logger.warning(f"Unknown section '{section}' found in config file; skipping.")
     
     def save(self) -> bool:
         """Save configuration to file"""
         try:
-            # Make sure directory exists
-            try:
-                os.makedirs(os.path.dirname(os.path.abspath(self.config_path)), exist_ok=True)
-            except OSError as e:
-                logger.error(f"OSError: Could not create directory: {e}")
-                return False
-            
-            try:
-                with open(self.config_path, 'w') as f:
-                    try:
-                        json.dump(self.config, f, indent=4)
-                    except TypeError as e:
-                        logger.error(f"TypeError: Could not serialize config to JSON: {e}")
-                        return False
-            except IOError as e:
-                logger.error(f"IOError: Could not open or write to file {self.config_path}: {e}")
-                return False
-            
+            self._ensure_directory_exists()
+            with open(self.config_path, 'w') as f:
+                json.dump(self.config, f, indent=4)
             logger.info(f"Configuration saved to {self.config_path}")
             return True
-        except Exception as e:
-            logger.exception(f"Unexpected error saving configuration: {e}") # Log full traceback
+        except (OSError, TypeError, IOError, Exception) as e:
+            logger.exception(f"Error saving configuration: {e}")
             return False
+    
+    def _ensure_directory_exists(self) -> None:
+        """Ensure that the directory for the config file exists."""
+        dir_path = os.path.dirname(os.path.abspath(self.config_path))
+        os.makedirs(dir_path, exist_ok=True)
     
     def get(self, section: str, key: str, default: Any = None) -> Any:
         """Get a configuration value"""
-        if not isinstance(section, str):
-            logger.error("Section must be a string.")
-            return default
-        if not isinstance(key, str):
-            logger.error("Key must be a string.")
+        if not self._validate_section_and_key(section, key):
             return default
 
         try:
-            if section in self.config and key in self.config[section]:
-                return self.config[section][key]
-            else:
-                logger.warning(f"Configuration key '{key}' not found in section '{section}'. Returning default.")
-                return default
+            return self.config[section][key]
+        except KeyError:
+            logger.warning(f"Configuration key '{key}' not found in section '{section}'. Returning default.")
+            return default
         except Exception as e:
             logger.exception(f"Unexpected error getting configuration: {e}")
             return default
-
-def set(self, section: str, key: str, value: Any) -> bool:
-    """Set a configuration value"""
-    if not isinstance(section, str):
-        logger.error("Section must be a string.")
-        return False
-    if not isinstance(key, str):
-        logger.error("Key must be a string.")
-        return False
-
-    try:
-        if section in self.config:
-            self.config[section][key] = value
-            return True
-        else:
-            logger.error(f"Section '{section}' not found in configuration.")
+    
+    def set(self, section: str, key: str, value: Any) -> bool:
+        """Set a configuration value"""
+        if not self._validate_section_and_key(section, key, check_valid=False):
             return False
-    except Exception as e:
-        logger.exception(f"Unexpected error setting configuration: {e}")
-        return False
 
-def reset_to_defaults(self, section: Optional[str] = None, key: Optional[str] = None) -> bool:
-    """Reset configuration to default values, either for a specific key, a section, or the entire config."""
-    try:
-        if section is None:
-            # Reset entire config to defaults
-            self.config = deepcopy(self.defaults)
-            logger.info("Configuration reset to defaults.")
-            return True
-        elif section in self.defaults:
-            if key is None:
-                # Reset entire section to defaults
-                self.config[section] = deepcopy(self.defaults[section])
-                logger.info(f"Section '{section}' reset to defaults.")
-                return True
-            elif key in self.defaults[section]:
-                # Reset specific key to default
-                self.config[section][key] = deepcopy(self.defaults[section][key])
-                logger.info(f"Key '{key}' in section '{section}' reset to default.")
+        try:
+            if section in self.config:
+                self.config[section][key] = value
                 return True
             else:
-                logger.error(f"Key '{key}' not found in default configuration for section '{section}'.")
+                logger.error(f"Section '{section}' not found in configuration.")
                 return False
-        else:
-            logger.error(f"Section '{section}' not found in default configuration.")
+        except Exception as e:
+            logger.exception(f"Unexpected error setting configuration: {e}")
             return False
-    except Exception as e:
-        logger.exception(f"Unexpected error resetting configuration: {e}")
-        return False
+    
+    def reset_to_defaults(self, section: Optional[str] = None, key: Optional[str] = None) -> bool:
+        """Reset configuration to default values, either for a specific key, a section, or the entire config."""
+        try:
+            if section is None:
+                self.config = deepcopy(self.defaults)
+                logger.info("Configuration reset to defaults.")
+                return True
+            elif section in self.defaults:
+                if key is None:
+                    self.config[section] = deepcopy(self.defaults[section])
+                    logger.info(f"Section '{section}' reset to defaults.")
+                    return True
+                elif key in self.defaults[section]:
+                    self.config[section][key] = deepcopy(self.defaults[section][key])
+                    logger.info(f"Key '{key}' in section '{section}' reset to default.")
+                    return True
+                else:
+                    logger.error(f"Key '{key}' not found in default configuration for section '{section}'.")
+                    return False
+            else:
+                logger.error(f"Section '{section}' not found in default configuration.")
+                return False
+        except Exception as e:
+            logger.exception(f"Unexpected error resetting configuration: {e}")
+            return False
+    
+    def is_valid_section(self, section: str) -> bool:
+        """Check if a section is a valid configuration section."""
+        if not isinstance(section, str):
+            logger.error("Section must be a string.")
+            return False
+        return section in self.defaults
+    
+    def is_valid_key(self, section: str, key: str) -> bool:
+        """Check if a key is a valid configuration key within a section."""
+        if not isinstance(section, str):
+            logger.error("Section must be a string.")
+            return False
+        if not isinstance(key, str):
+            logger.error("Key must be a string.")
+            return False
 
-def is_valid_section(self, section: str) -> bool:
-    """Check if a section is a valid configuration section."""
-    if not isinstance(section, str):
-        logger.error("Section must be a string.")
-        return False
-    return section in self.defaults
+        if not self.is_valid_section(section):
+            return False
+        return key in self.defaults[section]
 
-def is_valid_key(self, section: str, key: str) -> bool:
-    """Check if a key is a valid configuration key within a section."""
-    if not isinstance(section, str):
-        logger.error("Section must be a string.")
-        return False
-    if not isinstance(key, str):
-        logger.error("Key must be a string.")
-        return False
+    def _validate_section_and_key(self, section: str, key: str, check_valid: bool = True) -> bool:
+        """Validate section and key, logging errors if invalid."""
+        if not isinstance(section, str):
+            logger.error("Section must be a string.")
+            return False
+        if not isinstance(key, str):
+            logger.error("Key must be a string.")
+            return False
 
-    if not self.is_valid_section(section):
-        return False
-    return key in self.defaults[section]
+        if check_valid and not self.is_valid_section(section):
+            logger.error(f"Section '{section}' is not a valid configuration section.")
+            return False
+        if check_valid and not self.is_valid_key(section, key):
+            logger.error(f"Key '{key}' is not a valid configuration key in section '{section}'.")
+            return False
+        return True
 
 def get_config() -> ConfigManager:
     """Get the singleton configuration manager instance"""

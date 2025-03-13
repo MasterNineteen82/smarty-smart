@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const configForm = document.getElementById('configForm');
     if (configForm) {
         configForm.addEventListener('submit', handleConfigSubmit);
+    } else {
+        console.warn('Configuration form not found.');
     }
 
     // Initialize validation
@@ -15,6 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup config section toggles
     setupSectionToggles();
+
+    // Setup reset to defaults functionality
+    const resetButton = document.getElementById('resetConfigButton');
+    if (resetButton) {
+        resetButton.addEventListener('click', resetToDefaults);
+    } else {
+        console.warn('Reset button not found.');
+    }
 });
 
 /**
@@ -42,7 +52,14 @@ function handleConfigSubmit(event) {
             if (value === 'true' || value === 'false') {
                 configData[section][setting] = (value === 'true');
             } else if (!isNaN(value) && value.trim() !== '') {
-                configData[section][setting] = Number(value);
+                const numValue = Number(value);
+                if (Number.isFinite(numValue)) {
+                    configData[section][setting] = numValue;
+                } else {
+                    console.warn(`Invalid numeric value for ${key}: ${value}`);
+                    showConfigStatus(false, `Invalid numeric value for ${key}: ${value}`);
+                    return; // Stop submission
+                }
             } else {
                 configData[section][setting] = value;
             }
@@ -59,12 +76,14 @@ function handleConfigSubmit(event) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Failed to save configuration');
+            return response.json().then(err => {  // Attempt to read error message from the server
+                throw new Error(err.message || 'Failed to save configuration');
+            });
         }
         return response.json();
     })
     .then(data => {
-        showConfigStatus(true, 'Configuration saved successfully');
+        showConfigStatus(true, data.message || 'Configuration saved successfully'); // Use message from server if available
     })
     .catch(error => {
         console.error('Error saving configuration:', error);
@@ -89,6 +108,8 @@ function showConfigStatus(success, message) {
         setTimeout(() => {
             statusEl.classList.add('d-none');
         }, 5000);
+    } else {
+        console.warn('Status element not found.');
     }
 }
 
@@ -112,6 +133,9 @@ function setupValidation() {
         input.addEventListener('input', function() {
             validateNumeric(this);
         });
+        input.addEventListener('blur', function() {
+            validateNumeric(this); // Validate on blur as well
+        });
     });
 }
 
@@ -121,6 +145,12 @@ function setupValidation() {
  */
 function validatePath(input) {
     const value = input.value.trim();
+    
+    if (value.length === 0) {
+         setInputValidity(input, false, 'Path cannot be empty');
+         return;
+    }
+
     const invalidChars = /[<>:"|?*]/g;
     
     if (invalidChars.test(value)) {
@@ -135,9 +165,9 @@ function validatePath(input) {
  * @param {HTMLInputElement} input - Numeric input element
  */
 function validateNumeric(input) {
-    const min = parseInt(input.getAttribute('min') || '-Infinity');
-    const max = parseInt(input.getAttribute('max') || 'Infinity');
-    const value = parseInt(input.value);
+    const min = parseFloat(input.getAttribute('min') || '-Infinity');
+    const max = parseFloat(input.getAttribute('max') || 'Infinity');
+    const value = parseFloat(input.value);
     
     if (isNaN(value)) {
         setInputValidity(input, false, 'Please enter a valid number');
@@ -213,12 +243,14 @@ function resetToDefaults() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to reset configuration');
+                 return response.json().then(err => {  // Attempt to read error message from the server
+                    throw new Error(err.message || 'Failed to reset configuration');
+                });
             }
             return response.json();
         })
         .then(data => {
-            showConfigStatus(true, 'Configuration reset to defaults');
+            showConfigStatus(true, data.message || 'Configuration reset to defaults');
             // Reload the page to show updated values
             setTimeout(() => window.location.reload(), 1000);
         })
