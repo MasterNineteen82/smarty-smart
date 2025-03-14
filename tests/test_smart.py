@@ -3,7 +3,7 @@ import logging
 import os
 import time
 from unittest.mock import patch, MagicMock, mock_open
-from app import smart
+from archive import smart
 from app.config import LOG_FILE, LOG_LEVEL, LOG_FORMAT, MAX_LOG_SIZE, BACKUP_COUNT
 
 

@@ -41,7 +41,7 @@ async def run_server(app: Optional[FastAPI] = None) -> dict:
 
     if not app:
         try:
-            from app.smart import app as smart_app
+            from archive.smart import app as smart_app
             app = smart_app
         except ImportError:
             logger.error("No app provided and couldn't import from smart.py")

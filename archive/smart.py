@@ -8,24 +8,27 @@ import argparse
 import uvicorn
 import socket
 import webbrowser
+import site
 import traceback
+import json
 import asyncio
 import httpx  # Import httpx for async HTTP requests
 from contextlib import asynccontextmanager
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-from pathlib import Path  # Import Path from pathlib
 
-from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Depends, status, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.security import OAuth2PasswordRequestForm
 
 # Import necessary modules from other files
 from app.api import card_routes, auth_routes, routes
-from app.db import create_db_and_tables
-from app.security_manager import get_security_manager
+from app.db import create_db_and_tables, get_db, User
+from app.security_manager import SecurityManager, AuthenticationError, get_security_manager
+from app.utils.response_utils import standard_response, error_response
 
 # Setup logging
 logging.basicConfig(
@@ -39,12 +42,10 @@ logging.basicConfig(
 
 logger = logging.getLogger("SmartCardManager")
 
-# Define parent_dir globally
-parent_dir = Path(__file__).resolve().parent
-
 def setup_environment():
     """Set up the application environment"""
-    # Add the project root directory to the path for imports
+    # Add the parent directory to the path for imports
+    parent_dir = Path(__file__).parent
     if str(parent_dir) not in sys.path:
         sys.path.insert(0, str(parent_dir))
     
@@ -56,6 +57,7 @@ def setup_environment():
         os.environ["DEBUG"] = "true"
         
     logger.info(f"Application directory: {parent_dir}")
+    return True
 
 def run_setup_verification():
     """Run setup verification checks"""
@@ -466,12 +468,14 @@ manager = ConnectionManager()
 # Add WebSocket endpoint
 @app.websocket("/ws/card-status")
 async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time card status updates"""
     await manager.connect(websocket)
     try:
         while True:
             # Wait for any messages from the client
             # We're not actually expecting messages, but this keeps the connection open
             data = await websocket.receive_text()
+            # You could handle client messages here if needed
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         logger.debug("WebSocket client disconnected")
@@ -481,8 +485,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # Command-line argument parsing
 parser = argparse.ArgumentParser(description="Smart Card Manager Application")
-parser.add_argument("--port", type=int, default=8765, help="Port to run on (default: 8765)")
-parser.add_argument("--frontend-port", type=int, default=5678, help="Port where frontend is running (default: 5678)")
+parser.add_argument("--port", type=int, default=None, help="Port to run on (default: auto-detect available port)")
+parser.add_argument("--frontend-port", type=int, default=3000, help="Port where frontend is running (default: 3000)")
 parser.add_argument("--open-browser", action="store_true", help="Open browser at start")
 parser.add_argument("--log-level", default="INFO", 
                       choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -492,14 +496,14 @@ args = parser.parse_args()
 # Store the active port globally so it can be accessed elsewhere
 active_port = None
 
-def find_available_port(start=8765, stop=8800):
-    for port in range(start, stop):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
+def find_available_port(start=5000, stop=5050):
+    for port in range(start, stop + 1):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.bind(("127.0.0.1", port))
                 return port
-            except OSError:
-                continue
+        except OSError:
+            continue
     raise OSError(f"No available ports between {start} and {stop}")
 
 def print_links(port, frontend_port):
@@ -540,7 +544,6 @@ def main():
         "http://localhost",
         "http://localhost:8080",
         f"http://127.0.0.1:{args.frontend_port}",
-        "http://127.0.0.1",
     ]
     
     # Re-configure CORS to use the correct origins

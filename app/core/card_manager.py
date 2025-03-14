@@ -1,10 +1,11 @@
+"""Card manager module."""
 import os
 import json
 import asyncio
 import logging
+import shutil
 from typing import Dict, List, Tuple, Optional, Any
 from datetime import datetime
-import shutil
 
 from smartcard.util import toHexString
 
@@ -78,6 +79,10 @@ def handle_file_operation(filepath: str, operation: str = 'read', data: Optional
     except Exception as e:
         logger.error(f"File operation failed: {e}")
         return False
+
+class CardError(Exception):
+    """Custom exception for card-related errors."""
+    pass
 
 class CardManager:
     """High-level card management class handling lifecycle operations."""
@@ -302,6 +307,7 @@ class CardManager:
     
     def get_device_card_compatibility(self) -> Dict:
         """Check compatibility between current reader and card."""
+        card_info = {}  # Initialize card_info
         with safe_globals():
             conn, err = establish_connection()
             if err:
@@ -315,6 +321,7 @@ class CardManager:
             try:
                 atr = toHexString(conn.getATR())
                 card_type = detect_card_type(atr)
+                # Ensure card_info is defined before accessing it
                 reader_type = detect_reader_type(card_info.get("reader_name", "Unknown"))
                 
                 # Check for specific incompatibilities
@@ -365,9 +372,6 @@ class CardManager:
         else:
             logger.info("Recovery mode is already disabled.")
     
-    class CardError(Exception):
-        """Custom exception for card-related errors."""
-        pass
     
     def get_card_status_from_db(self, atr: str) -> Optional[CardStatus]:
         """Get the card status from the database."""
