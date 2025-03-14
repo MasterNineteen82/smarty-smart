@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Help - Smart Card Manager{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/help.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Help & Documentation</h1>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group"></div>
+                <input type="text" class="form-control" id="helpSearch" placeholder="Search help topics...">
+                <button class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="mt-2 d-none"></div>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error loading help content:</strong> {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <div id="helpContent">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Getting Started</h2>
+                <button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#gettingStartedContent">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div id="gettingStartedContent" class="collapse show card-body">
+                <p>Welcome to Smart Card Manager! Follow these steps to get started:</p>
+                <ol>
+                    <li>Connect your smart card reader to your computer</li>
+                    <li>Navigate to the <a href="{{ url_for('dashboard') }}">Dashboard</a> to see available readers</li>
+                    <li>Select a reader and click "Connect"</li>
+                    <li>Use the various card operations from the menu</li>
+                </ol>
+                <div class="mt-3">
+                    <video class="img-fluid rounded" controls>
+                        <source src="{{ url_for('static', filename='videos/getting-started.mp4') }}" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Troubleshooting</h2>
+                <button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#troubleshootingContent">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div id="troubleshootingContent" class="collapse show card-body">
+                <p>If you encounter any issues:</p>
+                <div class="accordion" id="troubleshootingAccordion">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                Card Reader Issues
+                            </button>
+                        </h3>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#troubleshootingAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Check that your card reader is properly connected to a working USB port</li>
+                                    <li>Try disconnecting and reconnecting the reader</li>
+                                    <li>Check if the reader appears in Device Manager (Windows) or System Information (Mac)</li>
+                                    <li>Try installing the latest drivers for your card reader model</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                Card Recognition Problems
+                            </button>
+                        </h3>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Ensure the card is inserted correctly (chip side in the right direction)</li>
+                                    <li>Clean the chip contacts with a soft cloth</li>
+                                    <li>Try a different card to determine if the issue is with the specific card</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('diagnostics') }}" class="btn btn-outline-primary">Run Diagnostics Tool</a>
+                    <a href="{{ url_for('connection_test') }}" class="btn btn-outline-secondary">Test API Connection</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Frequently Asked Questions</h2>
+                <button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#faqContent">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div id="faqContent" class="collapse show card-body">
+                <div class="accordion" id="faqAccordion">
+                    {% for faq in faqs %}
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqHeading{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ loop.index }}">
+                                {{ faq.question }}
+                            </button>
+                        </h3>
+                        <div id="faqCollapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">{{ faq.answer|safe }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-3">
+                        <p>FAQ content could not be loaded. Please try again later.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4"></h3>

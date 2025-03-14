@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Terms and Conditions{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb navigation -->
+    <nav aria-label="breadcrumb"></nav>
+        <ol class="breadcrumb"></ol>
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Terms and Conditions</li>
+        </ol>
+    </nav>
+    
+    {% if terms_content %}
+    <h1>Terms and Conditions</h1>
+    <p class="lead">Effective Date: {{ terms_date|default('March 14, 2025') }}</p>
+    <p>Version: {{ terms_version|default('1.0') }}</p>
+    
+    <div class="mt-4">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using the Smart Card Manager application, you agree to be bound by these Terms and Conditions.</p>
+        
+        <h2>2. Use of the Application</h2>
+        <p>The Smart Card Manager application is provided for managing smart cards, NFC tags, and RFID tags throughout their lifecycle.</p>
+        
+        <h2>3. Changes to Terms</h2>
+        <p>We reserve the right to modify these terms at any time. Your continued use of the application constitutes acceptance of the modified terms.</p>
+        
+        <!-- Additional sections could be added here -->
+    </div>
+    
+    <!-- User agreement section -->
+    {% if not user_accepted %}
+    <form action="{{ url_for('accept_terms') }}" method="post" class="mt-5">
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="acceptTerms" name="acceptTerms" required>
+            <label class="form-check-label" for="acceptTerms">
+                I have read and agree to the Terms and Conditions
+            </label>
+        </div>
+        <input type="hidden" name="terms_version" value="{{ terms_version|default('1.0') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary">Accept</button>
+    </form>
+    {% else %}
+    <div class="alert alert-success mt-4">
+        You accepted these terms on {{ acceptance_date|default('') }}
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Terms
+        </button>
+    </div>
+    
+    {% else %}
+    <div class="alert alert-warning">
+        Terms and conditions are currently unavailable. Please try again later.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}</form>

@@ -26,19 +26,19 @@
             <i class="bi bi-exclamation-triangle-fill me-2"></i> Error: <span id="configErrorMessage"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <div class="alert alert-warning alert-dismissible fade show d-none" id="configWarning" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i> Warning: <span id="configWarningMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header bg-light">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <h5 class="mb-0">Application Settings</h5>
-            <div class="mt-2 mt-md-0">
-                <button class="btn btn-sm btn-outline-primary me
-                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetConfirmModal">
-                    <i class="bi bi-arrow-counterclockwise"></i> Reset to Defaults
-                </button>
-            </div>
+<!-- Connection status indicator -->
+<div class="mb-3">
+    <span class="badge bg-success d-none" id="connectionStatus">Connected</span>
+    <span class="badge bg-danger d-none" id="disconnectionStatus">Disconnected</span>
+</div>
+
         </div>
     </div>
     <div class="card-body">

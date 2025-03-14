@@ -1,0 +1,10 @@
+Endpoint,Method,Description,Success,HasStandardFormat,Status,Message,HasData
+/health,GET,Health Check API,True,False,ok,N/A,False
+/api/health,GET,API Health Check,False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/health,False
+/api/card_status,GET,Card Status API,False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/card_status,False
+/api/cards/info,GET,Card Info API,False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/cards/info,False
+/api/readers,GET,Card Readers List API,False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/readers,False
+/api/connect,POST,Connect Card API,False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/connect,False
+/api/cards/check_registration,GET,Check Card Registration API,False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/cards/check_registration,False
+/api/nonexistent,GET,Non-existent Endpoint (Error Format Test),False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/nonexistent,False
+/api/verify_pin,POST,Invalid PIN Format (Validation Test),False,False,error,404 Client Error: Not Found for url: http://localhost:5000/api/verify_pin,False

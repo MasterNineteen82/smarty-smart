@@ -1,0 +1,6 @@
+{
+  "app_name": "Smart Card Manager",
+  "debug": true,
+  "log_level": "INFO",
+  "port": 5000
+}

@@ -1,0 +1,63 @@
+2025-03-14 21:27:52,589 - __main__ - INFO - Initializing API tester for http://localhost:5000
+2025-03-14 21:27:52,589 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [35mSMART CARD MANAGER API STANDARDIZATION TEST[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36mDate: 2025-03-14 21:27:52.589048[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36mServer: http://localhost:5000[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36mLog file: logs\api_test_20250314_212752.log[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36m[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36mCreating HTTP session...[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [35m
+--- Testing Existing API Endpoints ---[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36mTesting: Health Check API[0m
+2025-03-14 21:27:52,589 - __main__ - INFO - [36mGET http://localhost:5000/health[0m
+2025-03-14 21:27:52,859 - __main__ - INFO - Response status: 200
+2025-03-14 21:27:52,859 - __main__ - INFO - Response headers: {'Date': 'Fri, 14 Mar 2025 21:27:52 GMT', 'Server': 'uvicorn', 'Content-Length': '119', 'Content-Type': 'application/json'}
+2025-03-14 21:27:52,859 - __main__ - INFO - Response content: {"status":"success","message":"API service is operational","data":{"status":"ok","version":"1.0.0","uptime":"X hours"}}
+2025-03-14 21:27:52,859 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 21:27:52,874 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 21:27:52,874 - __main__ - INFO - [36mTesting: Card Status API[0m
+2025-03-14 21:27:52,874 - __main__ - INFO - [36mGET http://localhost:5000/cards/status[0m
+2025-03-14 21:27:52,874 - __main__ - INFO - Response status: 200
+2025-03-14 21:27:52,874 - __main__ - INFO - Response headers: {'Date': 'Fri, 14 Mar 2025 21:27:52 GMT', 'Server': 'uvicorn', 'Content-Length': '183', 'Content-Type': 'application/json'}
+2025-03-14 21:27:52,878 - __main__ - INFO - Response content: {"status":"success","message":"Card status retrieved successfully","data":{"status":"ready","timestamp":"2025-03-14 21:27:52.874953","services":{"card_manager":true,"database":true}}}
+2025-03-14 21:27:52,878 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 21:27:52,906 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 21:27:52,906 - __main__ - INFO - [36mTesting: Register Card API[0m
+2025-03-14 21:27:52,906 - __main__ - INFO - [36mPOST http://localhost:5000/cards/register[0m
+2025-03-14 21:27:52,906 - __main__ - INFO - [36mRequest body: {'atr': 'test_atr_123', 'user_id': 1, 'status': 'active', 'id': 1}[0m
+2025-03-14 21:27:52,912 - __main__ - INFO - Response status: 400
+2025-03-14 21:27:52,922 - __main__ - INFO - Response headers: {'Date': 'Fri, 14 Mar 2025 21:27:52 GMT', 'Server': 'uvicorn', 'Content-Length': '153', 'Content-Type': 'application/json'}
+2025-03-14 21:27:52,922 - __main__ - INFO - Response content: {"status":"error","message":"Card already registered","error_type":"CardRegistrationError","suggestion":"Please check the card parameters and try again"}
+2025-03-14 21:27:52,922 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 21:27:52,938 - __main__ - INFO - [35m
+--- Testing Error Handling ---[0m
+2025-03-14 21:27:52,938 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 21:27:52,938 - __main__ - INFO - [36mTesting: Non-existent Endpoint[0m
+2025-03-14 21:27:52,938 - __main__ - INFO - [36mGET http://localhost:5000/nonexistent[0m
+2025-03-14 21:27:52,938 - __main__ - INFO - Response status: 404
+2025-03-14 21:27:52,938 - __main__ - INFO - Response headers: {'Date': 'Fri, 14 Mar 2025 21:27:52 GMT', 'Server': 'uvicorn', 'Content-Length': '123', 'Content-Type': 'application/json'}
+2025-03-14 21:27:52,938 - __main__ - INFO - Response content: {"status":"error","message":"Not Found","error_type":"HTTP404Error","suggestion":"Please check your request and try again"}
+2025-03-14 21:27:52,938 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 21:27:52,954 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 21:27:52,954 - __main__ - INFO - [36mTesting: Get Card Details API[0m
+2025-03-14 21:27:52,954 - __main__ - INFO - [36mGET http://localhost:5000/cards/test_atr_123[0m
+2025-03-14 21:27:52,954 - __main__ - INFO - Response status: 500
+2025-03-14 21:27:52,954 - __main__ - INFO - Response headers: {'Date': 'Fri, 14 Mar 2025 21:27:52 GMT', 'Server': 'uvicorn', 'Content-Length': '131', 'Content-Type': 'application/json'}
+2025-03-14 21:27:52,954 - __main__ - INFO - Response content: {"status":"error","message":"Failed to retrieve card information","error_type":"ServerError","suggestion":"Please try again later"}
+2025-03-14 21:27:52,954 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 21:27:52,970 - __main__ - INFO - [35m
+=================================================[0m
+2025-03-14 21:27:52,970 - __main__ - INFO - [35mTEST RESULTS SUMMARY[0m
+2025-03-14 21:27:52,970 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 21:27:52,970 - __main__ - INFO - [32mTests with standard format: 5 of 5 (100%)[0m
+2025-03-14 21:27:52,970 - __main__ - INFO - [32m
+All tested APIs follow the standardized format![0m
+2025-03-14 21:27:52,988 - __main__ - INFO - [36m
+Detailed results saved to api_test_results_20250314_212752.csv[0m

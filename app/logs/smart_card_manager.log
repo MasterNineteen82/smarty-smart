@@ -1,0 +1,100 @@
+2025-03-14 19:33:46,912 - SmartCardManager - INFO - Application directory: X:\smarty-smart
+2025-03-14 19:33:46,912 - SmartCardManager - INFO - Running setup verification...
+2025-03-14 19:33:46,991 - SmartCardManager - INFO - Setup verification passed.
+2025-03-14 19:33:46,991 - SmartCardManager - INFO - Starting server on port 5000...
+2025-03-14 19:33:47,565 - app.db - INFO - Database engine created successfully
+2025-03-14 19:33:47,646 - app.db - INFO - Database tables created successfully
+2025-03-14 19:33:47,646 - app.main - INFO - Database initialized.
+2025-03-14 19:33:47,646 - app.main - INFO - App started.
+2025-03-14 19:37:20,596 - SmartCardManager - INFO - Application directory: X:\smarty-smart
+2025-03-14 19:37:20,596 - SmartCardManager - INFO - Running setup verification...
+2025-03-14 19:37:20,681 - SmartCardManager - INFO - Setup verification passed.
+2025-03-14 19:37:20,681 - SmartCardManager - INFO - Starting server on port 5000...
+2025-03-14 19:37:21,254 - app.db - INFO - Database engine created successfully
+2025-03-14 19:37:21,340 - app.db - INFO - Database tables created successfully
+2025-03-14 19:37:21,340 - app.main - INFO - Database initialized.
+2025-03-14 19:37:21,340 - app.main - INFO - App started.
+2025-03-14 20:15:22,936 - app.api.card_routes - ERROR - Error getting status: name 'datetime' is not defined
+2025-03-14 20:15:22,939 - app.api.card_routes - INFO - Getting card with ATR: register
+2025-03-14 20:15:22,939 - app.api.card_routes - ERROR - Failed to get card: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('register', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 20:15:23,061 - app.api.card_routes - ERROR - Error getting status: name 'datetime' is not defined
+2025-03-14 20:19:34,729 - app.api.card_routes - INFO - Getting card with ATR: register
+2025-03-14 20:19:34,729 - app.api.card_routes - ERROR - Failed to get card: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('register', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 20:19:34,959 - app.api.card_routes - ERROR - Error getting status: name 'datetime' is not defined
+2025-03-14 20:21:53,986 - app.api.card_routes - INFO - Getting card with ATR: register
+2025-03-14 20:21:53,986 - app.api.card_routes - ERROR - Failed to get card: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('register', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 20:21:54,238 - app.api.card_routes - ERROR - Error getting status: name 'datetime' is not defined
+2025-03-14 20:32:49,092 - app.api.card_routes - ERROR - Error getting status: name 'datetime' is not defined
+2025-03-14 20:32:49,108 - app.api.card_routes - INFO - Registering new card with ATR: test_atr_123
+2025-03-14 20:32:49,124 - app.api.card_routes - INFO - Card registered successfully: test_atr_123
+2025-03-14 20:32:49,124 - app.api.card_routes - ERROR - Registration failed: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('test_atr_123', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 20:32:49,140 - app.api.card_routes - INFO - Getting card with ATR: test_atr_123
+2025-03-14 20:32:49,140 - app.api.card_routes - ERROR - Failed to get card: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('test_atr_123', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 21:21:49,879 - app.api.card_routes - ERROR - Error getting status: name 'datetime' is not defined
+2025-03-14 21:21:49,893 - app.api.card_routes - INFO - Registering new card with ATR: test_atr_123
+2025-03-14 21:21:49,895 - app.api.card_routes - WARNING - Card registration failed: Card already registered
+2025-03-14 21:21:49,895 - app.api.card_routes - ERROR - Registration failed: 400: Card already registered
+2025-03-14 21:21:49,925 - app.api.card_routes - INFO - Getting card with ATR: test_atr_123
+2025-03-14 21:21:49,925 - app.api.card_routes - ERROR - Failed to get card: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('test_atr_123', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 21:26:50,104 - SmartCardManager - INFO - Application directory: X:\smarty-smart
+2025-03-14 21:26:50,104 - SmartCardManager - INFO - Running setup verification...
+2025-03-14 21:26:50,172 - SmartCardManager - INFO - Setup verification passed.
+2025-03-14 21:26:50,172 - SmartCardManager - INFO - Starting server on port 5000...
+2025-03-14 21:26:50,760 - app.db - INFO - Database engine created successfully
+2025-03-14 21:26:50,839 - app.db - INFO - Database tables created successfully
+2025-03-14 21:26:50,839 - app.main - INFO - Database initialized.
+2025-03-14 21:26:50,839 - app.main - INFO - App started.
+2025-03-14 21:27:52,912 - app.api.card_routes - INFO - Registering new card with ATR: test_atr_123
+2025-03-14 21:27:52,912 - app.api.card_routes - WARNING - Card registration failed: Card already registered
+2025-03-14 21:27:52,954 - app.api.card_routes - INFO - Getting card with ATR: test_atr_123
+2025-03-14 21:27:52,954 - app.api.card_routes - ERROR - Failed to get card: (sqlite3.OperationalError) no such column: cards.name
+[SQL: SELECT cards.id AS cards_id, cards.atr AS cards_atr, cards.name AS cards_name, cards.status AS cards_status 
+FROM cards 
+WHERE cards.atr = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('test_atr_123', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-14 21:33:47,277 - SmartCardManager - INFO - Application directory: X:\smarty-smart
+2025-03-14 21:33:47,277 - SmartCardManager - INFO - Running setup verification...
+2025-03-14 21:33:47,355 - SmartCardManager - INFO - Setup verification passed.
+2025-03-14 21:33:47,355 - SmartCardManager - INFO - Starting server on port 5000...
+2025-03-14 21:33:47,945 - app.db - INFO - Database engine created successfully
+2025-03-14 21:33:48,036 - app.db - INFO - Database tables created successfully
+2025-03-14 21:33:48,036 - app.main - INFO - Database initialized.
+2025-03-14 21:33:48,036 - app.main - INFO - App started.

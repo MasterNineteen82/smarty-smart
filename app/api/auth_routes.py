@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional, Dict, Any, List
+from fastapi.responses import JSONResponse
 
 import logging
 from pydantic import BaseModel, validator
@@ -9,6 +10,8 @@ from pydantic import BaseModel, validator
 from app.security_manager import AuthenticationError, get_security_manager, SecurityManager
 from app.db import session_scope, User
 from sqlalchemy.orm import Session
+# Import response utilities from the common module
+from app.utils.response_utils import standard_response, error_response
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -40,7 +43,7 @@ def get_db():
 
 
 # Route for user login
-@router.post("/token", response_model=Token)
+@router.post("/token")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     security_manager: SecurityManager = Depends(get_security_manager),
@@ -53,12 +56,18 @@ async def login(
             form_data.username, form_data.password
         ):
             access_token = "test_token"
-            return {"access_token": access_token, "token_type": "bearer"}
+            return standard_response(
+                message="Login successful",
+                data={"access_token": access_token, "token_type": "bearer"}
+            )
         else:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
+                content=error_response(
+                    message="Incorrect username or password",
+                    error_type="AuthenticationError"
+                ),
+                headers={"WWW-Authenticate": "Bearer"}
             )
     except AuthenticationError as e:
         raise HTTPException(
@@ -75,7 +84,7 @@ async def login(
 
 
 # Route for user registration
-@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(user: User, db: Session = Depends(get_db)):
     """
     User registration route.
@@ -83,19 +92,38 @@ async def register(user: User, db: Session = Depends(get_db)):
     try:
         existing_user = db.query(User).filter(User.username == user.username).first()
         if existing_user:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already taken",
+                content=error_response(
+                    message="Username already taken",
+                    error_type="UserExistsError",
+                    suggestion="Please choose a different username"
+                )
             )
 
         db_user = User(username=user.username, email=user.email)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        return db_user
+        
+        # Convert to dict for response
+        user_data = {
+            "id": db_user.id,
+            "username": db_user.username,
+            "email": db_user.email
+        }
+        
+        return standard_response(
+            message="User registered successfully",
+            data=user_data
+        )
     except Exception as e:
         logger.error(f"Registration failed: {e}")
-        raise HTTPException(
+        return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
+            content=error_response(
+                message="Failed to register user",
+                error_type="ServerError",
+                suggestion="Please try again later or contact support"
+            )
         )

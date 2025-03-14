@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}API Connection Test{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-4">API Connection Test Tool</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Basic API Connection</h2>
+                </div>
+                <div class="card-body">
+                    <button id="testConnection" class="btn btn-primary mb-3">Test Connection</button>
+                    <div id="connectionResult" class="alert d-none"></div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h2 class="card-title h5 mb-0">API Configuration</h2>
+                </div>
+                <div class="card-body">
+                    <button id="loadConfig" class="btn btn-info mb-3">Load Config</button>
+                    <pre id="configResult" class="bg-light p-3 border rounded"></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title h5 mb-0">Card API Test</h2>
+                </div>
+                <div class="card-body">
+                    <button id="testCardApi" class="btn btn-success mb-3">List Card Readers</button>
+                    <div id="cardResult" class="alert d-none"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="card-title h5 mb-0">Request Log</h2>
+                </div>
+                <div class="card-body p-0">
+                    <ul id="requestLog" class="list-group list-group-flush">
+                        <li class="list-group-item text-muted">No requests logged yet</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Helper function to log API requests
+    function logRequest(method, url, status, duration) {
+        const log = document.getElementById('requestLog');
+        const item = document.createElement('li');
+        item.className = 'list-group-item';
+        
+        const statusClass = status >= 200 && status < 300 ? 'text-success' : 'text-danger';
+        
+        item.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <span><strong>${method}</strong> ${url}</span>
+                <span class="${statusClass}">${status}</span>
+            </div>
+            <div class="text-muted small">Duration: ${duration.toFixed(2)}ms</div>
+        `;
+        
+        // Remove "No requests logged" message if it exists
+        const emptyLog = log.querySelector('.text-muted');
+        if (emptyLog) {
+            log.removeChild(emptyLog);
+        }
+        
+        // Add new log entry at the top
+        log.insertBefore(item, log.firstChild);
+    }
+    
+    // Function to make API requests with timing
+    async function makeRequest(url, method = 'GET', data = null) {
+        const startTime = performance.now();
+        let status = 0;
+        
+        try {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(url, options);
+            status = response.status;
+            
+            const endTime = performance.now();
+            logRequest(method, url, status, endTime - startTime);
+            
+            return await response.json();
+        } catch (error) {
+            const endTime = performance.now();
+            logRequest(method, url, 'ERROR', endTime - startTime);
+            throw error;
+        }
+    }
+    
+    // Test basic API connection
+    document.getElementById('testConnection').addEventListener('click', async function() {
+        const resultDiv = document.getElementById('connectionResult');
+        resultDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+        resultDiv.classList.add('alert-info');
+        resultDiv.textContent = 'Testing connection...';
+        
+        try {
+            const data = await makeRequest('/health');
+            
+            resultDiv.classList.remove('alert-info');
+            resultDiv.classList.add('alert-success');
+            resultDiv.innerHTML = `
+                <strong>Connection successful!</strong>
+                <div>Status: ${data.status}</div>
+            `;
+        } catch (error) {
+            resultDiv.classList.remove('alert-info');
+            resultDiv.classList.add('alert-danger');
+            resultDiv.innerHTML = `
+                <strong>Connection failed!</strong>
+                <div>Error: ${error.message}</div>
+                <div class="mt-2">
+                    <small>
+                        Check that your API server is running and there are no CORS issues.
+                    </small>
+                </div>
+            `;
+        }
+    });
+    
+    // Load API configuration
+    document.getElementById('loadConfig').addEventListener('click', async function() {
+        const configResult = document.getElementById('configResult');
+        configResult.textContent = 'Loading configuration...';
+        
+        try {
+            const data = await makeRequest('/config');
+            configResult.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            configResult.textContent = `Error loading configuration: ${error.message}`;
+        }
+    });
+    
+    // Test card API
+    document.getElementById('testCardApi').addEventListener('click', async function() {
+        const resultDiv = document.getElementById('cardResult');
+        resultDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+        resultDiv.classList.add('alert-info');
+        resultDiv.textContent = 'Querying card readers...';
+        
+        try {
+            const data = await makeRequest('/cards');
+            
+            resultDiv.classList.remove('alert-info');
+            resultDiv.classList.add('alert-success');
+            
+            if (data.length === 0) {
+                resultDiv.innerHTML = `<strong>Success!</strong> No card readers found.`;
+            } else {
+                let readersList = '<ul class="mb-0">';
+                data.forEach(card => {
+                    readersList += `<li>${JSON.stringify(card)}</li>`;
+                });
+                readersList += '</ul>';
+                
+                resultDiv.innerHTML = `
+                    <strong>Success!</strong> Found ${data.length} card(s):
+                    ${readersList}
+                `;
+            }
+        } catch (error) {
+            resultDiv.classList.remove('alert-info');
+            resultDiv.classList.add('alert-danger');
+            resultDiv.innerHTML = `
+                <strong>API request failed!</strong>
+                <div>Error: ${error.message}</div>
+            `;
+        }
+    });
+});
+</script>
+{% endblock %}

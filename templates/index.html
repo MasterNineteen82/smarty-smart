@@ -3,137 +3,210 @@
 {% block title %}Smart Card Manager - Dashboard{% endblock %}
 
 {% block content %}
-<div class="jumbotron">
-    <h1 class="display-4">Welcome to Smart Card Manager!</h1>
-    <p class="lead">This is a simple application for managing smart cards.</p>
-    <hr class="my-4">
-    <p>Use the navigation bar above to access the API Explorer, Configuration Manager, and Logs pages.</p>
-    <a class="btn btn-primary btn-lg" href="{{ url_for('api_explorer') }}" role="button">Explore APIs</a>
-</div>
-
-<div class="card-operations">
-    <h2>Card Operations</h2>
-
-    <div class="form-group">
-        <label for="cardId">Card ID:</label>
-        <input type="number" id="cardId" class="form-control" placeholder="Enter Card ID">
-        <small id="cardIdHelp" class="form-text text-muted">Please enter a valid card ID.</small>
-    </div>
-    <button id="getCardInfo" class="btn btn-primary" onclick="getCardInfo()">Get Card Info</button>
-
-    <div class="form-group">
-        <label for="memoryOffset">Memory Offset:</label>
-        <input type="number" id="memoryOffset" class="form-control" placeholder="Enter Memory Offset">
-        <small id="memoryOffsetHelp" class="form-text text-muted">Please enter a valid memory offset.</small>
-    </div>
-    <div class="form-group">
-        <label for="memoryData">Memory Data:</label>
-        <input type="text" id="memoryData" class="form-control" placeholder="Enter Memory Data">
-        <small id="memoryDataHelp" class="form-text text-muted">Please enter valid memory data.</small>
-    </div>
-    <button id="writeMemory" class="btn btn-primary" onclick="writeMemory()">Write Memory</button>
-
-    <div class="form-group">
-        <label for="newPin">New PIN:</label>
-        <input type="password" id="newPin" class="form-control" placeholder="Enter New PIN">
-        <small id="newPinHelp" class="form-text text-muted">Please enter a new PIN.</small>
-    </div>
-    <button id="changePin" class="btn btn-primary" onclick="changePin()">Change PIN</button>
-
-    <div class="form-group">
-        <label for="cardName">Card Name:</label>
-        <input type="text" id="cardName" class="form-control" placeholder="Enter Card Name">
-        <small id="cardNameHelp" class="form-text text-muted">Please enter a card name.</small>
-    </div>
-    <button id="registerCard" class="btn btn-primary" onclick="registerCard()">Register Card</button>
-
-    <button id="checkRegistration" class="btn btn-primary" onclick="checkRegistration()">Check Registration</button>
-    <button id="activateCard" class="btn btn-primary" onclick="activateCard()">Activate Card</button>
-    <button id="deactivateCard" class="btn btn-primary" onclick="deactivateCard()">Deactivate Card</button>
-    <button id="blockCard" class="btn btn-primary" onclick="blockCard()">Block Card</button>
-    <button id="unblockCard" class="btn btn-primary" onclick="unblockCard()">Unblock Card</button>
-    <button id="disposeCard" class="btn btn-primary" onclick="disposeCard()">Dispose Card</button>
-
-    <div class="form-group">
-        <label for="pin">PIN:</label>
-        <input type="password" id="pin" class="form-control" placeholder="Enter PIN">
-        <small id="pinHelp" class="form-text text-muted">Please enter your 4-digit PIN.</small>
-    </div>
-    <button id="authenticateCard" class="btn btn-success" onclick="authenticateCard()">Authenticate Card</button>
-
-    <div id="output" class="mt-3">
-        <!-- Output messages will be displayed here -->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2>Smart Card Manager Dashboard</h2>
+                    <div id="connection-status" class="badge bg-secondary">Connecting...</div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h3 class="card-title h5">Card Status</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="card-status" class="alert alert-info">
+                                        Waiting for status updates...
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="reader-select" class="form-label">Select Reader</label>
+                                        <select id="reader-select" class="form-select">
+                                            <option value="">Loading readers...</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button id="connect-btn" class="btn btn-primary">
+                                            Connect Card
+                                        </button>
+                                        <button id="read-btn" class="btn btn-success" disabled>
+                                            Read Card
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h3 class="card-title h5">Results</h3>
+                                </div>
+                                <div class="card-body">
+                                    <pre id="output" class="p-3 bg-light border rounded">No operations performed yet</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
+<!-- Include the WebSocket manager script -->
+<script src="/static/js/card-status.js"></script>
 <script>
-    // Function to display messages
-    function displayMessage(message, type = 'danger') {
-        $("#output").html(`<div class='alert alert-${type}'>${message}</div>`);
-    }
-
-    // Function to clear the output message
-    function clearMessage() {
-        $("#output").empty();
-    }
-
-    // Function to get card information
-    async function getCardInfo() {
-        const cardId = document.getElementById('cardId').value;
-        if (!cardId) {
-            displayMessage('Please enter a Card ID.', 'error');
-            return;
+document.addEventListener('DOMContentLoaded', function() {
+    const statusElement = document.getElementById('card-status');
+    const connectionStatusElement = document.getElementById('connection-status');
+    const outputElement = document.getElementById('output');
+    
+    // Listen for connection status changes
+    cardStatusManager.addConnectionListener(function(connected) {
+        if (connected) {
+            connectionStatusElement.textContent = 'Connected';
+            connectionStatusElement.className = 'badge bg-success';
+        } else {
+            connectionStatusElement.textContent = 'Disconnected';
+            connectionStatusElement.className = 'badge bg-danger';
         }
+    });
+    
+    // Listen for status updates
+    cardStatusManager.addStatusListener(function(data) {
+        // Update the status display
+        const statusClass = data.status === 'connected' ? 'alert-success' : 
+                           data.status === 'disconnected' ? 'alert-warning' : 
+                           data.status === 'error' ? 'alert-danger' : 'alert-info';
+        
+        statusElement.className = `alert ${statusClass}`;
+        statusElement.textContent = `Status: ${data.status}`;
+        
+        // Show more details in the output area
+        outputElement.textContent = JSON.stringify(data, null, 2);
+        
+        // Update the page title to indicate status
+        document.title = `Smart Card Manager (${data.status})`;
+    });
+    
+    // Connect button handler
+    document.getElementById('connect-btn').addEventListener('click', async function() {
         try {
-            const response = await fetch(`/cards/${cardId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const reader = document.getElementById('reader-select').value;
+            if (!reader) {
+                alert('Please select a reader first');
+                return;
             }
-            const data = await response.json();
-            displayMessage(`Card Info: ${JSON.stringify(data)}`, 'success');
-        } catch (error) {
-            console.error('Error fetching card info:', error);
-            displayMessage(`Error: ${error}`, 'error');
-        }
-    }
-
-    // Function to authenticate card
-    async function authenticateCard() {
-        const cardId = document.getElementById('cardId').value;
-        const pin = document.getElementById('pin').value;
-
-        if (!cardId || !pin) {
-            displayMessage('Please enter both Card ID and PIN.', 'error');
-            return;
-        }
-
-        try {
-            const response = await fetch('/cards/authenticate', {
+            
+            const response = await fetch('/cards/connect', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    card_id: cardId,
-                    pin: pin
-                })
+                body: JSON.stringify({ reader })
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+            
             const data = await response.json();
-
-            if (data.success) {
-                displayMessage('Authentication Successful!', 'success');
-            } else {
-                displayMessage(`Authentication Failed: ${data.message}`, 'error');
+            outputElement.textContent = JSON.stringify(data, null, 2);
+            
+            if (response.ok) {
+                document.getElementById('read-btn').disabled = false;
             }
         } catch (error) {
-            console.error('Error authenticating card:', error);
-            displayMessage(`Error: ${error}`, 'error');
+            console.error('Error connecting to card:', error);
+            outputElement.textContent = `Error: ${error.message}`;
+        }
+    });
+    
+    // Read button handler
+    document.getElementById('read-btn').addEventListener('click', async function() {
+        try {
+            const response = await fetch('/cards/read');
+            const data = await response.json();
+            outputElement.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            console.error('Error reading card:', error);
+            outputElement.textContent = `Error: ${error.message}`;
+        }
+    });
+    
+    // Load available readers
+    async function loadReaders() {
+        try {
+            const response = await fetch('/cards/readers');
+            const data = await response.json();
+            
+            const selectElement = document.getElementById('reader-select');
+            selectElement.innerHTML = '';
+            
+            if (data.readers && data.readers.length > 0) {
+                data.readers.forEach(reader => {
+                    const option = document.createElement('option');
+                    option.value = reader;
+                    option.textContent = reader;
+                    selectElement.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No readers found';
+                selectElement.appendChild(option);
+            }
+        } catch (error) {
+            console.error('Error loading readers:', error);
+            const selectElement = document.getElementById('reader-select');
+            selectElement.innerHTML = '<option value="">Error loading readers</option>';
         }
     }
+    
+    // Load readers on page load
+    loadReaders();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the status display element
+    const statusDisplay = document.getElementById('card-status-display');
+    const connectionIndicator = document.getElementById('connection-indicator');
+    
+    if (!statusDisplay || !connectionIndicator) {
+        console.warn('Status display elements not found');
+        return;
+    }
+    
+    // Update the connection indicator when WebSocket connection changes
+    cardStatusManager.addConnectionListener(function(connected) {
+        connectionIndicator.className = connected ? 'connected' : 'disconnected';
+        connectionIndicator.textContent = connected ? 'Connected' : 'Disconnected';
+    });
+    
+    // Update the status display when card status changes
+    cardStatusManager.addStatusListener(function(data) {
+        // Format the status data for display
+        const formattedTime = new Date(data.timestamp).toLocaleTimeString();
+        
+        // Update the status display
+        statusDisplay.innerHTML = `
+            <div class="status-item">
+                <strong>Status:</strong> ${data.status}
+            </div>
+            <div class="status-item">
+                <strong>Last Updated:</strong> ${formattedTime}
+            </div>
+            <div class="status-item">
+                <strong>Services:</strong> 
+                ${Object.entries(data.services || {}).map(([key, value]) => 
+                    `<span class="service-status ${value ? 'up' : 'down'}">${key}</span>`
+                ).join(' ')}
+            </div>
+        `;
+    });
+});
 </script>
 {% endblock %}

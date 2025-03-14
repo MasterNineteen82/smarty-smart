@@ -1,0 +1,299 @@
+2025-03-14 20:15:20,835 - __main__ - INFO - Initializing API tester for http://localhost:5000
+2025-03-14 20:15:20,835 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 20:15:20,835 - __main__ - INFO - [35mSMART CARD MANAGER API STANDARDIZATION TEST[0m
+2025-03-14 20:15:20,845 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 20:15:20,845 - __main__ - INFO - [36mDate: 2025-03-14 20:15:20.845089[0m
+2025-03-14 20:15:20,845 - __main__ - INFO - [36mServer: http://localhost:5000[0m
+2025-03-14 20:15:20,845 - __main__ - INFO - [36mLog file: api_test_20250314_201520.log[0m
+2025-03-14 20:15:20,845 - __main__ - INFO - [36m[0m
+2025-03-14 20:15:20,848 - __main__ - INFO - [35m
+=================================================[0m
+2025-03-14 20:15:20,848 - __main__ - INFO - [35mDISCOVERING API ENDPOINTS[0m
+2025-03-14 20:15:20,848 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 20:15:22,916 - __main__ - INFO - [32mFound endpoint: / (Status: 404)[0m
+2025-03-14 20:15:22,919 - __main__ - INFO - [32mFound endpoint: /docs (Status: 200)[0m
+2025-03-14 20:15:22,920 - __main__ - INFO - [32mFound endpoint: /openapi.json (Status: 200)[0m
+2025-03-14 20:15:22,923 - __main__ - INFO - [32mFound endpoint: /health (Status: 200)[0m
+2025-03-14 20:15:22,923 - __main__ - INFO - [32mFound endpoint: /card_status (Status: 404)[0m
+2025-03-14 20:15:22,923 - __main__ - INFO - [32mFound endpoint: /read_memory (Status: 404)[0m
+2025-03-14 20:15:22,923 - __main__ - INFO - [32mFound endpoint: /write_memory (Status: 404)[0m
+2025-03-14 20:15:22,928 - __main__ - INFO - [32mFound endpoint: /read_memory_region (Status: 404)[0m
+2025-03-14 20:15:22,928 - __main__ - INFO - [32mFound endpoint: /format_card (Status: 404)[0m
+2025-03-14 20:15:22,928 - __main__ - INFO - [32mFound endpoint: /block_card_direct (Status: 404)[0m
+2025-03-14 20:15:22,928 - __main__ - INFO - [32mFound endpoint: /register_card (Status: 404)[0m
+2025-03-14 20:15:22,928 - __main__ - INFO - [32mFound endpoint: /unregister_card (Status: 404)[0m
+2025-03-14 20:15:22,928 - __main__ - INFO - [32mFound endpoint: /check_registration (Status: 404)[0m
+2025-03-14 20:15:22,935 - __main__ - INFO - [32mFound endpoint: /activate_card (Status: 404)[0m
+2025-03-14 20:15:22,936 - __main__ - INFO - [32mFound endpoint: /deactivate_card (Status: 404)[0m
+2025-03-14 20:15:22,945 - __main__ - INFO - [32mFound endpoint: /api/ (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/docs (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/openapi.json (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/health (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/card_status (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/read_memory (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/write_memory (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/read_memory_region (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/format_card (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/block_card_direct (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/register_card (Status: 404)[0m
+2025-03-14 20:15:22,947 - __main__ - INFO - [32mFound endpoint: /api/unregister_card (Status: 404)[0m
+2025-03-14 20:15:22,960 - __main__ - INFO - [32mFound endpoint: /api/check_registration (Status: 404)[0m
+2025-03-14 20:15:22,962 - __main__ - INFO - [32mFound endpoint: /api/activate_card (Status: 404)[0m
+2025-03-14 20:15:22,962 - __main__ - INFO - [32mFound endpoint: /api/deactivate_card (Status: 404)[0m
+2025-03-14 20:15:22,963 - __main__ - INFO - [32mFound endpoint: /api/cards/status (Status: 404)[0m
+2025-03-14 20:15:22,963 - __main__ - INFO - [32mFound endpoint: /api/cards/register (Status: 404)[0m
+2025-03-14 20:15:22,963 - __main__ - INFO - [32mFound endpoint: /api/auth/register (Status: 404)[0m
+2025-03-14 20:15:22,967 - __main__ - INFO - [32mFound endpoint: /v1/ (Status: 404)[0m
+2025-03-14 20:15:22,967 - __main__ - INFO - [32mFound endpoint: /v1/docs (Status: 404)[0m
+2025-03-14 20:15:22,967 - __main__ - INFO - [32mFound endpoint: /v1/openapi.json (Status: 404)[0m
+2025-03-14 20:15:22,972 - __main__ - INFO - [32mFound endpoint: /v1/health (Status: 404)[0m
+2025-03-14 20:15:22,973 - __main__ - INFO - [32mFound endpoint: /v1/card_status (Status: 404)[0m
+2025-03-14 20:15:22,973 - __main__ - INFO - [32mFound endpoint: /v1/read_memory (Status: 404)[0m
+2025-03-14 20:15:22,973 - __main__ - INFO - [32mFound endpoint: /v1/write_memory (Status: 404)[0m
+2025-03-14 20:15:22,973 - __main__ - INFO - [32mFound endpoint: /v1/read_memory_region (Status: 404)[0m
+2025-03-14 20:15:22,978 - __main__ - INFO - [32mFound endpoint: /v1/format_card (Status: 404)[0m
+2025-03-14 20:15:22,979 - __main__ - INFO - [32mFound endpoint: /v1/block_card_direct (Status: 404)[0m
+2025-03-14 20:15:22,979 - __main__ - INFO - [32mFound endpoint: /v1/register_card (Status: 404)[0m
+2025-03-14 20:15:22,979 - __main__ - INFO - [32mFound endpoint: /v1/unregister_card (Status: 404)[0m
+2025-03-14 20:15:22,983 - __main__ - INFO - [32mFound endpoint: /v1/check_registration (Status: 404)[0m
+2025-03-14 20:15:22,983 - __main__ - INFO - [32mFound endpoint: /v1/activate_card (Status: 404)[0m
+2025-03-14 20:15:22,983 - __main__ - INFO - [32mFound endpoint: /v1/deactivate_card (Status: 404)[0m
+2025-03-14 20:15:22,987 - __main__ - INFO - [32mFound endpoint: /v1/cards/status (Status: 404)[0m
+2025-03-14 20:15:22,987 - __main__ - INFO - [32mFound endpoint: /v1/cards/register (Status: 404)[0m
+2025-03-14 20:15:22,987 - __main__ - INFO - [32mFound endpoint: /v1/auth/register (Status: 404)[0m
+2025-03-14 20:15:22,987 - __main__ - INFO - [32mFound endpoint: /api/v1/ (Status: 404)[0m
+2025-03-14 20:15:22,987 - __main__ - INFO - [32mFound endpoint: /api/v1/docs (Status: 404)[0m
+2025-03-14 20:15:22,987 - __main__ - INFO - [32mFound endpoint: /api/v1/openapi.json (Status: 404)[0m
+2025-03-14 20:15:22,995 - __main__ - INFO - [32mFound endpoint: /api/v1/health (Status: 404)[0m
+2025-03-14 20:15:22,995 - __main__ - INFO - [32mFound endpoint: /api/v1/card_status (Status: 404)[0m
+2025-03-14 20:15:22,997 - __main__ - INFO - [32mFound endpoint: /api/v1/read_memory (Status: 404)[0m
+2025-03-14 20:15:22,997 - __main__ - INFO - [32mFound endpoint: /api/v1/write_memory (Status: 404)[0m
+2025-03-14 20:15:22,997 - __main__ - INFO - [32mFound endpoint: /api/v1/read_memory_region (Status: 404)[0m
+2025-03-14 20:15:23,001 - __main__ - INFO - [32mFound endpoint: /api/v1/format_card (Status: 404)[0m
+2025-03-14 20:15:23,001 - __main__ - INFO - [32mFound endpoint: /api/v1/block_card_direct (Status: 404)[0m
+2025-03-14 20:15:23,001 - __main__ - INFO - [32mFound endpoint: /api/v1/register_card (Status: 404)[0m
+2025-03-14 20:15:23,005 - __main__ - INFO - [32mFound endpoint: /api/v1/unregister_card (Status: 404)[0m
+2025-03-14 20:15:23,005 - __main__ - INFO - [32mFound endpoint: /api/v1/check_registration (Status: 404)[0m
+2025-03-14 20:15:23,007 - __main__ - INFO - [32mFound endpoint: /api/v1/activate_card (Status: 404)[0m
+2025-03-14 20:15:23,007 - __main__ - INFO - [32mFound endpoint: /api/v1/deactivate_card (Status: 404)[0m
+2025-03-14 20:15:23,007 - __main__ - INFO - [32mFound endpoint: /api/v1/cards/status (Status: 404)[0m
+2025-03-14 20:15:23,007 - __main__ - INFO - [32mFound endpoint: /api/v1/cards/register (Status: 404)[0m
+2025-03-14 20:15:23,012 - __main__ - INFO - [32mFound endpoint: /api/v1/auth/register (Status: 404)[0m
+2025-03-14 20:15:23,012 - __main__ - INFO - [32mFound POST endpoint: /api/connect (Status: 404)[0m
+2025-03-14 20:15:23,012 - __main__ - INFO - [32mFound POST endpoint: /api/verify_pin (Status: 404)[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [32mFound POST endpoint: /api/read_memory (Status: 404)[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [32mFound POST endpoint: /api/write_memory (Status: 404)[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [32mFound POST endpoint: /card_status (Status: 404)[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [32mFound POST endpoint: /api/card_status (Status: 404)[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [35m
+Discovered API Endpoints:[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [36mGET / - Status: 404[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [36mGET /docs - Status: 200[0m
+2025-03-14 20:15:23,016 - __main__ - INFO - [36mGET /openapi.json - Status: 200[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /health - Status: 200[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /card_status - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /read_memory - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /write_memory - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /read_memory_region - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /format_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /block_card_direct - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /register_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /unregister_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /check_registration - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /activate_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /deactivate_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/ - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/docs - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/openapi.json - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/health - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/card_status - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/read_memory - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/write_memory - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/read_memory_region - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/format_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/block_card_direct - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/register_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/unregister_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/check_registration - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/activate_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/deactivate_card - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/cards/status - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/cards/register - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /api/auth/register - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /v1/ - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /v1/docs - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /v1/openapi.json - Status: 404[0m
+2025-03-14 20:15:23,021 - __main__ - INFO - [36mGET /v1/health - Status: 404[0m
+2025-03-14 20:15:23,025 - __main__ - INFO - [36mGET /v1/card_status - Status: 404[0m
+2025-03-14 20:15:23,025 - __main__ - INFO - [36mGET /v1/read_memory - Status: 404[0m
+2025-03-14 20:15:23,025 - __main__ - INFO - [36mGET /v1/write_memory - Status: 404[0m
+2025-03-14 20:15:23,025 - __main__ - INFO - [36mGET /v1/read_memory_region - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/format_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/block_card_direct - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/register_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/unregister_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/check_registration - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/activate_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/deactivate_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/cards/status - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/cards/register - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /v1/auth/register - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/ - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/docs - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/openapi.json - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/health - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/card_status - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/read_memory - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/write_memory - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/read_memory_region - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/format_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/block_card_direct - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/register_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/unregister_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/check_registration - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/activate_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/deactivate_card - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/cards/status - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/cards/register - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mGET /api/v1/auth/register - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mPOST /api/connect - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mPOST /api/verify_pin - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mPOST /api/read_memory - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mPOST /api/write_memory - Status: 404[0m
+2025-03-14 20:15:23,026 - __main__ - INFO - [36mPOST /card_status - Status: 404[0m
+2025-03-14 20:15:23,028 - __main__ - INFO - [36mPOST /api/card_status - Status: 404[0m
+2025-03-14 20:15:23,028 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,028 - __main__ - INFO - [36mTesting: Health Check API[0m
+2025-03-14 20:15:23,028 - __main__ - INFO - [36mGET http://localhost:5000/health[0m
+2025-03-14 20:15:23,029 - __main__ - INFO - Response status: 200
+2025-03-14 20:15:23,029 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '15', 'content-type': 'application/json'}
+2025-03-14 20:15:23,029 - __main__ - INFO - Response content: {"status":"ok"}
+2025-03-14 20:15:23,038 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,038 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,038 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,038 - __main__ - INFO - [36mTesting: Card Status API (Direct)[0m
+2025-03-14 20:15:23,038 - __main__ - INFO - [36mPOST http://localhost:5000/card_status[0m
+2025-03-14 20:15:23,042 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,042 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,042 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,042 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,042 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,042 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,042 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,042 - __main__ - INFO - [36mTesting: Card Status API (with /api prefix)[0m
+2025-03-14 20:15:23,042 - __main__ - INFO - [36mPOST http://localhost:5000/api/card_status[0m
+2025-03-14 20:15:23,045 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,045 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,058 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,058 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,059 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,059 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,059 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,059 - __main__ - INFO - [36mTesting: Card Status API (from card_routes)[0m
+2025-03-14 20:15:23,059 - __main__ - INFO - [36mGET http://localhost:5000/cards/status[0m
+2025-03-14 20:15:23,061 - __main__ - INFO - Response status: 500
+2025-03-14 20:15:23,061 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '34', 'content-type': 'application/json'}
+2025-03-14 20:15:23,061 - __main__ - INFO - Response content: {"detail":"Internal server error"}
+2025-03-14 20:15:23,062 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,062 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,062 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,062 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,062 - __main__ - INFO - [36mTesting: API Health Check[0m
+2025-03-14 20:15:23,062 - __main__ - INFO - [36mGET http://localhost:5000/api/health[0m
+2025-03-14 20:15:23,075 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,075 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,075 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,075 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,075 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,075 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,075 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,075 - __main__ - INFO - [36mTesting: Card Readers List API[0m
+2025-03-14 20:15:23,075 - __main__ - INFO - [36mGET http://localhost:5000/api/readers[0m
+2025-03-14 20:15:23,078 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,078 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,078 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,078 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,078 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,078 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,078 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,095 - __main__ - INFO - [36mTesting: Connect Card API[0m
+2025-03-14 20:15:23,095 - __main__ - INFO - [36mPOST http://localhost:5000/api/connect[0m
+2025-03-14 20:15:23,096 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,096 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,096 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,096 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,096 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,096 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,096 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,096 - __main__ - INFO - [36mTesting: Check Registration (Direct)[0m
+2025-03-14 20:15:23,096 - __main__ - INFO - [36mGET http://localhost:5000/check_registration[0m
+2025-03-14 20:15:23,100 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,100 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,100 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,100 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,112 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,112 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - [36mTesting: Check Registration (with /api prefix)[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - [36mGET http://localhost:5000/api/check_registration[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,112 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,112 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,112 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,112 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,112 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - [36mTesting: Non-existent Endpoint (Error Format Test)[0m
+2025-03-14 20:15:23,112 - __main__ - INFO - [36mGET http://localhost:5000/api/nonexistent[0m
+2025-03-14 20:15:23,117 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,117 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,117 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,117 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,129 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,129 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [35m
+=====================================[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [36mTesting: Invalid PIN Format (Validation Test)[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [36mPOST http://localhost:5000/api/verify_pin[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [36mRequest body: {'pin': 'abc'}[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - Response status: 404
+2025-03-14 20:15:23,129 - __main__ - INFO - Response headers: {'date': 'Fri, 14 Mar 2025 20:15:22 GMT', 'server': 'uvicorn', 'content-length': '22', 'content-type': 'application/json'}
+2025-03-14 20:15:23,129 - __main__ - INFO - Response content: {"detail":"Not Found"}
+2025-03-14 20:15:23,129 - __main__ - INFO - [32mResponse received:[0m
+2025-03-14 20:15:23,129 - __main__ - ERROR - [31m  - Missing 'status' field[0m
+2025-03-14 20:15:23,129 - __main__ - ERROR - [31m  - Missing 'message' field[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [35m
+=================================================[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [35mTEST RESULTS SUMMARY[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [35m=================================================[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33mTests with standard format: 0 of 11 (0%)[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m
+Some APIs are not using the standardized format:[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m1. GET /health - Health Check API[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m2. POST /card_status - Card Status API (Direct)[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m3. POST /api/card_status - Card Status API (with /api prefix)[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m4. GET /cards/status - Card Status API (from card_routes)[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m5. GET /api/health - API Health Check[0m
+2025-03-14 20:15:23,129 - __main__ - INFO - [33m6. GET /api/readers - Card Readers List API[0m
+2025-03-14 20:15:23,134 - __main__ - INFO - [33m7. POST /api/connect - Connect Card API[0m
+2025-03-14 20:15:23,134 - __main__ - INFO - [33m8. GET /check_registration - Check Registration (Direct)[0m
+2025-03-14 20:15:23,145 - __main__ - INFO - [33m9. GET /api/check_registration - Check Registration (with /api prefix)[0m
+2025-03-14 20:15:23,145 - __main__ - INFO - [33m10. GET /api/nonexistent - Non-existent Endpoint (Error Format Test)[0m
+2025-03-14 20:15:23,145 - __main__ - INFO - [33m11. POST /api/verify_pin - Invalid PIN Format (Validation Test)[0m
+2025-03-14 20:15:23,145 - __main__ - INFO - [36m
+Recommendations:[0m
+2025-03-14 20:15:23,146 - __main__ - INFO - [36m1. Update these endpoints to use standard_response() and error_response() functions[0m
+2025-03-14 20:15:23,146 - __main__ - INFO - [36m2. Ensure all responses include 'status' and 'message' fields[0m
+2025-03-14 20:15:23,146 - __main__ - INFO - [36m3. Use 'success' or 'error' as the status value[0m
+2025-03-14 20:15:23,150 - __main__ - INFO - [36m
+Detailed results saved to api_test_results_20250314_201523.csv[0m

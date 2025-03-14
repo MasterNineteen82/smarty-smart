@@ -1,0 +1,12 @@
+Endpoint,Method,Description,Success,HasStandardFormat,Status,Message,HasData
+/health,GET,Health Check API,True,False,ok,N/A,False
+/card_status,POST,Card Status API (Direct),True,False,N/A,N/A,False
+/api/card_status,POST,Card Status API (with /api prefix),True,False,N/A,N/A,False
+/cards/status,GET,Card Status API (from card_routes),True,False,N/A,N/A,False
+/api/health,GET,API Health Check,True,False,N/A,N/A,False
+/api/readers,GET,Card Readers List API,True,False,N/A,N/A,False
+/api/connect,POST,Connect Card API,True,False,N/A,N/A,False
+/check_registration,GET,Check Registration (Direct),True,False,N/A,N/A,False
+/api/check_registration,GET,Check Registration (with /api prefix),True,False,N/A,N/A,False
+/api/nonexistent,GET,Non-existent Endpoint (Error Format Test),True,False,N/A,N/A,False
+/api/verify_pin,POST,Invalid PIN Format (Validation Test),True,False,N/A,N/A,False

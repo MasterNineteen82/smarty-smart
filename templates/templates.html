@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Smart Card Manager{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Welcome to Smart Card Manager</h1>
+        <p class="lead">Secure and efficient smart card management system</p>
+    </div>
+    
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-app-indicator display-1 text-primary mb-3"></i>
+                    <h2 class="h4">Launch Application</h2>
+                    <p>Access the main application dashboard to manage your smart cards</p>
+                    <a href="/app" class="btn btn-primary">Open Application</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-code-slash display-1 text-success mb-3"></i>
+                    <h2 class="h4">API Documentation</h2>
+                    <p>Explore the API documentation for developers</p>
+                    <a href="/docs" class="btn btn-success">View API Docs</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-gear display-1 text-secondary mb-3"></i>
+                    <h2 class="h4">Connection Test</h2>
+                    <p>Verify connectivity with the backend API</p>
+                    <a href="/connection-test" class="btn btn-secondary">Test Connection</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

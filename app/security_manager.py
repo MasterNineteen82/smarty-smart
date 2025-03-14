@@ -39,23 +39,68 @@ class SecurityManager:
         Initializes the SecurityManager with an optional encryption key.
         """
         self.encryption_key = key or self._load_or_generate_key()
+        self.encryption_key = self._ensure_valid_key_format(self.encryption_key)
         self.fernet = Fernet(self.encryption_key.encode())
         self.default_pin = config.get("DEFAULT_PIN")  # Access DEFAULT_PIN using config
         self.max_pin_attempts = config.get("MAX_PIN_ATTEMPTS")  # Access MAX_PIN_ATTEMPTS using config
         self.pin_attempts = 0
 
+    def _ensure_valid_key_format(self, key: str) -> str:
+        """
+        Ensures the key is in a valid format for Fernet.
+        If not, generates a new valid key.
+        """
+        try:
+            # Test if the key is valid by creating a Fernet instance
+            Fernet(key.encode())
+            return key
+        except Exception as e:
+            logger.warning(f"Invalid encryption key format: {e}. Generating new key.")
+            return self._generate_encryption_key()
+
     def _load_or_generate_key(self) -> str:
         """
-        Loads the encryption key from an environment variable or generates a new one.
+        Loads the encryption key from multiple sources in order of preference:
+        1. Environment variable
+        2. Key file
+        3. Generate new key (last resort)
         """
+        # Try environment variable first
         key = os.environ.get("SMARTCARD_ENCRYPTION_KEY")
         if key:
-            logger.info("Encryption key loaded from environment variable.")
-            return key
-        else:
-            key = self._generate_encryption_key()
-            logger.warning("No encryption key provided. Generated a new key. Ensure key persistence in production.")
-            return key
+            try:
+                # Validate key before returning
+                Fernet(key.encode())
+                logger.info("Encryption key loaded from environment variable.")
+                return key
+            except Exception as e:
+                logger.warning(f"Invalid key from environment: {e}. Generating new key.")
+        
+        # Try key file next
+        key_file = os.path.join(os.path.dirname(__file__), "..", "encryption_key.txt")
+        try:
+            if os.path.exists(key_file):
+                with open(key_file, "r") as f:
+                    key = f.read().strip()
+                    logger.info("Encryption key loaded from key file")
+                    return key
+        except Exception as e:
+            logger.warning(f"Failed to read key file: {e}")
+        
+        # As a last resort, generate a new key
+        key = self._generate_encryption_key()
+        logger.warning("No encryption key provided. Generated a new key. Ensure key persistence in production.")
+        
+        # Try to persist the key to file for future use
+        try:
+            with open(key_file, "w") as f:
+                f.write(key)
+            os.chmod(key_file, 0o600)  # Set permissions to owner read/write only
+            logger.info("Encryption key saved to key file")
+        except Exception as e:
+            logger.warning(f"Failed to save key to file: {e}")
+        
+        return key
 
     def _generate_encryption_key(self) -> str:
         """
@@ -68,8 +113,19 @@ class SecurityManager:
         """
         Persists the encryption key to an environment variable.
         """
-        os.environ["SMARTCARD_ENCRYPTION_KEY"] = self.encryption_key
-        logger.info("Encryption key persisted to environment variable.")
+        try:
+            # Validate key before persisting
+            Fernet(self.encryption_key.encode())
+            os.environ["SMARTCARD_ENCRYPTION_KEY"] = self.encryption_key
+            logger.info("Encryption key persisted to environment variable.")
+            
+            # Additionally, save to file for persistence across restarts
+            key_file = os.path.join(os.path.dirname(__file__), "..", "encryption_key.txt")
+            with open(key_file, "w") as f:
+                f.write(self.encryption_key)
+            os.chmod(key_file, 0o600)  # Set permissions to owner read/write only
+        except Exception as e:
+            logger.error(f"Failed to persist encryption key: {e}")
 
     async def authenticate_user(self, username, password):
         """

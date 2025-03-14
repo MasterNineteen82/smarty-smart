@@ -1,0 +1,6 @@
+Endpoint,Method,Description,Success,HasStandardFormat,Status,Message,HasData
+/health,GET,Health Check API,True,True,success,API service is operational,True
+/cards/status,GET,Card Status API,True,True,success,Card status retrieved successfully,True
+/cards/register,POST,Register Card API,True,True,error,Card already registered,False
+/nonexistent,GET,Non-existent Endpoint,True,True,error,Not Found,False
+/cards/test_atr_123,GET,Get Card Details API,True,True,error,Failed to retrieve card information,False

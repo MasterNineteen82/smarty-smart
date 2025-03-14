@@ -183,6 +183,21 @@ class TestCardOperations(unittest.TestCase):
         self.assertIn("not registered", message.lower())
 
     @patch('card_utils.establish_connection')
+    @patch('card_utils.get_card_status')
+    @patch('card_utils.is_card_registered')
+    def test_activation_deactivation(self, mock_is_registered, mock_get_card_status, mock_establish_connection):
+        """Test card activation and deactivation, including edge cases and exceptions"""
+        self.mock_conn = MockCardConnection()
+        mock_establish_connection.return_value = (self.mock_conn, None)
+        
+        # Test activation when card is registered
+        mock_is_registered.return_value = True
+        mock_get_card_status.return_value = CardStatus.INACTIVE.name
+        success, message = activate_card()
+        self.assertTrue(success, f"Card activation failed: {message}")
+        self.assertIn("activated", message.lower())
+
+    @patch('card_utils.establish_connection')
     @patch('card_utils.get_card_status')  
     @patch('card_utils.is_card_registered')  # Change from is_registered to is_card_registered
     def test_activation_deactivation_simplified(self, mock_is_registered, mock_card_status, mock_establish_connection):

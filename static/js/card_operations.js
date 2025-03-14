@@ -11,44 +11,18 @@ let cardConnected = false;
  * Connect to a card in the selected reader
  */
 async function connectCard() {
-    const readerSelect = document.getElementById('readerSelect');
-    const selectedReader = readerSelect ? readerSelect.value : null;
-
-    if (!selectedReader) {
-        updateStatusMessage('No reader selected.', 'warning');
-        return;
-    }
-    
-    // Show loading spinner
-    showSpinner('Connecting to card...');
+    showSpinner();
     
     try {
-        const response = await fetch('/connect', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ reader: selectedReader })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.status === 'success') {
-            cardConnected = true;
-            currentReader = selectedReader;
-            updateStatusMessage(data.message, 'success');
-            enableCardOperations();
-            updateCardInfo();
-        } else {
-            updateStatusMessage(data.message, 'error');
+        const data = await api.post('/cards/connect');
+        updateStatusMessage(data.message, data.status);
+        
+        if (data.data && data.data.atr) {
+            document.getElementById('card-atr').textContent = data.data.atr;
+            document.getElementById('card-details').classList.remove('d-none');
         }
     } catch (error) {
-        console.error('Error connecting to card:', error);
-        updateStatusMessage('Connection failed: ' + error.message, 'error');
+        ApiClient.displayError(error, updateStatusMessage);
     } finally {
         hideSpinner();
     }
@@ -373,5 +347,30 @@ async function performCardOperation(operation, data = {}) {
     } catch (error) {
         console.error(`Failed to perform card operation ${operation}:`, error);
         throw error;
+    }
+}
+
+/**
+ * Check card registration status
+ */
+async function checkRegistration() {
+    showSpinner();
+    
+    try {
+        const data = await api.get('/cards/check_registration');
+        
+        let message = data.data?.registered ?
+            'This card is registered in the system.' :
+            'This card is not registered.';
+
+        if (data.data?.card_info?.card_type) {
+            message += ` Card type: ${data.data.card_info.card_type}`;
+        }
+
+        updateStatusMessage(message, data.status);
+    } catch (error) {
+        ApiClient.displayError(error, updateStatusMessage);
+    } finally {
+        hideSpinner();
     }
 }

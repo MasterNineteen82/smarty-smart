@@ -10,6 +10,8 @@ import importlib.util
 import platform
 import time
 import logging
+import json
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -332,8 +334,21 @@ def create_directories():
     
     return success
 
+def check_file(file_path, required=True):
+    """Check if a file exists and log result"""
+    path = Path(file_path)
+    exists = path.exists()
+    
+    status = "OK" if exists else "MISSING"
+    mark = "✓" if exists else "✗"
+    print(f"{mark} {file_path}: {status}")
+    
+    if required and not exists:
+        return False
+    return True
+
 def main():
-    """Main function to check and set up the environment"""
+    """Run setup verification checks"""
     print_header("Smart Card Manager Setup Checker")
     print(f"System: {platform.system()} {platform.release()} ({platform.architecture()[0]})")
     print(f"Python: {sys.version.split()[0]}")
@@ -375,9 +390,77 @@ def main():
     # Check for card readers
     readers_ok = check_card_readers()
     
+    # Define required files
+    required_files = [
+        "app/__init__.py",
+        "app/routes.py",
+        "app/main.py",
+        "config.json",
+        "requirements.txt"
+    ]
+    
+    # Define the entry point file
+    # This is the file that the batch file actually tries to run
+    entry_point = "app/smart.py"
+    if not os.path.exists(entry_point):
+        # Check alternative locations
+        alternative_paths = [
+            "smart.py",
+            "app/core/smart.py",
+            "app/main.py"  # Fallback to main.py if smart.py doesn't exist
+        ]
+        
+        for alt_path in alternative_paths:
+            if os.path.exists(alt_path):
+                entry_point = alt_path
+                break
+    
+    print(f"Using entry point: {entry_point}")
+    required_files.append(entry_point)
+    
+    # Check each required file
+    all_files_exist = True
+    print("\nChecking required files:")
+    for file_path in required_files:
+        if not check_file(file_path, required=True):
+            all_files_exist = False
+    
+    # Check for config.json content
+    if os.path.exists("config.json"):
+        print("\nVerifying config.json content:")
+        try:
+            with open("config.json", "r") as f:
+                config = json.load(f)
+                
+            required_keys = ["app_name", "port", "debug"]
+            missing_keys = [key for key in required_keys if key not in config]
+            
+            if missing_keys:
+                print(f"✗ config.json is missing required keys: {', '.join(missing_keys)}")
+                all_files_exist = False
+            else:
+                print("✓ config.json has all required keys")
+                
+        except json.JSONDecodeError:
+            print("✗ config.json contains invalid JSON")
+            all_files_exist = False
+        except Exception as e:
+            print(f"✗ Error reading config.json: {e}")
+            all_files_exist = False
+    
+    # Create any missing directories
+    required_dirs = ["app/data", "app/logs"]
+    print("\nChecking required directories:")
+    for dir_path in required_dirs:
+        path = Path(dir_path)
+        if not path.exists():
+            print(f"Creating missing directory: {dir_path}")
+            path.mkdir(parents=True, exist_ok=True)
+        print(f"✓ {dir_path}: OK")
+    
     # Summary
     print_header("Setup Check Summary")
-    if overall_success:
+    if overall_success and all_files_exist:
         print_success("All critical checks passed! The application should start correctly.")
         logging.info("All critical checks passed! The application should start correctly.")
         if not readers_ok:

@@ -1,0 +1,658 @@
+2025-03-14 21:21:56,316 - === DISCOVERING API STRUCTURE ===
+2025-03-14 21:21:56,316 - Base URL: http://localhost:5000
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/api
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/docs
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/openapi.json
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/health
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/status
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/v1
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/api/v1
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/api/card
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/api/cards
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/cards
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/readers
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/api/readers
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/card
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/card/status
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/reader
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/reader/status
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/reader/list
+2025-03-14 21:21:56,317 - Testing: http://localhost:5000/smartcard
+2025-03-14 21:21:56,321 - Testing: http://localhost:5000/smartcard/status
+2025-03-14 21:21:56,321 - Testing: http://localhost:5000/connect
+2025-03-14 21:21:56,321 - Testing: http://localhost:5000/verify_pin
+2025-03-14 21:21:56,321 - Testing: http://localhost:5000/read_memory
+2025-03-14 21:21:56,321 - Testing: http://localhost:5000/write_memory
+2025-03-14 21:21:56,321 - Testing: http://localhost:5000/format
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/card/status'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/card/status'
+2025-03-14 21:21:56,336 - Status: 200
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/cards'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/cards'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/verify_pin'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/verify_pin'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/reader/status'
+2025-03-14 21:21:56,336 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/reader/status'
+2025-03-14 21:21:56,340 - HTTP error occurred: 200, message='Attempt to decode JSON with unexpected mimetype: text/html; charset=utf-8', url='http://localhost:5000/docs'
+2025-03-14 21:21:56,340 - HTTP error occurred: 200, message='Attempt to decode JSON with unexpected mimetype: text/html; charset=utf-8', url='http://localhost:5000/docs'
+2025-03-14 21:21:56,340 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/reader/list'
+2025-03-14 21:21:56,340 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/reader/list'
+2025-03-14 21:21:56,340 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/readers'
+2025-03-14 21:21:56,340 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/readers'
+2025-03-14 21:21:56,342 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/smartcard'
+2025-03-14 21:21:56,342 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/smartcard'
+2025-03-14 21:21:56,342 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/format'
+2025-03-14 21:21:56,342 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/format'
+2025-03-14 21:21:56,342 - Status: 200
+2025-03-14 21:21:56,344 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/v1'
+2025-03-14 21:21:56,344 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/v1'
+2025-03-14 21:21:56,344 - Response:
+2025-03-14 21:21:56,344 - {
+  "status": "ok"
+}
+2025-03-14 21:21:56,578 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/card'
+2025-03-14 21:21:56,578 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/card'
+2025-03-14 21:21:56,578 - Status: 200
+2025-03-14 21:21:56,585 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/connect'
+2025-03-14 21:21:56,585 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/connect'
+2025-03-14 21:21:56,600 - Response:
+2025-03-14 21:21:56,612 - {
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/cards/status": {
+      "get": {
+        "tags": [
+          "cards",
+          "cards"
+        ],
+        "summary": "Get Card Status",
+        "description": "Get the status of card services without accessing DB",
+        "operationId": "get_card_status_cards_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cards/register": {
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Register Card",
+        "description": "Register a new card.",
+        "operationId": "register_card_cards_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Card"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cards/{atr}": {
+      "get": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Get Card",
+        "description": "Get a card by ATR.",
+        "operationId": "get_card_cards__atr__get",
+        "parameters": [
+          {
+            "name": "atr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Atr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cards/{atr}/activate": {
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Activate Card",
+        "description": "Activate a card.",
+        "operationId": "activate_card_cards__atr__activate_post",
+        "parameters": [
+          {
+            "name": "atr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Atr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cards/{atr}/deactivate": {
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Deactivate Card",
+        "description": "Deactivate a card.",
+        "operationId": "deactivate_card_cards__atr__deactivate_post",
+        "parameters": [
+          {
+            "name": "atr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Atr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cards/{atr}/block": {
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Block Card",
+        "description": "Block a card.",
+        "operationId": "block_card_cards__atr__block_post",
+        "parameters": [
+          {
+            "name": "atr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Atr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cards/{atr}/unblock": {
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Unblock Card",
+        "description": "Unblock a card.",
+        "operationId": "unblock_card_cards__atr__unblock_post",
+        "parameters": [
+          {
+            "name": "atr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Atr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "description": "User login route.",
+        "operationId": "login_auth_token_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login_auth_token_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "description": "User registration route.",
+        "operationId": "register_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_login_auth_token_post": {
+        "properties": {
+          "grant_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "password"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grant Type"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": ""
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Secret"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_login_auth_token_post"
+      },
+      "Card": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "atr": {
+            "type": "string",
+            "title": "Atr"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "atr",
+          "user_id",
+          "status"
+        ],
+        "title": "Card"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type"
+        ],
+        "title": "Token"
+      },
+      "User": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username"
+        ],
+        "title": "User"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/smartcard/status'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/smartcard/status'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/card'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/card'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/status'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/status'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/v1'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/api/v1'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/readers'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/readers'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/write_memory'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/write_memory'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/reader'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/reader'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/read_memory'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/read_memory'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/cards'
+2025-03-14 21:21:56,612 - HTTP error occurred: 404, message='Not Found', url='http://localhost:5000/cards'
+2025-03-14 21:21:56,615 - 
+=== DISCOVERY RESULTS ===
+2025-03-14 21:21:56,615 - Working endpoints found:
+2025-03-14 21:21:56,615 -   \u2713 /openapi.json
+2025-03-14 21:21:56,615 -   \u2713 /health

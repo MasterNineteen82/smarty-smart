@@ -1,0 +1,6 @@
+Endpoint,Method,Description,Success,HasStandardFormat,Status,Message,HasData
+/health,GET,Health Check API,True,False,ok,N/A,False
+/cards/status,GET,Card Status API,True,False,N/A,N/A,False
+/cards/register,POST,Register Card API,True,False,N/A,N/A,False
+/nonexistent,GET,Non-existent Endpoint,True,False,N/A,N/A,False
+/cards/test_atr_123,GET,Get Card Details API,True,False,N/A,N/A,False
