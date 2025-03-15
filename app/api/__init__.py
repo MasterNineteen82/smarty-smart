@@ -52,8 +52,8 @@ async def health_check():
     return {"status": "ok"}
 
 # Include your routes
-from . import card_routes
-from . import auth_routes
+# from . import card_routes
+# from . import auth_routes
 # from .routes import router
 # app.include_router(router)
 # from . import config_routes # Remove config routes

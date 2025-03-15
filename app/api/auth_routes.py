@@ -7,7 +7,7 @@ import logging
 from pydantic import BaseModel, validator
 
 # Update this line to include SecurityManager
-from app.security_manager import AuthenticationError, get_security_manager, SecurityManager
+# from app.security_manager import AuthenticationError, get_security_manager, SecurityManager
 from app.db import session_scope, User
 from sqlalchemy.orm import Session
 # Import response utilities from the common module
@@ -42,45 +42,47 @@ def get_db():
         db.close()
 
 
+#"""
 # Route for user login
-@router.post("/token")
-async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    security_manager: SecurityManager = Depends(get_security_manager),
-):
-    """
-    User login route.
-    """
-    try:
-        if await security_manager.authenticate_user(
-            form_data.username, form_data.password
-        ):
-            access_token = "test_token"
-            return standard_response(
-                message="Login successful",
-                data={"access_token": access_token, "token_type": "bearer"}
-            )
-        else:
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content=error_response(
-                    message="Incorrect username or password",
-                    error_type="AuthenticationError"
-                ),
-                headers={"WWW-Authenticate": "Bearer"}
-            )
-    except AuthenticationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(e),
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except Exception as e:
-        logger.error(f"Login failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
-        )
+#@router.post("/token")
+#async def login(
+#    form_data: OAuth2PasswordRequestForm = Depends(),
+#    security_manager: SecurityManager = Depends(get_security_manager),
+#):
+#    """
+#    User login route.
+#    """
+#    try:
+#        if await security_manager.authenticate_user(
+#            form_data.username, form_data.password
+#        ):
+#            access_token = "test_token"
+#            return standard_response(
+#                message="Login successful",
+#                data={"access_token": access_token, "token_type": "bearer"}
+#            )
+#        else:
+#            return JSONResponse(
+#                status_code=status.HTTP_401_UNAUTHORIZED,
+#                content=error_response(
+#                    message="Incorrect username or password",
+#                    error_type="AuthenticationError"
+#                ),
+#                headers={"WWW-Authenticate": "Bearer"}
+#            )
+#    except AuthenticationError as e:
+#        raise HTTPException(
+#            status_code=status.HTTP_401_UNAUTHORIZED,
+#            detail=str(e),
+#            headers={"WWW-Authenticate": "Bearer"},
+#        )
+#    except Exception as e:
+#        logger.error(f"Login failed: {e}")
+#        raise HTTPException(
+#            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#            detail="Internal server error",
+#        )
+#"""
 
 
 # Route for user registration

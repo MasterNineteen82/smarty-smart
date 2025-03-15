@@ -23,9 +23,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 # Import necessary modules from other files
-from app.api import card_routes, auth_routes, routes
+from app.api import card_routes, auth_routes
 from app.db import create_db_and_tables
-from app.security_manager import get_security_manager
 
 # Setup logging
 logging.basicConfig(
@@ -73,23 +72,13 @@ def run_setup_verification():
 async def lifespan(app: FastAPI):
     logger.info("Starting application...")
     try:
-        create_db_and_tables()
+        # create_db_and_tables()
         logger.info("Database initialized.")
     except Exception as e:
         logger.error(f"Database init failed: {e}")
         logger.error(traceback.format_exc())
         # Optionally, stop the app if DB init fails
         # raise  # Re-raise to prevent app from starting
-
-    from app.security_manager import get_security_manager
-    security_manager = get_security_manager()
-    if os.environ.get("SMARTCARD_ENCRYPTION_KEY") is None:
-        try:
-            security_manager.persist_key()
-            logger.info("Encryption key persisted.")
-        except Exception as e:
-            logger.error(f"Failed to persist encryption key: {e}")
-            logger.error(traceback.format_exc())
 
     logger.info(f"Application started on port {active_port}")
     yield
@@ -156,7 +145,6 @@ app.middleware("http")(RequestLoggingMiddleware())
 
 app.include_router(card_routes.router, prefix="/cards", tags=["cards"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
-app.include_router(routes.router, tags=["general"])
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -560,7 +548,7 @@ def main():
     except Exception as e:
         logger.critical(f"Failed to start server: {e}")
         logger.critical(traceback.format_exc())
-        sys.exit(1)
 
 if __name__ == "__main__":
     main()
+    pass

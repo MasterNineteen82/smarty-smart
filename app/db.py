@@ -14,9 +14,6 @@ from datetime import datetime
 from contextlib import contextmanager
 from sqlalchemy.pool import QueuePool
 
-# Remove unused imports
-from app.core.card_utils import config  # Import the config object
-
 # Get the database URL from the environment or use a default
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./smartcard.db")
 
@@ -110,4 +107,4 @@ def init_db():
 
 # Initialize database only if this module is executed directly
 if __name__ == "__main__":
-    init_db()
+    pass

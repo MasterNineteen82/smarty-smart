@@ -1,0 +1,20 @@
+{
+  "runs": [
+    {
+      "timestamp": "20250315_031324",
+      "total_issues": 1,
+      "by_level": {
+        "ERROR": 0,
+        "WARNING": 0,
+        "INFO": 1
+      },
+      "by_category": {
+        "Code Duplication": 1
+      }
+    }
+  ],
+  "issue_hashes": [
+    "c66f0f5dae5f74e676ccf0721679b7f0"
+  ],
+  "trends": {}
+}

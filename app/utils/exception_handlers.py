@@ -4,7 +4,7 @@ from functools import wraps
 from typing import Any, Callable, Dict, Optional, Type, Union
 
 from fastapi import HTTPException
-from app.core.smartcard import CardConnectionError, CardDataError, CardAuthenticationError, SmartCardError
+from app.core.smartcard_utils import CardConnectionError, CardDataError, CardAuthenticationError, SmartCardError
 from app.utils.response_utils import error_response
 from app.utils.exceptions import AuthenticationError, AuthorizationError, EncryptionError  # Import custom exceptions
 

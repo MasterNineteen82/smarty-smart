@@ -11,8 +11,14 @@ cd /d "%APP_DIR%" || (
     exit /b 1
 )
 
-REM Activate virtual environment if it exists
+REM Create virtual environment if it doesn't exist and activate it
+if not exist venv (
+    echo Creating virtual environment...
+    python -m venv venv
+)
+
 if exist venv\Scripts\activate.bat (
+    echo Activating virtual environment...
     call venv\Scripts\activate.bat
 )
 

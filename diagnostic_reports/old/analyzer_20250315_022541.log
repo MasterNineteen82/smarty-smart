@@ -1,0 +1,5 @@
+2025-03-15 02:26:29,381 - INFO - Parsed 1 issues from the log file.
+2025-03-15 02:26:30,277 - INFO - Generated chart: diagnostic_reports\charts\issues_by_category_20250315_022541.png
+2025-03-15 02:26:30,482 - INFO - HTML report generated: diagnostic_reports\diagnostic_report_20250315_022541.html
+2025-03-15 02:26:30,561 - INFO - Markdown report generated: diagnostic_reports\diagnostic_report_20250315_022541.md
+2025-03-15 02:26:30,561 - INFO - Analysis history saved to diagnostic_reports\analysis_history.json

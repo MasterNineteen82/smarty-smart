@@ -7,10 +7,10 @@ from datetime import datetime
 # Renamed import to avoid confusion
 from app.models.card import Card as CardModel 
 from pydantic import BaseModel, validator
-from app.core.card_manager import CardManager, card_manager
-from app.security_manager import SecurityManager, get_security_manager  # Updated import statement
+#from app.core.card_manager import CardManager, card_manager
+#from app.security_manager import SecurityManager, get_security_manager  # Updated import statement
 from app.db import session_scope, Card, Session
-from app.utils.exceptions import CardError, InvalidInputError
+#from app.utils.exceptions import CardError, InvalidInputError
 # Import response utils
 from fastapi.responses import JSONResponse
 from app.utils.response_utils import standard_response, error_response
@@ -88,45 +88,45 @@ async def get_card_status():
             )
         )
 
-# Route for registering a new card
-@router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register_card(card: Card, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
-    """Register a new card."""
-    logger.info(f"Registering new card with ATR: {card.atr}")
-    try:
-        # Keep existing logic
-        success, message = card_manager.register_new_card(card.atr, card.user_id)
-        if success:
-            logger.info(f"Card registered successfully: {card.atr}")
-            db_card = db.query(CardModel).filter(CardModel.atr == card.atr).first()
-            
-            # Convert to dict for response
-            card_data = card_model_to_dict(db_card)
-            
-            return standard_response(
-                message="Card registered successfully",
-                data=card_data
-            )
-        else:
-            logger.warning(f"Card registration failed: {message}")
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=error_response(
-                    message=message,
-                    error_type="CardRegistrationError",
-                    suggestion="Please check the card parameters and try again"
-                )
-            )
-    except Exception as e:
-        logger.error(f"Registration failed: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=error_response(
-                message="Card registration failed",
-                error_type="ServerError",
-                suggestion="Please try again later or contact support"
-            )
-        )
+# # Route for registering a new card
+# @router.post("/register", status_code=status.HTTP_201_CREATED)
+# async def register_card(card: Card, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
+#     """Register a new card."""
+#     logger.info(f"Registering new card with ATR: {card.atr}")
+#     try:
+#         # Keep existing logic
+#         success, message = card_manager.register_new_card(card.atr, card.user_id)
+#         if success:
+#             logger.info(f"Card registered successfully: {card.atr}")
+#             db_card = db.query(CardModel).filter(CardModel.atr == card.atr).first()
+#             
+#             # Convert to dict for response
+#             card_data = card_model_to_dict(db_card)
+#             
+#             return standard_response(
+#                 message="Card registered successfully",
+#                 data=card_data
+#             )
+#         else:
+#             logger.warning(f"Card registration failed: {message}")
+#             return JSONResponse(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 content=error_response(
+#                     message=message,
+#                     error_type="CardRegistrationError",
+#                     suggestion="Please check the card parameters and try again"
+#                 )
+#             )
+#     except Exception as e:
+#         logger.error(f"Registration failed: {e}")
+#         return JSONResponse(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             content=error_response(
+#                 message="Card registration failed",
+#                 error_type="ServerError",
+#                 suggestion="Please try again later or contact support"
+#             )
+#         )
 
 # Now this won't match '/status' anymore
 @router.get("/{atr}")
@@ -184,166 +184,166 @@ async def get_card(atr: str, db: Session = Depends(get_db)):
             )
         )
 
-# Route for activating a card
-@router.post("/{atr}/activate")
-async def activate_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
-    """Activate a card."""
-    logger.info(f"Activating card with ATR: {atr}")
-    try:
-        # Activate the card using the CardManager
-        success, message = card_manager.activate_inactive_card(atr)
-        if success:
-            logger.info(f"Card activated successfully: {atr}")
-            # Retrieve the activated card from the database
-            db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
-            
-            # Convert to dict for response
-            card_data = card_model_to_dict(db_card)
-            
-            return standard_response(
-                message="Card activated successfully",
-                data=card_data
-            )
-        else:
-            logger.warning(f"Card activation failed: {message}")
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=error_response(
-                    message=message,
-                    error_type="CardActivationError",
-                    suggestion="Check if the card is in the correct state for activation"
-                )
-            )
-    except Exception as e:
-        logger.error(f"Activation failed: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=error_response(
-                message="Failed to activate card",
-                error_type="ServerError",
-                suggestion="Please try again later or contact support"
-            )
-        )
-
-# Route for deactivating a card
-@router.post("/{atr}/deactivate")
-async def deactivate_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
-    """Deactivate a card."""
-    logger.info(f"Deactivating card with ATR: {atr}")
-    try:
-        # Deactivate the card using the CardManager
-        success, message = card_manager.deactivate_active_card(atr)
-        if success:
-            logger.info(f"Card deactivated successfully: {atr}")
-            # Retrieve the deactivated card from the database
-            db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
-            
-            # Convert to dict for response
-            card_data = card_model_to_dict(db_card)
-            
-            return standard_response(
-                message="Card deactivated successfully",
-                data=card_data
-            )
-        else:
-            logger.warning(f"Card deactivation failed: {message}")
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=error_response(
-                    message=message,
-                    error_type="CardDeactivationError",
-                    suggestion="Check if the card is in the correct state for deactivation"
-                )
-            )
-    except Exception as e:
-        logger.error(f"Deactivation failed: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=error_response(
-                message="Failed to deactivate card",
-                error_type="ServerError",
-                suggestion="Please try again later or contact support"
-            )
-        )
-
-# Route for blocking a card
-@router.post("/{atr}/block")
-async def block_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
-    """Block a card."""
-    logger.info(f"Blocking card with ATR: {atr}")
-    try:
-        # Block the card using the CardManager
-        success, message = card_manager.block_active_card(atr)
-        if success:
-            logger.info(f"Card blocked successfully: {atr}")
-            # Retrieve the blocked card from the database
-            db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
-            
-            # Convert to dict for response
-            card_data = card_model_to_dict(db_card)
-            
-            return standard_response(
-                message="Card blocked successfully",
-                data=card_data
-            )
-        else:
-            logger.warning(f"Card blocking failed: {message}")
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=error_response(
-                    message=message,
-                    error_type="CardBlockError",
-                    suggestion="Check if the card is in the correct state for blocking"
-                )
-            )
-    except Exception as e:
-        logger.error(f"Blocking failed: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=error_response(
-                message="Failed to block card",
-                error_type="ServerError",
-                suggestion="Please try again later or contact support"
-            )
-        )
-
-# Route for unblocking a card
-@router.post("/{atr}/unblock")
-async def unblock_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
-    """Unblock a card."""
-    logger.info(f"Unblocking card with ATR: {atr}")
-    try:
-        # Unblock the card using the CardManager
-        success, message = card_manager.unblock_blocked_card(atr)
-        if success:
-            logger.info(f"Card unblocked successfully: {atr}")
-            # Retrieve the unblocked card from the database
-            db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
-            
-            # Convert to dict for response
-            card_data = card_model_to_dict(db_card)
-            
-            return standard_response(
-                message="Card unblocked successfully",
-                data=card_data
-            )
-        else:
-            logger.warning(f"Card unblocking failed: {message}")
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=error_response(
-                    message=message,
-                    error_type="CardUnblockError",
-                    suggestion="Check if the card is in the correct state for unblocking"
-                )
-            )
-    except Exception as e:
-        logger.error(f"Unblocking failed: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=error_response(
-                message="Failed to unblock card",
-                error_type="ServerError",
-                suggestion="Please try again later or contact support"
-            )
-        )
+# # Route for activating a card
+# @router.post("/{atr}/activate")
+# async def activate_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
+#     """Activate a card."""
+#     logger.info(f"Activating card with ATR: {atr}")
+#     try:
+#         # Activate the card using the CardManager
+#         success, message = card_manager.activate_inactive_card(atr)
+#         if success:
+#             logger.info(f"Card activated successfully: {atr}")
+#             # Retrieve the activated card from the database
+#             db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
+#             
+#             # Convert to dict for response
+#             card_data = card_model_to_dict(db_card)
+#             
+#             return standard_response(
+#                 message="Card activated successfully",
+#                 data=card_data
+#             )
+#         else:
+#             logger.warning(f"Card activation failed: {message}")
+#             return JSONResponse(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 content=error_response(
+#                     message=message,
+#                     error_type="CardActivationError",
+#                     suggestion="Check if the card is in the correct state for activation"
+#                 )
+#             )
+#     except Exception as e:
+#         logger.error(f"Activation failed: {e}")
+#         return JSONResponse(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             content=error_response(
+#                 message="Failed to activate card",
+#                 error_type="ServerError",
+#                 suggestion="Please try again later or contact support"
+#             )
+#         )
+# 
+# # Route for deactivating a card
+# @router.post("/{atr}/deactivate")
+# async def deactivate_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
+#     """Deactivate a card."""
+#     logger.info(f"Deactivating card with ATR: {atr}")
+#     try:
+#         # Deactivate the card using the CardManager
+#         success, message = card_manager.deactivate_active_card(atr)
+#         if success:
+#             logger.info(f"Card deactivated successfully: {atr}")
+#             # Retrieve the deactivated card from the database
+#             db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
+#             
+#             # Convert to dict for response
+#             card_data = card_model_to_dict(db_card)
+#             
+#             return standard_response(
+#                 message="Card deactivated successfully",
+#                 data=card_data
+#             )
+#         else:
+#             logger.warning(f"Card deactivation failed: {message}")
+#             return JSONResponse(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 content=error_response(
+#                     message=message,
+#                     error_type="CardDeactivationError",
+#                     suggestion="Check if the card is in the correct state for deactivation"
+#                 )
+#             )
+#     except Exception as e:
+#         logger.error(f"Deactivation failed: {e}")
+#         return JSONResponse(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             content=error_response(
+#                 message="Failed to deactivate card",
+#                 error_type="ServerError",
+#                 suggestion="Please try again later or contact support"
+#             )
+#         )
+# 
+# # Route for blocking a card
+# @router.post("/{atr}/block")
+# async def block_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
+#     """Block a card."""
+#     logger.info(f"Blocking card with ATR: {atr}")
+#     try:
+#         # Block the card using the CardManager
+#         success, message = card_manager.block_active_card(atr)
+#         if success:
+#             logger.info(f"Card blocked successfully: {atr}")
+#             # Retrieve the blocked card from the database
+#             db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
+#             
+#             # Convert to dict for response
+#             card_data = card_model_to_dict(db_card)
+#             
+#             return standard_response(
+#                 message="Card blocked successfully",
+#                 data=card_data
+#             )
+#         else:
+#             logger.warning(f"Card blocking failed: {message}")
+#             return JSONResponse(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 content=error_response(
+#                     message=message,
+#                     error_type="CardBlockError",
+#                     suggestion="Check if the card is in the correct state for blocking"
+#                 )
+#             )
+#     except Exception as e:
+#         logger.error(f"Blocking failed: {e}")
+#         return JSONResponse(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             content=error_response(
+#                 message="Failed to block card",
+#                 error_type="ServerError",
+#                 suggestion="Please try again later or contact support"
+#             )
+#         )
+# 
+# # Route for unblocking a card
+# @router.post("/{atr}/unblock")
+# async def unblock_card(atr: str, db: Session = Depends(get_db), card_manager: CardManager = Depends(lambda: card_manager)):
+#     """Unblock a card."""
+#     logger.info(f"Unblocking card with ATR: {atr}")
+#     try:
+#         # Unblock the card using the CardManager
+#         success, message = card_manager.unblock_blocked_card(atr)
+#         if success:
+#             logger.info(f"Card unblocked successfully: {atr}")
+#             # Retrieve the unblocked card from the database
+#             db_card = db.query(CardModel).filter(CardModel.atr == atr).first()
+#             
+#             # Convert to dict for response
+#             card_data = card_model_to_dict(db_card)
+#             
+#             return standard_response(
+#                 message="Card unblocked successfully",
+#                 data=card_data
+#             )
+#         else:
+#             logger.warning(f"Card unblocking failed: {message}")
+#             return JSONResponse(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 content=error_response(
+#                     message=message,
+#                     error_type="CardUnblockError",
+#                     suggestion="Check if the card is in the correct state for unblocking"
+#                 )
+#             )
+#     except Exception as e:
+#         logger.error(f"Unblocking failed: {e}")
+#         return JSONResponse(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             content=error_response(
+#                 message="Failed to unblock card",
+#                 error_type="ServerError",
+#                 suggestion="Please try again later or contact support"
+#             )
+#         )

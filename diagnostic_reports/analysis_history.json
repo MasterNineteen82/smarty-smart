@@ -1,0 +1,16 @@
+{
+  "runs": [
+    {
+      "timestamp": "20250315_032231",
+      "total_issues": 0,
+      "by_level": {
+        "ERROR": 0,
+        "WARNING": 0,
+        "INFO": 0
+      },
+      "by_category": {}
+    }
+  ],
+  "issue_hashes": [],
+  "trends": {}
+}

@@ -1,0 +1,13 @@
+2025-03-15 03:22:31,486 - INFO - Processing log file: codebase_diagnostic.log
+2025-03-15 03:23:22,554 - WARNING - Could not parse message: Collecting files...
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - Collected 73 files.
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - Checking file health...
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - File OK: X:\smarty-smart\smart.py
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - File OK: X:\smarty-smart\app\api\card_routes.py
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - File OK: X:\smarty-smart\app\core\card_manager.py
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - File OK: X:\smarty-smart\app\core\card_utils.py
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - File OK: X:\smarty-smart\app\utils\smartcard_utils.py
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - File OK: X:\smarty-smart\requirements.txt
+2025-03-15 01:53:36,224 - CodebaseDiagnostic - INFO - Detecting duplicate code blocks...
+2025-03-15 01:53:36,249 - CodebaseDiagnostic - WARNING - Highly similar code detected
+2025-03-15 03:23:22,568 - INFO - Parsed 0 issues from the log file.

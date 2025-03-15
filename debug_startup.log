@@ -1,0 +1,55 @@
+2025-03-15 01:43:53,693 - DebugStartup - INFO - --- Environment Information ---
+2025-03-15 01:43:53,693 - DebugStartup - INFO - Operating System: win32
+2025-03-15 01:43:53,693 - DebugStartup - INFO - VIRTUAL_ENV: X:\smarty-smart\venv
+2025-03-15 01:43:53,693 - DebugStartup - INFO - CONDA_DEFAULT_ENV: Not in a conda environment
+2025-03-15 01:43:53,693 - DebugStartup - INFO - PATH: X:\smarty-smart\venv\Scripts;C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files\PowerShell\7;C:\Program Files\Microsoft MPI\Bin\;C:\Program Files\WindowsApps\Microsoft.PowerShell_7.4.6.0_x64__8wekyb3d8bbwe;C:\Program Files\PowerShell\7;C:\Program Files\ImageMagick-7.1.1-Q16-HDRI;C:\Python312\Scripts\;C:\Python312\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\Microchip\xc8\v2.36\bin;C:\Program Files\dotnet\;C:\Users\email\.rustup\toolchains\esp\xtensa-esp32-elf-clang\esp-clang\bin;C:\Users\email\.rustup\toolchains\esp\xtensa-esp-elf\bin;C:\Espressif\tools\idf-python\3.11.2\;C:\Espressif\tools\idf-git\2.44.0\cmd\;C:\Program Files (x86)\Microsoft\Edge\Application;C:\Python311\Scripts\;C:\Python311\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Azure Data Studio\bin;C:\Program Files (x86)\STMic;W:\Microsoft VS Code\bin;W:\JetBrains\PyCharm 2024.1.4\bin;C:\Program Files\Tesseract-OCR;C:\ffmpeg\ffmpeg-2023-06-19-essentials_build\bin;C:\Meshroom\Meshroom-2023.3.0\bin;C:\ADB\platform-tools;C:\Program Files\NVIDIA Corporation\Nsight Compute 2024.3.2\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Users\email\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\email\AppData\Local\Programs\Python\Python310\;C:\speedtest-cli;C:\Program Files\nodejs;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\Program Files\PowerShell\7\;C:\Users\email\AppData\Local\Programs\Python\Python39\Scripts\;C:\Users\email\AppData\Local\Programs\Python\Python39\;C:\Users\email\AppData\Local\Programs\Ollama;C:\Users\email\AppData\Local\Microsoft\WindowsApps;C:\Users\email\AppData\Roaming\npm;C:\Users\email\AppData\Local\GitHubDesktop\bin;C:\Users\email\AppData\Local\Programs\Swift\Runtimes\6.0.2\usr\bin\;C:\Users\email\AppData\Local\Programs\Swift\Toolchains\6.0.2+Asserts\usr\bin\;C:\Users\email\AppData\Local\Programs\Swift\Tools\6.0.2\;C:\Users\email\AppData\Local\Microsoft\WinGet\Packages\Genymobile.scrcpy_Microsoft.Winget.Source_8wekyb3d8bbwe\scrcpy-win64-v3.1;C:\ADB\platform-tools;;C:\ADB\platform-tools;C:\Program Files\CMake\bin;C:\Users\email\.dotnet\tools;C:\Program Files\CMake\bin;;C:\Program Files\OpenSC Project\OpenSC\tools\;C:\Program Files\Microsoft SQL Server\160\T;C:\Program Files\OpenSC Project\OpenSC\tools\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Users\email\.lmstudio\bin
+2025-03-15 01:43:53,704 - DebugStartup - INFO - PYTHONPATH: PYTHONPATH not set
+2025-03-15 01:43:53,704 - DebugStartup - INFO - Current User: email
+2025-03-15 01:43:53,704 - DebugStartup - INFO - 
+--- Python Information ---
+2025-03-15 01:43:53,704 - DebugStartup - INFO - sys.executable: X:\smarty-smart\venv\Scripts\python.exe
+2025-03-15 01:43:53,704 - DebugStartup - INFO - sys.version: 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+2025-03-15 01:43:53,704 - DebugStartup - INFO - sys.version_info: sys.version_info(major=3, minor=10, micro=11, releaselevel='final', serial=0)
+2025-03-15 01:43:53,704 - DebugStartup - INFO - sys.prefix: X:\smarty-smart\venv
+2025-03-15 01:43:53,708 - DebugStartup - INFO - sys.base_prefix: C:\Users\email\AppData\Local\Programs\Python\Python310
+2025-03-15 01:43:53,708 - DebugStartup - INFO - sys.real_prefix: N/A
+2025-03-15 01:43:53,708 - DebugStartup - INFO - site.getsitepackages(): ['X:\\smarty-smart\\venv', 'X:\\smarty-smart\\venv\\lib\\site-packages']
+2025-03-15 01:43:53,708 - DebugStartup - INFO - site.getusersitepackages(): C:\Users\email\AppData\Roaming\Python\Python310\site-packages
+2025-03-15 01:43:53,708 - DebugStartup - INFO - 
+--- Encoding Information ---
+2025-03-15 01:43:53,708 - DebugStartup - INFO - sys.getdefaultencoding(): utf-8
+2025-03-15 01:43:53,708 - DebugStartup - INFO - sys.getfilesystemencoding(): utf-8
+2025-03-15 01:43:53,708 - DebugStartup - INFO - locale.getpreferredencoding(): locale module not imported
+2025-03-15 01:43:53,708 - DebugStartup - INFO - 
+--- Module Search Path ---
+2025-03-15 01:43:53,708 - DebugStartup - INFO - sys.path: ['X:\\smarty-smart', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310\\python310.zip', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310\\DLLs', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310\\lib', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310', 'X:\\smarty-smart\\venv', 'X:\\smarty-smart\\venv\\lib\\site-packages']
+2025-03-15 01:43:53,708 - DebugStartup - INFO - 
+--- Check for common issues ---
+2025-03-15 01:43:53,708 - DebugStartup - INFO - Current working directory 'X:\smarty-smart' is in sys.path.
+2025-03-15 01:43:53,710 - DebugStartup - INFO - Write permissions to site-packages: OK
+2025-03-15 01:43:53,712 - DebugStartup - INFO - Starting debugging script...
+2025-03-15 01:43:53,712 - DebugStartup - INFO - sys.path: ['X:\\smarty-smart\\app\\utils', 'X:\\smarty-smart\\app', 'X:\\smarty-smart', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310\\python310.zip', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310\\DLLs', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310\\lib', 'C:\\Users\\email\\AppData\\Local\\Programs\\Python\\Python310', 'X:\\smarty-smart\\venv', 'X:\\smarty-smart\\venv\\lib\\site-packages']
+2025-03-15 01:43:53,712 - DebugStartup - INFO - Importing smart.py...
+2025-03-15 01:43:54,471 - DebugStartup - ERROR - Syntax error in X:\smarty-smart\smart.py Extra: {
+  "line": 8,
+  "offset": 33,
+  "text": "import pyscard.smartcard.System import readers\n"
+}
+Traceback (most recent call last):
+  File "X:\smarty-smart\debug_startup.py", line 253, in import_module_async
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "X:\smarty-smart\smart.py", line 26, in <module>
+    from app.api import card_routes, auth_routes, routes
+  File "X:\smarty-smart\app\api\__init__.py", line 55, in <module>
+    from . import card_routes
+  File "X:\smarty-smart\app\api\card_routes.py", line 10, in <module>
+    from app.core.card_manager import CardManager, card_manager
+  File "X:\smarty-smart\app\core\card_manager.py", line 10, in <module>
+    from app.core.card_utils import (
+  File "X:\smarty-smart\app\core\card_utils.py", line 8
+    import pyscard.smartcard.System import readers
+                                    ^^^^^^
+SyntaxError: invalid syntax
+2025-03-15 01:43:54,487 - DebugStartup - ERROR - Failed to import smart.py. Exiting.

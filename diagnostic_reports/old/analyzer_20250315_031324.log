@@ -1,0 +1,4 @@
+2025-03-15 03:13:24,992 - INFO - Processing log file: codebase_diagnostic.log
+2025-03-15 03:14:12,895 - INFO - Parsed 1 issues from the log file.
+2025-03-15 03:14:13,204 - INFO - CSV report generated successfully at diagnostic_reports\diagnostic_report_codebase_diagnostic_20250315_031324.csv
+2025-03-15 03:14:13,207 - INFO - HTML report generated successfully at diagnostic_reports\diagnostic_report_codebase_diagnostic_20250315_031324.html
