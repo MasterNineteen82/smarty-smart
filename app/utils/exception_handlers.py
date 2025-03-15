@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, Optional, Type, Union
 from fastapi import HTTPException
 from app.core.smartcard import CardConnectionError, CardDataError, CardAuthenticationError, SmartCardError
 from app.utils.response_utils import error_response
+from app.utils.exceptions import AuthenticationError, AuthorizationError, EncryptionError  # Import custom exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,24 @@ def handle_card_exceptions(f):
             raise HTTPException(
                 status_code=401, 
                 detail=error_response("CardAuthenticationError", str(e), suggestion)
+            )
+        except AuthenticationError as e:
+            logger.warning(f"Authentication error in {f.__name__}: {e}")
+            raise HTTPException(
+                status_code=401,
+                detail=error_response("AuthenticationError", str(e), "Invalid credentials")
+            )
+        except AuthorizationError as e:
+            logger.warning(f"Authorization error in {f.__name__}: {e}")
+            raise HTTPException(
+                status_code=403,
+                detail=error_response("AuthorizationError", str(e), "Insufficient permissions")
+            )
+        except EncryptionError as e:
+            logger.error(f"Encryption error in {f.__name__}: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=error_response("EncryptionError", str(e), "Encryption or decryption failed")
             )
         except SmartCardError as e:
             logger.error(f"Smart card error in {f.__name__}: {e}")

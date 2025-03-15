@@ -12,21 +12,11 @@ from typing import Tuple, Optional
 
 from app.core.card_utils import config  # Import the config object
 from app.db import session_scope, User
+import pdb; pdb.set_trace()
+from app.utils.exceptions import AuthenticationError, AuthorizationError, EncryptionError
 
 # Configure logging
 logger = logging.getLogger(__name__)
-
-class AuthenticationError(Exception):
-    """Custom exception for authentication failures."""
-    pass
-
-class AuthorizationError(Exception):
-    """Custom exception for authorization failures."""
-    pass
-
-class EncryptionError(Exception):
-    """Custom exception for encryption failures."""
-    pass
 
 class SecurityManager:
     """
@@ -41,9 +31,10 @@ class SecurityManager:
         self.encryption_key = key or self._load_or_generate_key()
         self.encryption_key = self._ensure_valid_key_format(self.encryption_key)
         self.fernet = Fernet(self.encryption_key.encode())
-        self.default_pin = config.get("DEFAULT_PIN")  # Access DEFAULT_PIN using config
-        self.max_pin_attempts = config.get("MAX_PIN_ATTEMPTS")  # Access MAX_PIN_ATTEMPTS using config
+        self.default_pin = config.get("DEFAULT_PIN", "0000")  # Access DEFAULT_PIN using config with a default
+        self.max_pin_attempts = config.get("MAX_PIN_ATTEMPTS", 3)  # Access MAX_PIN_ATTEMPTS using config with a default
         self.pin_attempts = 0
+        logger.debug("SecurityManager initialized.")
 
     def _ensure_valid_key_format(self, key: str) -> str:
         """
@@ -55,7 +46,7 @@ class SecurityManager:
             Fernet(key.encode())
             return key
         except Exception as e:
-            logger.warning(f"Invalid encryption key format: {e}. Generating new key.")
+            logger.warning(f"Invalid encryption key format: {e}. Generating new key.", exc_info=True)
             return self._generate_encryption_key()
 
     def _load_or_generate_key(self) -> str:
@@ -65,67 +56,87 @@ class SecurityManager:
         2. Key file
         3. Generate new key (last resort)
         """
-        # Try environment variable first
-        key = os.environ.get("SMARTCARD_ENCRYPTION_KEY")
-        if key:
-            try:
-                # Validate key before returning
-                Fernet(key.encode())
-                logger.info("Encryption key loaded from environment variable.")
-                return key
-            except Exception as e:
-                logger.warning(f"Invalid key from environment: {e}. Generating new key.")
-        
-        # Try key file next
+        key = None
         key_file = os.path.join(os.path.dirname(__file__), "..", "encryption_key.txt")
-        try:
-            if os.path.exists(key_file):
-                with open(key_file, "r") as f:
-                    key = f.read().strip()
-                    logger.info("Encryption key loaded from key file")
-                    return key
-        except Exception as e:
-            logger.warning(f"Failed to read key file: {e}")
-        
-        # As a last resort, generate a new key
-        key = self._generate_encryption_key()
-        logger.warning("No encryption key provided. Generated a new key. Ensure key persistence in production.")
-        
-        # Try to persist the key to file for future use
-        try:
-            with open(key_file, "w") as f:
-                f.write(key)
-            os.chmod(key_file, 0o600)  # Set permissions to owner read/write only
-            logger.info("Encryption key saved to key file")
-        except Exception as e:
-            logger.warning(f"Failed to save key to file: {e}")
-        
+
+        # 1. Try environment variable
+        env_key = os.environ.get("SMARTCARD_ENCRYPTION_KEY")
+        if env_key:
+            try:
+                Fernet(env_key.encode())  # Validate key
+                key = env_key
+                logger.info("Encryption key loaded from environment variable.")
+            except Exception as e:
+                logger.warning(f"Invalid key from environment: {e}. Ignoring.", exc_info=True)
+
+        # 2. Try key file
+        if not key:
+            try:
+                if os.path.exists(key_file):
+                    with open(key_file, "r") as f:
+                        file_key = f.read().strip()
+                        Fernet(file_key.encode())  # Validate key
+                        key = file_key
+                        logger.info("Encryption key loaded from key file.")
+            except FileNotFoundError:
+                logger.warning("Key file not found.", exc_info=True)
+            except Exception as e:
+                logger.warning(f"Failed to read key file: {e}. Ignoring.", exc_info=True)
+
+        # 3. Generate new key (last resort)
+        if not key:
+            key = self._generate_encryption_key()
+            logger.warning("No encryption key found. Generated a new key. Ensure key persistence in production.")
+
+            # Try to persist the key to file for future use
+            try:
+                with open(key_file, "w") as f:
+                    f.write(key)
+                os.chmod(key_file, 0o600)  # Set permissions to owner read/write only
+                logger.info("Encryption key saved to key file.")
+            except Exception as e:
+                logger.error(f"Failed to save key to file: {e}", exc_info=True)
+
+        if not key:
+            logger.critical("Failed to load or generate encryption key. SecurityManager cannot function.")
+            raise RuntimeError("Failed to initialize encryption key.")
+
         return key
 
     def _generate_encryption_key(self) -> str:
         """
         Generates a new encryption key.
         """
-        key = Fernet.generate_key().decode()
-        return key
+        try:
+            key = Fernet.generate_key().decode()
+            logger.info("Encryption key generated successfully.")
+            return key
+        except Exception as e:
+            logger.error(f"Failed to generate encryption key: {e}", exc_info=True)
+            raise EncryptionError("Failed to generate encryption key.") from e
 
     def persist_key(self):
         """
-        Persists the encryption key to an environment variable.
+        Persists the encryption key to an environment variable and a file.
         """
+        key_file = os.path.join(os.path.dirname(__file__), "..", "encryption_key.txt")
         try:
             # Validate key before persisting
             Fernet(self.encryption_key.encode())
+
+            # Persist to environment variable
             os.environ["SMARTCARD_ENCRYPTION_KEY"] = self.encryption_key
             logger.info("Encryption key persisted to environment variable.")
-            
-            # Additionally, save to file for persistence across restarts
-            key_file = os.path.join(os.path.dirname(__file__), "..", "encryption_key.txt")
+
+            # Persist to file
             with open(key_file, "w") as f:
                 f.write(self.encryption_key)
             os.chmod(key_file, 0o600)  # Set permissions to owner read/write only
+            logger.info("Encryption key saved to key file.")
+
         except Exception as e:
-            logger.error(f"Failed to persist encryption key: {e}")
+            logger.error(f"Failed to persist encryption key: {e}", exc_info=True)
+            raise EncryptionError("Failed to persist encryption key.") from e
 
     async def authenticate_user(self, username, password):
         """
@@ -137,11 +148,15 @@ class SecurityManager:
                 # Retrieve user from database based on username
                 user = db.query(User).filter(User.username == username).first()
 
-                if user is None:
+                if not user:
                     logger.warning(f"Authentication failed for user {username}: user not found.")
                     raise AuthenticationError("Invalid credentials.")
 
                 # Hash the provided password
+                if not password:
+                    logger.warning(f"Authentication failed for user {username}: password not provided.")
+                    raise AuthenticationError("Invalid credentials.")
+
                 hashed_password = self._hash_password(password)
 
                 # Compare the hashed password with the stored hash
@@ -151,8 +166,11 @@ class SecurityManager:
                 else:
                     logger.warning(f"Authentication failed for user {username}: incorrect password.")
                     raise AuthenticationError("Invalid credentials.")
+        except AuthenticationError as e:
+            logger.warning(f"Authentication failed for user {username}: {e}")
+            raise
         except Exception as e:
-            logger.error(f"Authentication failed for user {username}: {e}")
+            logger.error(f"Authentication failed for user {username}: {e}", exc_info=True)
             raise AuthenticationError("Authentication failed.") from e
 
     async def authorize_user(self, username, permission):
@@ -171,8 +189,11 @@ class SecurityManager:
             else:
                 logger.warning(f"User {username} not authorized for permission {permission}.")
                 raise AuthorizationError("Unauthorized access.")
+        except AuthorizationError as e:
+            logger.warning(f"Authorization failed for user {username}: {e}")
+            raise
         except Exception as e:
-            logger.error(f"Authorization failed for user {username}: {e}")
+            logger.error(f"Authorization failed for user {username}: {e}", exc_info=True)
             raise AuthorizationError("Authorization failed.") from e
 
     async def _get_user_roles_from_db(self, username):
@@ -180,10 +201,14 @@ class SecurityManager:
         Retrieve user roles from the database.
         This is a placeholder; replace with actual database retrieval logic.
         """
-        # Placeholder: Simulate fetching user roles from a database
-        if username == "testuser":
-            return ["admin"]
-        else:
+        try:
+            # Placeholder: Simulate fetching user roles from a database
+            if username == "testuser":
+                return ["admin"]
+            else:
+                return []
+        except Exception as e:
+            logger.error(f"Failed to retrieve user roles from database: {e}", exc_info=True)
             return []
 
     def _check_permission(self, user_roles, permission):
@@ -191,12 +216,16 @@ class SecurityManager:
         Check if the user has the specified permission based on their roles.
         This is a placeholder; replace with actual permission checking logic.
         """
-        # Placeholder: Simulate permission checking based on roles
-        if "admin" in user_roles:
-            return True  # Admins have all permissions
-        if permission == "read" and "reader" in user_roles:
-            return True  # Readers have read permission
-        return False
+        try:
+            # Placeholder: Simulate permission checking based on roles
+            if "admin" in user_roles:
+                return True  # Admins have all permissions
+            if permission == "read" and "reader" in user_roles:
+                return True  # Readers have read permission
+            return False
+        except Exception as e:
+            logger.error(f"Failed to check permission: {e}", exc_info=True)
+            return False
 
     def generate_encryption_key(self):
         """
@@ -208,7 +237,7 @@ class SecurityManager:
             logger.info("Encryption key generated successfully.")
             return key
         except Exception as e:
-            logger.error(f"Failed to generate encryption key: {e}")
+            logger.error(f"Failed to generate encryption key: {e}", exc_info=True)
             raise EncryptionError("Failed to generate encryption key.") from e
 
     def encrypt_data(self, data, key=None):
@@ -217,6 +246,10 @@ class SecurityManager:
         """
         logger.info("Encrypting data")
         try:
+            if not data:
+                logger.warning("No data provided for encryption.")
+                return None
+
             if key is None:
                 cipher = self.fernet
             else:
@@ -225,7 +258,7 @@ class SecurityManager:
             logger.info("Data encrypted successfully.")
             return encrypted_data
         except Exception as e:
-            logger.error(f"Encryption failed: {e}")
+            logger.error(f"Encryption failed: {e}", exc_info=True)
             raise EncryptionError("Encryption failed.") from e
 
     def decrypt_data(self, data, key=None):
@@ -234,56 +267,92 @@ class SecurityManager:
         """
         logger.info("Decrypting data")
         try:
+            if not data:
+                logger.warning("No data provided for decryption.")
+                return None
+
             if key is None:
                 cipher = self.fernet
             else:
                 cipher = Fernet(key)
-            decrypted_data = cipher.decrypt(data.decode()).decode()
+            decrypted_data = cipher.decrypt(data.encode()).decode()
             logger.info("Data decrypted successfully.")
             return decrypted_data
         except InvalidToken as e:
-            logger.error(f"Decryption failed: Invalid token - {e}")
+            logger.error(f"Decryption failed: Invalid token - {e}", exc_info=True)
             raise EncryptionError("Decryption failed: Invalid token.") from e
         except Exception as e:
-            logger.error(f"Decryption failed: {e}")
+            logger.error(f"Decryption failed: {e}", exc_info=True)
             raise EncryptionError("Decryption failed.") from e
 
     def verify_pin(self, pin: str) -> Tuple[bool, str]:
         """
         Verifies the provided PIN against the stored PIN.
         """
-        if pin == self.default_pin:
-            self.pin_attempts = 0
-            return True, "PIN verified successfully"
-        else:
-            self.pin_attempts += 1
-            if self.pin_attempts >= self.max_pin_attempts:
-                return False, "PIN blocked due to too many incorrect attempts"
+        try:
+            if not pin:
+                logger.warning("PIN not provided for verification.")
+                return False, "PIN not provided."
+
+            if pin == self.default_pin:
+                self.pin_attempts = 0
+                logger.info("PIN verified successfully.")
+                return True, "PIN verified successfully"
             else:
-                return False, f"Incorrect PIN. Attempts remaining: {self.max_pin_attempts - self.pin_attempts}"
+                self.pin_attempts += 1
+                logger.warning(f"Incorrect PIN. Attempt {self.pin_attempts} of {self.max_pin_attempts}.")
+                if self.pin_attempts >= self.max_pin_attempts:
+                    logger.warning("PIN blocked due to too many incorrect attempts.")
+                    return False, "PIN blocked due to too many incorrect attempts"
+                else:
+                    attempts_remaining = self.max_pin_attempts - self.pin_attempts
+                    logger.info(f"Incorrect PIN. Attempts remaining: {attempts_remaining}")
+                    return False, f"Incorrect PIN. Attempts remaining: {attempts_remaining}"
+        except Exception as e:
+            logger.error(f"PIN verification failed: {e}", exc_info=True)
+            return False, "PIN verification failed due to an unexpected error."
 
     def reset_pin_attempts(self) -> None:
         """
         Resets the PIN attempts counter.
         """
         self.pin_attempts = 0
+        logger.info("PIN attempts reset.")
 
     def _hash_password(self, password):
         """
         Hash the password using SHA-256.
         """
-        # Use a salt for more secure hashing
-        salt = os.urandom(16)  # Generate a random salt
-        salted_password = salt + password.encode('utf-8')
-        hashed_password = hashlib.sha256(salted_password).hexdigest()
-        return hashed_password
+        try:
+            if not password:
+                logger.warning("Password not provided for hashing.")
+                return None
+
+            # Use a salt for more secure hashing
+            salt = os.urandom(16)  # Generate a random salt
+            salted_password = salt + password.encode('utf-8')
+            hashed_password = hashlib.sha256(salted_password).hexdigest()
+            logger.debug("Password hashed successfully.")
+            return hashed_password
+        except Exception as e:
+            logger.error(f"Password hashing failed: {e}", exc_info=True)
+            return None
 
     def _hash_pin(self, pin):
         """
         Hash the PIN using SHA-256.
         """
-        hashed_pin = hashlib.sha256(pin.encode()).hexdigest()
-        return hashed_pin
+        try:
+            if not pin:
+                logger.warning("PIN not provided for hashing.")
+                return None
+
+            hashed_pin = hashlib.sha256(pin.encode()).hexdigest()
+            logger.debug("PIN hashed successfully.")
+            return hashed_pin
+        except Exception as e:
+            logger.error(f"PIN hashing failed: {e}", exc_info=True)
+            return None
 
     def require_auth(self, permission):
         """
@@ -291,13 +360,21 @@ class SecurityManager:
         """
         def decorator(func):
             @wraps(func)
-            def wrapper(*args, **kwargs):
+            async def wrapper(*args, **kwargs):
                 username = kwargs.get('username')  # Assuming username is passed as a kwarg
                 if not username:
+                    logger.warning("Username must be provided for authorization.")
                     raise ValueError("Username must be provided.")
-                if not self.authorize_user(username, permission):
-                    raise AuthorizationError(f"User {username} not authorized for {permission}.")
-                return func(*args, **kwargs)
+                try:
+                    if not await self.authorize_user(username, permission):
+                        logger.warning(f"User {username} not authorized for {permission}.")
+                        raise AuthorizationError(f"User {username} not authorized for {permission}.")
+                except AuthorizationError as e:
+                    raise
+                except Exception as e:
+                    logger.error(f"Authorization check failed: {e}", exc_info=True)
+                    raise AuthorizationError("Authorization check failed.") from e
+                return await func(*args, **kwargs)
             return wrapper
         return decorator
 
@@ -306,4 +383,5 @@ def get_security_manager():
     """
     Returns a singleton instance of the SecurityManager.
     """
+    logger.debug("Getting SecurityManager instance.")
     return SecurityManager()

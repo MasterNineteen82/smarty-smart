@@ -12,116 +12,138 @@ import time
 import logging
 import json
 from pathlib import Path
+import importlib
+import pkg_resources
 
 # Configure logging
+LOG_DIR = os.path.join("logs", "setup")
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR, exist_ok=True)
+
+LOG_FILE = os.path.join(LOG_DIR, "setup_checker.log")
+
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(levelname)s - %(module)s - %(funcName)s - %(message)s',
     handlers=[
-        logging.FileHandler("setup_checker.log"),
+        logging.FileHandler(LOG_FILE),
         logging.StreamHandler(sys.stdout)
     ]
 )
 
-# Required packages list
-REQUIRED_PACKAGES = [
-    "pyscard",
-    "fastapi",
-    "uvicorn",
-    "werkzeug",
-    "cryptography",
-    "pyopenssl",
-    "python-dateutil"
-]
+def load_requirements(file_path="requirements.txt"):
+    """Load required packages from a requirements.txt file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:  # Specify encoding
+            requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+        return requirements
+    except FileNotFoundError:
+        print_warning("requirements.txt not found. Using default package list.")
+        logging.warning("requirements.txt not found. Using default package list.")
+        return [
+            "pyscard",
+            "fastapi",
+            "uvicorn",
+            "werkzeug",
+            "cryptography",
+            "pyopenssl",
+            "python-dateutil"
+        ]
+    except Exception as e:
+        print_error(f"Error reading requirements.txt: {e}. Using default package list.")
+        logging.error(f"Error reading requirements.txt: {e}. Using default package list.")
+        return [
+            "pyscard",
+            "fastapi",
+            "uvicorn",
+            "werkzeug",
+            "cryptography",
+            "pyopenssl",
+            "python-dateutil"
+        ]
 
-# Color codes for terminal output
+# Load required packages from requirements.txt
+REQUIRED_PACKAGES = load_requirements()
+
+# Color codes and icons for terminal output
 class Colors:
     HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
     WARNING = '\033[93m'
     FAIL = '\033[91m'
+    CYAN = '\033[96m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+# Icons
+ICON_SUCCESS = "✅"  # Unicode check mark
+ICON_WARNING = "⚠️"  # Unicode warning sign
+ICON_ERROR = "❌"    # Unicode cross mark
+ICON_INFO = "ℹ️"     # Unicode information icon
+ICON_HEADER = "⚙️"   # Unicode gear/settings icon
+
 
 def print_header(message):
-    """Print a formatted header"""
-    print(f"{Colors.HEADER}{Colors.BOLD}\n{'=' * 60}\n{message}\n{'=' * 60}{Colors.ENDC}\n")
+    """Print a formatted header with icon and underline"""
+    print(f"{Colors.HEADER}{Colors.BOLD}{ICON_HEADER} {Colors.UNDERLINE}{message}{Colors.ENDC}")
     logging.info(f"Header: {message}")
 
 def print_success(message):
-    """Print a success message"""
-    print(f"{Colors.GREEN}✓ {message}{Colors.ENDC}")
+    """Print a success message with green color and check mark icon"""
+    print(f"{Colors.OKGREEN}{ICON_SUCCESS} {message}{Colors.ENDC}")
     logging.info(f"Success: {message}")
 
 def print_warning(message):
-    """Print a warning message"""
-    print(f"{Colors.WARNING}! {message}{Colors.ENDC}")
+    """Print a warning message with yellow color and warning icon"""
+    print(f"{Colors.WARNING}{ICON_WARNING} {message}{Colors.ENDC}")
     logging.warning(f"Warning: {message}")
 
 def print_error(message):
-    """Print an error message"""
-    print(f"{Colors.FAIL}✗ {message}{Colors.ENDC}")
+    """Print an error message with red color and cross mark icon"""
+    print(f"{Colors.FAIL}{ICON_ERROR} {message}{Colors.ENDC}")
     logging.error(f"Error: {message}")
 
 def print_info(message):
-    """Print an info message"""
-    print(f"{Colors.BLUE}i {message}{Colors.ENDC}")
+    """Print an info message with blue color and information icon"""
+    print(f"{Colors.OKBLUE}{ICON_INFO} {message}{Colors.ENDC}")
     logging.info(f"Info: {message}")
 
+def check_virtual_environment():
+    """Check if the script is running inside a virtual environment."""
+    print_header("Checking Virtual Environment")
+    if 'VIRTUAL_ENV' in os.environ:
+        print_success("Running inside a virtual environment.")
+        logging.info("Running inside a virtual environment.")
+        return True
+    else:
+        print_warning("Not running inside a virtual environment.")
+        logging.warning("Not running inside a virtual environment.")
+        print_info("It is recommended to run this application within a virtual environment.")
+        logging.info("It is recommended to run this application within a virtual environment.")
+        return False
+
 def is_package_installed(package_name):
-    """Check if a package is installed"""
+    """Check if a package is installed using pkg_resources."""
     try:
-        spec = importlib.util.find_spec(package_name)
-        if spec is None:
-            return False
-        else:
-            return True
-    except ModuleNotFoundError:
-        return False
+        # Attempt to get the package distribution
+        dist = pkg_resources.get_distribution(package_name)
+        print_info(f"Package {package_name} found with version {dist.version} using pkg_resources")
+        return True  # If get_distribution doesn't raise an exception, it's installed
+
+    except pkg_resources.DistributionNotFound:
+        print_warning(f"Package {package_name} not found using pkg_resources")
+        return False  # Package not found
+
     except Exception as e:
-        print_error(f"Error checking if package {package_name} is installed: {e}")
-        logging.exception(f"Error checking if package {package_name} is installed: {e}")
-        return False
-
-def install_package(package_name):
-    """Install a package using pip with enhanced error handling"""
-    print_info(f"Installing {package_name}...")
-    logging.info(f"Installing {package_name}...")
-    try:
-        # Attempt to install the package
-        result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", package_name, "--quiet"],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
-
-        if result.returncode == 0:
-            print_success(f"{package_name} was successfully installed")
-            logging.info(f"{package_name} was successfully installed")
-            return True
-        else:
-            # Log the error output from pip
-            print_error(f"Failed to install {package_name}.  Error: {result.stderr}")
-            logging.error(f"Failed to install {package_name}. Error: {result.stderr}")
-            return False
-
-    except subprocess.TimeoutExpired:
-        print_error(f"Installation of {package_name} timed out.")
-        logging.error(f"Installation of {package_name} timed out.")
-        return False
-    except FileNotFoundError:
-        print_error(f"Pip not found. Ensure pip is installed and in your PATH.")
-        logging.error(f"Pip not found.")
-        return False
-    except Exception as e:
-        print_error(f"An unexpected error occurred during installation of {package_name}: {e}")
-        logging.exception(f"An unexpected error occurred during installation of {package_name}: {e}")
+        print_error(f"Error checking if package {package_name} is installed using pkg_resources: {e}")
+        logging.exception(f"Error checking if package {package_name} is installed using pkg_resources: {e}")
         return False
 
 def check_python_version():
     """Check if the Python version is sufficient"""
+    print_header("Checking Python Version")
     required_version = (3, 8)
     current_version = sys.version_info[:2]
     
@@ -136,6 +158,7 @@ def check_python_version():
 
 def check_pip():
     """Check if pip is installed and working"""
+    print_header("Checking Pip Installation")
     try:
         result = subprocess.run([sys.executable, "-m", "pip", "--version"],
                                  capture_output=True, text=True, timeout=10)
@@ -160,25 +183,17 @@ def check_pip():
         logging.exception(f"An unexpected error occurred while checking pip: {e}")
         return False
 
-def check_virtual_environment():
-    """Check if the script is running inside a virtual environment."""
-    if 'VIRTUAL_ENV' in os.environ:
-        print_success("Running inside a virtual environment.")
-        logging.info("Running inside a virtual environment.")
-        return True
-    else:
-        print_warning("Not running inside a virtual environment.")
-        logging.warning("Not running inside a virtual environment.")
-        print_info("It is recommended to run this application within a virtual environment.")
-        logging.info("It is recommended to run this application within a virtual environment.")
-        return False
-
 def check_required_packages():
     """Check for and install required packages"""
     print_header("Checking Required Packages")
     
+    # Clear importlib and pkg_resources caches
+    importlib.invalidate_caches()
+    pkg_resources.working_set = pkg_resources.WorkingSet()
+    
     all_packages_installed = True
     for package in REQUIRED_PACKAGES:
+        print(f"Checking {package}...")
         try:
             if is_package_installed(package):
                 print_success(f"{package} is installed")
@@ -195,6 +210,43 @@ def check_required_packages():
         return True
     else:
         print_error("Not all required packages were successfully installed.")
+        return False
+
+def install_package(package_name):
+    """Install a package using pip with enhanced error handling"""
+    print_info(f"Installing {package_name}...")
+    logging.info(f"Installing {package_name}...")
+    try:
+        # Attempt to install the package
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", package_name, "--quiet"],
+            capture_output=True,
+            text=True,
+            encoding='utf-8', # Ensure encoding is set
+            timeout=60
+        )
+
+        if result.returncode == 0:
+            print_success(f"{package_name} was successfully installed")
+            logging.info(f"{package_name} was successfully installed")
+            return True
+        else:
+            # Log the error output from pip
+            print_error(f"Failed to install {package_name}.  Error: {result.stderr}")
+            logging.error(f"Failed to install {package_name}. Error: {result.stderr}")
+            return False
+
+    except subprocess.TimeoutExpired:
+        print_error(f"Installation of {package_name} timed out.")
+        logging.error(f"Installation of {package_name} timed out.")
+        return False
+    except FileNotFoundError:
+        print_error(f"Pip not found. Ensure pip is installed and in your PATH.")
+        logging.error(f"Pip not found.")
+        return False
+    except Exception as e:
+        print_error(f"An unexpected error occurred during installation of {package_name}: {e}")
+        logging.exception(f"An unexpected error occurred during installation of {package_name}: {e}")
         return False
 
 def check_pcsc_service():
@@ -264,53 +316,69 @@ def check_card_readers():
     try:
         # First make sure pyscard is installed
         if not is_package_installed("smartcard"):
-            print_warning("pyscard module not available to check readers")
-            logging.warning("pyscard module not available to check readers")
-            return True  # Don't fail the overall check for this
+            print_warning("smartcard module not available to check readers")
+            logging.warning("smartcard module not available to check readers")
+            return False  # Return False to indicate that the check failed
         
         # Import after checking to avoid import errors
-        from smartcard.System import readers
+        try:
+            from smartcard.System import readers
+        except ImportError as e:
+            print_error(f"Error importing smartcard.System: {e}")
+            logging.error(f"Error importing smartcard.System: {e}")
+            return False
         
         try:
             reader_list = readers()
             if reader_list:
                 print_success(f"Found {len(reader_list)} card reader(s):")
                 logging.info(f"Found {len(reader_list)} card reader(s):")
+                
+                acr122u_found = False
+                st1144_found = False
+                
                 for i, reader in enumerate(reader_list):
                     print_info(f"  {i+1}. {reader}")
                     logging.info(f"  {i+1}. {reader}")
+                    
+                    if "ACR122U" in str(reader):
+                        acr122u_found = True
+                    if "ST1144" in str(reader):
+                        st1144_found = True
+                
+                if acr122u_found:
+                    print_success("ACR122U card reader detected.")
+                    logging.info("ACR122U card reader detected.")
+                if st1144_found:
+                    print_success("Cherry ST1144 card reader detected.")
+                    logging.info("Cherry ST1144 card reader detected.")
+                
                 return True
             else:
                 print_warning("No card readers detected")
                 logging.warning("No card readers detected")
                 print_info("Please connect a supported card reader and try again")
                 logging.info("Please connect a supported card reader and try again")
-                return True  # Don't fail the overall check for this
+                return False  # Return False to indicate that no readers were found
         except Exception as e:
             print_warning(f"Error listing card readers: {e}")
             logging.warning(f"Error listing card readers: {e}")
             print_info("Check reader connection and drivers.")
             logging.info("Check reader connection and drivers.")
-            return True
+            return False  # Return False to indicate that the check failed
             
-    except ImportError as e:
-        print_warning(f"pyscard module import error: {e}")
-        logging.warning(f"pyscard module import error: {e}")
-        print_info("Ensure pyscard is correctly installed and configured.")
-        logging.info("Ensure pyscard is correctly installed and configured.")
-        return True
     except Exception as e:
         print_warning(f"Error checking card readers: {e}")
         logging.warning(f"Error checking card readers: {e}")
         print_info("This doesn't prevent startup, but check your reader connection")
         logging.info("This doesn't prevent startup, but check your reader connection")
-        return True  # Don't fail the overall check for this
+        return False  # Return False to indicate that the check failed
 
 def create_directories():
     """Create required directories if they don't exist"""
-    directories = ["logs", "data", os.path.join("logs", "backups")]
-    
     print_header("Setting Up Directories")
+    
+    directories = ["logs", "data", os.path.join("logs", "backups")]
     
     success = True
     for directory in directories:
@@ -347,48 +415,9 @@ def check_file(file_path, required=True):
         return False
     return True
 
-def main():
-    """Run setup verification checks"""
-    print_header("Smart Card Manager Setup Checker")
-    print(f"System: {platform.system()} {platform.release()} ({platform.architecture()[0]})")
-    print(f"Python: {sys.version.split()[0]}")
-    print(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-    print()
-    
-    # Log system information
-    logging.info(f"System: {platform.system()} {platform.release()} ({platform.architecture()[0]})")
-    logging.info(f"Python: {sys.version.split()[0]}")
-    logging.info(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-    
-    overall_success = True
-    
-    # Check Python version first
-    if not check_python_version():
-        overall_success = False
-        
-    # Check pip next, as we need it to install packages
-    if not check_pip():
-        overall_success = False
-
-    # Check virtual environment
-    check_virtual_environment()
-    
-    # Check and create directories
-    if not create_directories():
-        print_error("Failed to create required directories. Please check permissions.")
-        logging.error("Failed to create required directories. Please check permissions.")
-        overall_success = False
-    
-    # Check for required packages
-    if not check_required_packages():
-        overall_success = False
-    
-    # Check PC/SC service
-    if not check_pcsc_service():
-        overall_success = False
-    
-    # Check for card readers
-    readers_ok = check_card_readers()
+def check_files():
+    """Check for required files"""
+    print_header("Checking Required Files")
     
     # Define required files
     required_files = [
@@ -420,14 +449,17 @@ def main():
     
     # Check each required file
     all_files_exist = True
-    print("\nChecking required files:")
     for file_path in required_files:
         if not check_file(file_path, required=True):
             all_files_exist = False
     
-    # Check for config.json content
+    return all_files_exist
+
+def check_config_content():
+    """Check for config.json content"""
+    print_header("Verifying config.json Content")
+    
     if os.path.exists("config.json"):
-        print("\nVerifying config.json content:")
         try:
             with open("config.json", "r") as f:
                 config = json.load(f)
@@ -436,36 +468,101 @@ def main():
             missing_keys = [key for key in required_keys if key not in config]
             
             if missing_keys:
-                print(f"✗ config.json is missing required keys: {', '.join(missing_keys)}")
-                all_files_exist = False
+                print_error(f"config.json is missing required keys: {', '.join(missing_keys)}")
+                return False
             else:
-                print("✓ config.json has all required keys")
+                print_success("config.json has all required keys")
+                return True
                 
         except json.JSONDecodeError:
-            print("✗ config.json contains invalid JSON")
-            all_files_exist = False
+            print_error("config.json contains invalid JSON")
+            return False
         except Exception as e:
-            print(f"✗ Error reading config.json: {e}")
-            all_files_exist = False
+            print_error(f"Error reading config.json: {e}")
+            return False
+    else:
+        print_error("config.json is missing")
+        return False
+
+def main():
+    """Run setup verification checks"""
+    print_header("Smart Card Manager Setup Checker")
+    print(f"System: {platform.system()} {platform.release()} ({platform.architecture()[0]})")
+    print(f"Python: {sys.version.split()[0]}")
+    print(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print()
     
-    # Create any missing directories
-    required_dirs = ["app/data", "app/logs"]
-    print("\nChecking required directories:")
-    for dir_path in required_dirs:
-        path = Path(dir_path)
-        if not path.exists():
-            print(f"Creating missing directory: {dir_path}")
-            path.mkdir(parents=True, exist_ok=True)
-        print(f"✓ {dir_path}: OK")
+    # Log system information
+    logging.info(f"System: {platform.system()} {platform.release()} ({platform.architecture()[0]})")
+    logging.info(f"Python: {sys.version.split()[0]}")
+    logging.info(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    overall_success = True
+    
+    # 1. Check Virtual Environment
+    venv_ok = check_virtual_environment()
+    if not venv_ok:
+        print_warning("Running outside a virtual environment is not recommended.")
+        logging.warning("Running outside a virtual environment is not recommended.")
+    
+    # 2. Check Python version
+    if not check_python_version():
+        overall_success = False
+        print_error("Python version check failed. Please ensure Python 3.8 or higher is installed.")
+        logging.error("Python version check failed. Please ensure Python 3.8 or higher is installed.")
+    
+    # 3. Check pip installation
+    if not check_pip():
+        overall_success = False
+        print_error("pip check failed. Please ensure pip is installed and working correctly.")
+        logging.error("pip check failed. Please ensure pip is installed and working correctly.")
+    
+    # 4. Check required files
+    files_ok = check_files()
+    if not files_ok:
+        overall_success = False
+        print_error("One or more required files are missing.")
+        logging.error("One or more required files are missing.")
+    
+    # 5. Check config.json content
+    config_ok = check_config_content()
+    if not config_ok:
+        overall_success = False
+        print_error("config.json is missing or contains invalid content.")
+        logging.error("config.json is missing or contains invalid content.")
+    
+    # 6. Create and check directories
+    dirs_ok = create_directories()
+    if not dirs_ok:
+        overall_success = False
+        print_error("Failed to create required directories. Please check permissions.")
+        logging.error("Failed to create required directories. Please check permissions.")
+    
+    # 7. Check for required packages
+    packages_ok = check_required_packages()
+    if not packages_ok:
+        overall_success = False
+        print_error("Not all required packages were successfully installed.")
+        logging.error("Not all required packages were successfully installed.")
+    
+    # 8. Check PC/SC service
+    pcsc_ok = check_pcsc_service()
+    if not pcsc_ok:
+        overall_success = False
+        print_error("PC/SC service is not running or could not be started.")
+        logging.error("PC/SC service is not running or could not be started.")
+    
+    # 9. Check for card readers
+    readers_ok = check_card_readers()
+    if not readers_ok:
+        print_warning("No card readers detected, but you can still start the application.")
+        logging.warning("No card readers detected, but you can still start the application.")
     
     # Summary
     print_header("Setup Check Summary")
-    if overall_success and all_files_exist:
+    if overall_success:
         print_success("All critical checks passed! The application should start correctly.")
         logging.info("All critical checks passed! The application should start correctly.")
-        if not readers_ok:
-            print_warning("No readers detected, but you can still start the application.")
-            logging.warning("No readers detected, but you can still start the application.")
         print_info("Starting Smart Card Manager...")
         logging.info("Starting Smart Card Manager...")
         return 0

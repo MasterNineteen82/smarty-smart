@@ -1,0 +1,298 @@
+2025-03-14 23:21:15,944 - INFO - setup_checker - print_header - Header: Smart Card Manager Setup Checker
+2025-03-14 23:21:15,960 - INFO - setup_checker - main - System: Windows 10 (64bit)
+2025-03-14 23:21:15,960 - INFO - setup_checker - main - Python: 3.10.11
+2025-03-14 23:21:15,960 - INFO - setup_checker - main - Time: 2025-03-14 23:21:15
+2025-03-14 23:21:15,960 - INFO - setup_checker - print_header - Header: Checking Virtual Environment
+2025-03-14 23:21:15,960 - INFO - setup_checker - print_success - Success: Running inside a virtual environment.
+2025-03-14 23:21:15,960 - INFO - setup_checker - check_virtual_environment - Running inside a virtual environment.
+2025-03-14 23:21:15,960 - INFO - setup_checker - print_header - Header: Checking Python Version
+2025-03-14 23:21:15,960 - INFO - setup_checker - print_success - Success: Python version 3.10.11 detected (required: 3.8+)
+2025-03-14 23:21:15,960 - INFO - setup_checker - check_python_version - Python version 3.10.11 detected (required: 3.8+)
+2025-03-14 23:21:15,960 - INFO - setup_checker - print_header - Header: Checking Pip Installation
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_success - Success: pip is installed and working
+2025-03-14 23:21:16,313 - INFO - setup_checker - check_pip - pip is installed and working
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_header - Header: Checking Required Files
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_header - Header: Verifying config.json Content
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_success - Success: config.json has all required keys
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_header - Header: Setting Up Directories
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_info - Info: Directory already exists: logs
+2025-03-14 23:21:16,313 - INFO - setup_checker - create_directories - Directory already exists: logs
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_info - Info: Directory already exists: data
+2025-03-14 23:21:16,313 - INFO - setup_checker - create_directories - Directory already exists: data
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_info - Info: Directory already exists: logs\backups
+2025-03-14 23:21:16,313 - INFO - setup_checker - create_directories - Directory already exists: logs\backups
+2025-03-14 23:21:16,313 - INFO - setup_checker - print_header - Header: Checking Required Packages
+2025-03-14 23:21:16,341 - INFO - setup_checker - print_info - Info: Package aiofiles==23.2.1 found with version 23.2.1 using pkg_resources
+2025-03-14 23:21:16,341 - INFO - setup_checker - print_success - Success: aiofiles==23.2.1 is installed
+2025-03-14 23:21:16,341 - INFO - setup_checker - print_info - Info: Package aiohappyeyeballs==2.6.1 found with version 2.6.1 using pkg_resources
+2025-03-14 23:21:16,341 - INFO - setup_checker - print_success - Success: aiohappyeyeballs==2.6.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package aiohttp==3.11.13 found with version 3.11.13 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: aiohttp==3.11.13 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package aioredis==2.0.1 found with version 2.0.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: aioredis==2.0.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package aiosignal==1.3.2 found with version 1.3.2 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: aiosignal==1.3.2 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package alabaster==0.7.16 found with version 0.7.16 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: alabaster==0.7.16 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package amqp==5.3.1 found with version 5.3.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: amqp==5.3.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package annotated-types==0.7.0 found with version 0.7.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: annotated-types==0.7.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package anyio==4.8.0 found with version 4.8.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: anyio==4.8.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package async-timeout==5.0.1 found with version 5.0.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: async-timeout==5.0.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package asyncpg==0.29.0 found with version 0.29.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: asyncpg==0.29.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package attrs==25.3.0 found with version 25.3.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: attrs==25.3.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package babel==2.17.0 found with version 2.17.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: babel==2.17.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package bandit==1.7.7 found with version 1.7.7 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: bandit==1.7.7 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package billiard==4.2.1 found with version 4.2.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: billiard==4.2.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package BTrees==6.1 found with version 6.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: BTrees==6.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package celery==5.3.6 found with version 5.3.6 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: celery==5.3.6 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package certifi==2025.1.31 found with version 2025.1.31 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: certifi==2025.1.31 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package cffi==1.17.1 found with version 1.17.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: cffi==1.17.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package charset-normalizer==3.4.1 found with version 3.4.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: charset-normalizer==3.4.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package click==8.1.8 found with version 8.1.8 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: click==8.1.8 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package click-didyoumean==0.3.1 found with version 0.3.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: click-didyoumean==0.3.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package click-plugins==1.1.1 found with version 1.1.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: click-plugins==1.1.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package click-repl==0.3.0 found with version 0.3.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: click-repl==0.3.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package colorama==0.4.6 found with version 0.4.6 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: colorama==0.4.6 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package coverage==7.6.12 found with version 7.6.12 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: coverage==7.6.12 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package cryptography==42.0.2 found with version 42.0.2 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: cryptography==42.0.2 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package dnspython==2.7.0 found with version 2.7.0 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: dnspython==2.7.0 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package docutils==0.20.1 found with version 0.20.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: docutils==0.20.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package ecdsa==0.19.1 found with version 0.19.1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: ecdsa==0.19.1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package email-validator==2.1.0.post1 found with version 2.1.0.post1 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: email-validator==2.1.0.post1 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package exceptiongroup==1.2.2 found with version 1.2.2 using pkg_resources
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_success - Success: exceptiongroup==1.2.2 is installed
+2025-03-14 23:21:16,357 - INFO - setup_checker - print_info - Info: Package fastapi==0.109.0 found with version 0.109.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: fastapi==0.109.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package fastapi-limiter==0.1.6 found with version 0.1.6 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: fastapi-limiter==0.1.6 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package flake8==7.0.0 found with version 7.0.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: flake8==7.0.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package frozenlist==1.5.0 found with version 1.5.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: frozenlist==1.5.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package greenlet==3.1.1 found with version 3.1.1 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: greenlet==3.1.1 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package h11==0.14.0 found with version 0.14.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: h11==0.14.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package httpcore==1.0.7 found with version 1.0.7 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: httpcore==1.0.7 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package httpx==0.28.1 found with version 0.28.1 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: httpx==0.28.1 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package idna==3.10 found with version 3.10 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: idna==3.10 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package imagesize==1.4.1 found with version 1.4.1 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: imagesize==1.4.1 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package iniconfig==2.0.0 found with version 2.0.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: iniconfig==2.0.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package itsdangerous==2.1.2 found with version 2.1.2 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: itsdangerous==2.1.2 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package jaeger-client==4.8.0 found with version 4.8.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: jaeger-client==4.8.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package Jinja2==3.1.6 found with version 3.1.6 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: Jinja2==3.1.6 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package kombu==5.5.0 found with version 5.5.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: kombu==5.5.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package markdown-it-py==3.0.0 found with version 3.0.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: markdown-it-py==3.0.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package MarkupSafe==3.0.2 found with version 3.0.2 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: MarkupSafe==3.0.2 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package marshmallow==3.20.2 found with version 3.20.2 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: marshmallow==3.20.2 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package mccabe==0.7.0 found with version 0.7.0 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: mccabe==0.7.0 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package mdurl==0.1.2 found with version 0.1.2 using pkg_resources
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_success - Success: mdurl==0.1.2 is installed
+2025-03-14 23:21:16,372 - INFO - setup_checker - print_info - Info: Package multidict==6.1.0 found with version 6.1.0 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: multidict==6.1.0 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package mypy==1.8.0 found with version 1.8.0 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: mypy==1.8.0 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package mypy-extensions==1.0.0 found with version 1.0.0 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: mypy-extensions==1.0.0 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package numpy==2.2.3 found with version 2.2.3 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: numpy==2.2.3 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package opentracing==2.4.0 found with version 2.4.0 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: opentracing==2.4.0 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package packaging==24.2 found with version 24.2 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: packaging==24.2 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package pandas==2.2.3 found with version 2.2.3 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: pandas==2.2.3 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package passlib==1.7.4 found with version 1.7.4 using pkg_resources
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_success - Success: passlib==1.7.4 is installed
+2025-03-14 23:21:16,384 - INFO - setup_checker - print_info - Info: Package pbr==6.1.1 found with version 6.1.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pbr==6.1.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package persistent==6.1.1 found with version 6.1.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: persistent==6.1.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pluggy==1.5.0 found with version 1.5.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pluggy==1.5.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package prometheus_client==0.20.0 found with version 0.20.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: prometheus_client==0.20.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package prompt_toolkit==3.0.50 found with version 3.0.50 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: prompt_toolkit==3.0.50 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package propcache==0.3.0 found with version 0.3.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: propcache==0.3.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pyasn1==0.6.1 found with version 0.6.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pyasn1==0.6.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pycodestyle==2.11.1 found with version 2.11.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pycodestyle==2.11.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pycparser==2.22 found with version 2.22 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pycparser==2.22 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pydantic==2.10.6 found with version 2.10.6 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pydantic==2.10.6 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pydantic_core==2.27.2 found with version 2.27.2 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pydantic_core==2.27.2 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pyflakes==3.2.0 found with version 3.2.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pyflakes==3.2.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package Pygments==2.19.1 found with version 2.19.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: Pygments==2.19.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package PyJWT==2.9.0 found with version 2.9.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: PyJWT==2.9.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pyOpenSSL==24.0.0 found with version 24.0.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pyOpenSSL==24.0.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pyscard==2.2.1 found with version 2.2.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pyscard==2.2.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pytest==8.0.1 found with version 8.0.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pytest==8.0.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pytest-cov==4.1.0 found with version 4.1.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pytest-cov==4.1.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package python-dateutil==2.9.0.post0 found with version 2.9.0.post0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: python-dateutil==2.9.0.post0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package python-dotenv==1.0.1 found with version 1.0.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: python-dotenv==1.0.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package python-jose==3.3.0 found with version 3.3.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: python-jose==3.3.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package python-multipart==0.0.20 found with version 0.0.20 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: python-multipart==0.0.20 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package pytz==2025.1 found with version 2025.1 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: pytz==2025.1 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package PyYAML==6.0.2 found with version 6.0.2 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: PyYAML==6.0.2 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package redis==5.3.0b5 found with version 5.3.0b5 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: redis==5.3.0b5 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package requests==2.31.0 found with version 2.31.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: requests==2.31.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package requests-mock==1.11.0 found with version 1.11.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: requests-mock==1.11.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package rich==13.9.4 found with version 13.9.4 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: rich==13.9.4 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package rsa==4.9 found with version 4.9 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: rsa==4.9 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package sentry-sdk==1.40.5 found with version 1.40.5 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: sentry-sdk==1.40.5 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package six==1.17.0 found with version 1.17.0 using pkg_resources
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_success - Success: six==1.17.0 is installed
+2025-03-14 23:21:16,388 - INFO - setup_checker - print_info - Info: Package smartcard==0.3 found with version 0.3 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: smartcard==0.3 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sniffio==1.3.1 found with version 1.3.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sniffio==1.3.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package snowballstemmer==2.2.0 found with version 2.2.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: snowballstemmer==2.2.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package Sphinx==7.2.6 found with version 7.2.6 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: Sphinx==7.2.6 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinx-rtd-theme==2.0.0 found with version 2.0.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinx-rtd-theme==2.0.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-applehelp==2.0.0 found with version 2.0.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-applehelp==2.0.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-devhelp==2.0.0 found with version 2.0.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-devhelp==2.0.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-htmlhelp==2.1.0 found with version 2.1.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-htmlhelp==2.1.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-jquery==4.1 found with version 4.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-jquery==4.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-jsmath==1.0.1 found with version 1.0.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-jsmath==1.0.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-qthelp==2.0.0 found with version 2.0.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-qthelp==2.0.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package sphinxcontrib-serializinghtml==2.0.0 found with version 2.0.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: sphinxcontrib-serializinghtml==2.0.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package SQLAlchemy==2.0.25 found with version 2.0.25 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: SQLAlchemy==2.0.25 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package starlette==0.35.1 found with version 0.35.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: starlette==0.35.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package stevedore==5.4.1 found with version 5.4.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: stevedore==5.4.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package structlog==24.1.0 found with version 24.1.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: structlog==24.1.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package threadloop==1.0.2 found with version 1.0.2 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: threadloop==1.0.2 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package thrift==0.21.0 found with version 0.21.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: thrift==0.21.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package tomli==2.2.1 found with version 2.2.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: tomli==2.2.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package tornado==6.4.2 found with version 6.4.2 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: tornado==6.4.2 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package transaction==5.0 found with version 5.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: transaction==5.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package types-requests==2.31.0.20240125 found with version 2.31.0.20240125 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: types-requests==2.31.0.20240125 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package typing_extensions==4.12.2 found with version 4.12.2 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: typing_extensions==4.12.2 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package tzdata==2025.1 found with version 2025.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: tzdata==2025.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package urllib3==2.3.0 found with version 2.3.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: urllib3==2.3.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package uvicorn==0.27.0 found with version 0.27.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: uvicorn==0.27.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package vine==5.1.0 found with version 5.1.0 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: vine==5.1.0 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package wcwidth==0.2.13 found with version 0.2.13 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: wcwidth==0.2.13 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package websockets==15.0.1 found with version 15.0.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: websockets==15.0.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package Werkzeug==3.0.1 found with version 3.0.1 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: Werkzeug==3.0.1 is installed
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_info - Info: Package yarl==1.18.3 found with version 1.18.3 using pkg_resources
+2025-03-14 23:21:16,404 - INFO - setup_checker - print_success - Success: yarl==1.18.3 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package zc.lockfile==3.0.post1 found with version 3.0.post1 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: zc.lockfile==3.0.post1 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package ZConfig==4.2 found with version 4.2 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: ZConfig==4.2 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package ZODB==6.0 found with version 6.0 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: ZODB==6.0 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package zodbpickle==4.2 found with version 4.2 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: zodbpickle==4.2 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package zope.deferredimport==5.0 found with version 5.0 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: zope.deferredimport==5.0 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package zope.interface==7.2 found with version 7.2 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: zope.interface==7.2 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package zope.proxy==6.1 found with version 6.1 using pkg_resources
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: zope.proxy==6.1 is installed
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_header - Header: Checking PC/SC Service
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_success - Success: PC/SC service (SCardSvr) is running
+2025-03-14 23:21:16,420 - INFO - setup_checker - check_pcsc_service - PC/SC service (SCardSvr) is running
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_header - Header: Checking for Card Readers
+2025-03-14 23:21:16,420 - INFO - setup_checker - print_info - Info: Package smartcard found with version 0.3 using pkg_resources
+2025-03-14 23:21:16,468 - INFO - setup_checker - print_success - Success: Found 2 card reader(s):
+2025-03-14 23:21:16,468 - INFO - setup_checker - check_card_readers - Found 2 card reader(s):
+2025-03-14 23:21:16,468 - INFO - setup_checker - print_info - Info:   1. ACS ACR122 0
+2025-03-14 23:21:16,468 - INFO - setup_checker - check_card_readers -   1. ACS ACR122 0
+2025-03-14 23:21:16,468 - INFO - setup_checker - print_info - Info:   2. CHERRY Smart Terminal xx44 0
+2025-03-14 23:21:16,468 - INFO - setup_checker - check_card_readers -   2. CHERRY Smart Terminal xx44 0
+2025-03-14 23:21:16,468 - INFO - setup_checker - print_header - Header: Setup Check Summary
+2025-03-14 23:21:16,468 - INFO - setup_checker - print_success - Success: All critical checks passed! The application should start correctly.
+2025-03-14 23:21:16,468 - INFO - setup_checker - main - All critical checks passed! The application should start correctly.
+2025-03-14 23:21:16,468 - INFO - setup_checker - print_info - Info: Starting Smart Card Manager...
+2025-03-14 23:21:16,468 - INFO - setup_checker - main - Starting Smart Card Manager...
